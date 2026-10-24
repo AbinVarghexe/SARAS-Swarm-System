@@ -1,0 +1,78 @@
+\chapter{Literature Survey}
+
+\section{Evolution of Phishing Detection Systems}
+The technological arms race between cybercriminals and security defense engineers has catalyzed significant transformations in phishing detection mechanisms over the past two decades. Early defense frameworks relied predominantly on heuristic rule sets and centralized blacklists. Blacklist services such as Google Safe Browsing, PhishTank, and Spamhaus maintain databases of confirmed malicious domains and IP addresses compiled through web honeypots, spam traps, and manual analyst submissions. While blacklisting provides near-instantaneous query response times ($< 5\text{ ms}$) and an exceptionally low false-positive rate for known malicious domains, it suffers from fatal limitations against zero-day campaigns. Attackers frequently leverage programmatic domain generation algorithms (DGAs), dynamic DNS fast-flux techniques, and ephemeral cloud subdomains, rendering static blacklists obsolete within hours of campaign launch.
+
+To address the limitations of blacklists, researchers pioneered heuristic and classical machine learning (ML) classification systems. These early frameworks extracted manual, hand-crafted features from URLs and HTML source documents, including lexical properties (e.g., URL length, token entropy, count of subdomains, presence of `@` symbols), domain registration attributes (WHOIS domain age, registrar trust), and Document Object Model (DOM) characteristics (e.g., number of external hyperlinks, presence of hidden forms, null anchor tags). Algorithms such as Random Forests \cite{14}, Support Vector Machines (SVM), and Logistic Regression were trained on these feature matrices. While effective against naive attacks, manual feature engineering exhibits severe drawbacks:
+\begin{enumerate}
+\item \textbf{Vulnerability to Feature Evading Adversaries:} Attackers intentionally manipulate lexical attributes (e.g., shortening URL paths, embedding benign keywords, padding forms) to bypass rigid heuristic thresholds.
+\item \textbf{High Latency in Feature Extraction:} Querying live WHOIS records and external DNS servers introduces severe networking bottlenecks, often exceeding several seconds per request.
+\item \textbf{Lack of Semantic Depth:} Tabular models ignore the rich semantic context present in natural language phishing emails, SMS lures, and webpage HTML source code.
+\end{enumerate}
+
+To transcend the constraints of manual feature engineering, deep neural networks (DNNs) were introduced. Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs) enabled end-to-end representation learning directly from raw character sequences and text strings \cite{15}. Nevertheless, contemporary studies reveal that unimodal deep learning models remain susceptible to evasion and fundamentally lack the interpretability required for enterprise SOC integration. The following subsections analyze foundational and cutting-edge paradigms that set the stage for multimodal explainability.
+
+\section{Behavior-Based Multichannel Phishing Detection via EM-BERT and SPCA}
+Recognizing that phishing campaigns increasingly manifest across disparate digital touchpoints simultaneously, Rathore, Sharma, and Sharma (2025) \cite{2} developed a robust multimodal framework aimed at behavior analysis and mitigation across mobile and web attack surfaces. Their investigation identified that single-vector defenses fail when threat actors coordinate multi-stage attacks---for instance, transmitting an SMS lure containing a shortened URL that subsequently redirects to an evasive web portal.
+
+To construct a resilient defense, the authors engineered a multichannel ingestion pipeline capturing SMS text, email body content, URL lexical tokens, and webpage Cascading Style Sheets (CSS). Their methodological breakthrough centered on two core innovations:
+\begin{itemize}
+\item \textbf{Enhanced Multichannel BERT (EM-BERT):} The researchers adapted bidirectional transformer encoders to capture complex linguistic, syntactic, and structural relationships across heterogeneous communication formats. EM-BERT was trained using masked token modeling and cross-channel attention, allowing the model to project both short-form SMS text and full-length HTML code into a unified, semantically coherent embedding space.
+\item \textbf{Spherical Principal Component Analysis (SPCA):} Because concatenating high-dimensional multichannel embeddings frequently introduces severe noise and multicollinearity, the authors deployed SPCA. Unlike Euclidean PCA, SPCA projects feature vectors onto a unit hypersphere, preserving directional angular distances while eliminating scale-induced variance distortions. This achieved substantial dimensionality compression while retaining critical discriminative variance.
+\item \textbf{Explainable AI-Driven Soft Computing LSTM (EAI-SC-LSTM):} For sequential classification, Rathore et al. developed an optimized LSTM network incorporating Smooth Error Regularized Functions (SERF) and Continuously Differentiable Linear Units (CoLU) to prevent vanishing gradients during long-sequence processing. The model was coupled with the Cauchy distribution-based Seagull Optimization Algorithm (CSOA) to dynamically select the optimal feature subsets.
+\end{itemize}
+
+Evaluated across the SMS Spam Collection (SSC), Phishing Email Corpus (PEC), and Web Phishing Dataset (WPD), this architecture achieved remarkable detection accuracies exceeding 99.5\% \cite{2}. Crucially, the authors demonstrated that once a phishing incident is verified, their system triggers automated cross-channel containment policies, systematically revoking malicious credentials and notifying upstream telecommunications carriers. However, while EM-BERT provided implicit attention weights, the study did not incorporate multi-tiered visual or source-code level post-hoc explainability, leaving screenshot mimicry partially unaddressed.
+
+\section{Dynamic Optimization for Symbolic URL Analysis in Cloud Environments (DAOA-DLPC)}
+Addressing the challenge of real-time phishing detection in latency-critical and resource-constrained environments (such as cloud gateways and Internet of Vehicles ecosystems), Ravula and Ramaiah (2025) \cite{3} introduced the DAOA-DLPC framework (Dynamic Arithmetic Optimization Algorithm with Deep Learning-Driven Phishing URL Classification). Their research focused on detecting sophisticated phishing URLs generated by automated toolkits without incurring the latency overhead of page crawling or visual rendering.
+
+The DAOA-DLPC architecture comprises two interlinked mechanisms:
+\begin{itemize}
+\item \textbf{Multi-Head Attention-Based Bidirectional Gated Recurrent Units (MHA-BiGRU):} The authors represented raw URL strings as character-level embeddings. By utilizing BiGRU networks equipped with multi-head self-attention mechanisms, the network captures bidirectional temporal dependencies across the URL sequence while consuming significantly fewer tensor operations than standard BiLSTM models. By attending simultaneously to character-level dependencies across the domain, subdomains, and URL path, the multi-head attention mechanism isolates salient deceptive patterns, such as deceptive domain nesting (e.g., \texttt{paypal.com.account-verify.info}).
+\item \textbf{Dynamic Arithmetic Optimization Algorithm (DAOA):} To ensure the deep learning network adapts dynamically to changing phishing tactics and prevents hyperparameter stagnation, the authors integrated DAOA---a metaheuristic algorithm that mimics arithmetic operators (multiplication, division, subtraction, addition) to fine-tune network learning rates, hidden layer dimensions, and dropout coefficients during training.
+\end{itemize}
+
+Experimental testing on benchmark datasets containing over 100,000 URLs demonstrated that DAOA-DLPC achieved an accuracy of 98.85\% and an F1-score of 98.38\%, significantly outperforming baseline SVM, Random Forest, and standalone deep learning models \cite{3}. Furthermore, its lightweight symbolic processing allowed inference latencies under 15 milliseconds, making it ideal for cloud ingress proxies. However, because DAOA-DLPC restricts its analysis solely to lexical URL strings, it remains blind to attacks hosted on compromised legitimate domains (where the URL structure appears completely benign) or attacks employing dynamic client-side JavaScript redirection.
+
+\section{Comparative Evaluation of Convolutional and Recurrent Architectures}
+To rigorously benchmark the computational trade-offs between different deep sequence models in phishing detection, Alenezi, Al-Sarem, and Boulila (2024) \cite{4} conducted a comprehensive comparative analysis across convolutional and recurrent architectures. Their research systematically evaluated 1D Convolutional Neural Networks (1D-CNN), Long Short-Term Memory networks (LSTM), Bidirectional LSTMs (BiLSTM), Gated Recurrent Units (GRU), and Bidirectional GRUs (BiGRU) across large-scale phishing email corpora and lexical datasets.
+
+Their empirical findings provided critical insights into model selection for cybersecurity pipelines:
+\begin{itemize}
+\item \textbf{1D-CNN Architectures:} 1D-CNNs utilizing multi-scale convolutional kernels (e.g., window sizes of 3, 4, and 5) demonstrated superior computational efficiency. Because 1D convolutions can be executed entirely in parallel across GPU threads, the 1D-CNN achieved the fastest inference latency ($< 8\text{ ms}$ per sample) and converged rapidly during training. 1D-CNNs excelled at detecting localized n-gram deceptive signatures (such as \texttt{secure-login} or \texttt{update-account}), but struggled to maintain long-range syntactic dependencies across lengthy URL paths.
+\item \textbf{Standard LSTM and GRU Models:} Recurrent models resolved the long-range dependency problem by introducing memory cells (in LSTMs) and reset and output gating mechanisms. LSTMs effectively maintain contextual memory over extended sequences, making them proficient at recognizing structural phishing patterns that span across distant tokens. However, their sequential step-by-step computation prohibits full GPU parallelization, leading to increased training and inference latency.
+\item \textbf{Bidirectional Long Short-Term Memory (BiLSTM):} By executing dual forward and backward recurrent passes, BiLSTM networks evaluate each token within both preceding and succeeding contexts. In phishing detection, this allows the network to assess a deceptive token (e.g., \texttt{verification}) in light of both the top-level domain suffix that follows it and the protocol prefix that precedes it.
+\item \textbf{Hybrid 1D-CNN + BiGRU Superiority:} The authors revealed that while standalone BiLSTM and BiGRU models achieved the highest individual F1-scores ($> 99.4\%$), a hybrid ensemble combining 1D-CNN (for rapid localized n-gram extraction) with a BiGRU layer (for sequential context) achieved the optimal Pareto balance between accuracy (99.68\%) and inference latency \cite{4}.
+\end{itemize}
+
+\section{Paradigm Shift: Multimodal Late Fusion and Explainability}
+Despite the impressive statistical accuracy achieved by unimodal and hybrid deep learning models, a critical analysis of the literature reveals a fundamental operational bottleneck:
+\begin{enumerate}
+\item \textbf{Vulnerability to Domain Manipulation:} Any defense system constrained to a single modality can be circumvented. If a system inspects only URLs, an adversary hosts a phishing landing page on a compromised university or cloud storage server (e.g., \texttt{docs.google.com/forms/...}). If a system inspects only HTML code, the attacker obfuscates scripts, renders content inside an HTML5 \texttt{<canvas>}, or dynamically pulls the phishing form via encrypted WebSockets. If a system inspects only rendered screenshots, the attacker employs CSS evasions, overlay transparencies, or geographic IP geofencing that shows benign content to security scanners.
+\item \textbf{The Interpretability Crisis in Enterprise SOCs:} As deep learning models grow increasingly complex (incorporating millions of transformer parameters), they become completely opaque. When a mission-critical domain is blocked by a black-box model, security analysts cannot determine why the alert was triggered. Without interpretable justifications, Security Operations Centers face catastrophic operational gridlock, false alarm dismissals, and analyst attrition.
+\end{enumerate}
+
+To overcome these deficiencies, Vulfin et al. \cite{1} established a multimodal late-fusion architecture that decouples analysis into four specialized domain models (CatBoost, 1D-CNN, CodeBERT, and EfficientNet-B7) and links them via multi-tiered explainability techniques (SHAP, Grad-CAM, Integrated Gradients, attention matrices) aggregated by a local Large Language Model. Table \ref{tab:lit_comparison} provides a comprehensive structured comparison of the literature surveyed in this chapter.
+
+\begin{table}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|p{2.8cm}|p{3.2cm}|p{2.6cm}|p{2.2cm}|p{3.8cm}|}
+\hline
+\textbf{Study \& Author} & \textbf{Core Architecture} & \textbf{Analyzed Modalities} & \textbf{XAI Method} & \textbf{Key Results \& Strengths} \\
+\hline
+Rathore et al. (2025) \cite{2} & EM-BERT + SPCA with EAI-SC-LSTM & SMS, Email text, URL tokens, CSS styles & Implicit feature attention in LSTM & $>99.5\%$ accuracy across SSC, PEC, WPD; cross-channel mitigation. \\
+\hline
+Al-Aiyan et al. (2024) \cite{3} & DAOA-DLPC (Dynamic Arithmetic Optimization with Deep CNN) & URL character-level tokens and numerical host features & DAOA feature importance visualization & $97.6\%$ detection accuracy; low computational latency for cloud pipelines. \\
+\hline
+Alenezi et al. (2024) \cite{4} & Comparative Benchmark (1D-CNN, LSTM, BiGRU) & Textual and sequential email features & None (Black-box comparative) & Identified 1D-CNN + BiGRU hybrid superiority ($99.68\%$ accuracy); latency trade-offs. \\
+\hline
+Vulfin et al. (2026) \cite{1} (Base Paper) & Multimodal Late Fusion (CatBoost, 1D-CNN, CodeBERT, EfficientNet) & Tabular URL/WHOIS, Char URL, HTML DOM, Page Screenshots & TreeSHAP, Grad-CAM, Integrated Gradients, Local LLM & $\text{F1} = 0.989$ ($3.2\text{M}$ dataset), $\text{F1} = 0.953$ (MTLP); $92/100$ zero-day detection; $4.20/5$ SOC usability. \\
+\hline
+\end{tabular}%
+}
+\vspace{0.2cm}
+\caption{Structured Comparison of Modern Phishing Detection Literature}
+\label{tab:lit_comparison}
+\end{table}

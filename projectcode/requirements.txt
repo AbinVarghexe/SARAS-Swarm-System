@@ -1,0 +1,10 @@
+# SARAS Swarm Mission System Dependencies
+fastapi>=0.110.0
+uvicorn>=0.28.0
+websockets>=12.0
+pymavlink>=2.4.40
+opencv-python>=4.8.0
+ultralytics>=8.1.0
+numpy>=1.24.0
+pydantic>=2.0.0
+

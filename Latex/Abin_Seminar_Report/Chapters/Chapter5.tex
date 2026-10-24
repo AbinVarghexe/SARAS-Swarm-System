@@ -1,0 +1,32 @@
+\chapter{Conclusion and Future Work}
+
+\section{Summary of Seminar Work}
+Phishing attacks continue to represent the primary initial compromise vector threatening global enterprise cyber infrastructure. The industrialization of attack frameworks through Phishing-as-a-Service (PaaS) platforms has enabled malicious actors to launch targeted, evasive campaigns at unprecedented scale and speed. Traditional reactive defenses---principally static URL blacklists and domain reputation heuristics---suffer from unacceptable incubation delays, leaving organizations vulnerable during zero-day deployment windows.
+
+This seminar presented a comprehensive critical analysis of an advanced, industrial-grade multimodal late-fusion architecture integrated with multi-tiered Explainable Artificial Intelligence (XAI) \cite{1}. By simultaneously analyzing tabular domain metadata (via CatBoost), symbolic URL character strings (via 1D-CNN), structural DOM programming logic (via CodeBERT), and visual screenshot brand impersonation (via EfficientNet-B7), the system eliminates the blind spots that plague unimodal classifiers. To resolve the black-box opacity barrier, the architecture maps dedicated post-hoc explanation techniques (TreeSHAP, 1D Integrated Gradients, attention matrix extraction, and Grad-CAM) across each respective branch, translating multi-dimensional mathematical attributions into actionable natural language incident reports using a local Large Language Model (LLM) with Retrieval-Augmented Generation (RAG). The investigation was reinforced by analyzing supporting methodologies, including cross-channel behavioral mitigation (EM-BERT + SPCA) \cite{2}, dynamic arithmetic cloud optimization (DAOA-DLPC) \cite{3}, and benchmark evaluations of recurrent and convolutional models \cite{4}.
+
+\section{Key Contributions}
+The primary contributions and insights established through this seminar work include:
+\begin{enumerate}
+\item \textbf{Decisive Multimodal Superiority:} The late-fusion architecture achieved exceptional benchmark performance, recording F1-scores of 0.989 on an enterprise corpus of 3.2 million URLs and 0.953 on the public MTLP dataset, consistently outperforming every standalone model branch.
+\item \textbf{Exceptional Zero-Day Resilience:} In live testing on 100 active, unindexed phishing sites, the multimodal framework intercepted 92\% of attacks, whereas commercial services such as Google Safe Browsing missed 59\% of threats due to list update latencies.
+\item \textbf{Operational Explainability for Enterprise SOCs:} The combination of quantitative XAI with local LLM synthesis elevated analyst usability to $4.20/5$, reducing manual verification and alert triage time by nearly 85\%.
+\item \textbf{Fault-Tolerant, Scalable Engineering:} Utilizing late fusion with neutral imputation ensures the system remains operational even when dynamic page rendering fails, maintaining sub-$120\text{ ms}$ processing latencies suitable for inline enterprise streaming proxies.
+\end{enumerate}
+
+\section{Operational Limitations and Challenges}
+Despite its significant strengths, several practical limitations must be acknowledged:
+\begin{itemize}
+\item \textbf{Browser Crawling Bottlenecks:} Dynamic rendering of client-side JavaScript requires headless browser sandbox pods, which consume noticeable memory resources and represent the primary latency constraint ($84.6\text{ ms}$).
+\item \textbf{Hardware Requirements:} Hosting multiple deep learning backbones (EfficientNet-B7) and transformer backbones (CodeBERT) demands substantial GPU computing infrastructure compared to lightweight lexical filters.
+\item \textbf{Adversarial Attacks on XAI:} Emerging research shows that adversaries can craft perturbations specifically designed to fool explanation methods (e.g., diluting SHAP values while retaining malicious functions).
+\end{itemize}
+
+\section{Future Research Directions}
+Future investigations in multimodal explainable phishing detection will benefit from exploring several promising directions:
+\begin{enumerate}
+\item \textbf{Knowledge Graph-Augmented Entity Reasoning:} Integrating enterprise knowledge graphs to cross-reference domain ownership, organizational relationships, and SSL certificate lineages dynamically during classification.
+\item \textbf{Lightweight Transformer Distillation:} Developing distilled, quantized student models (e.g., MobileBERT, EfficientNet-Lite) to enable on-device mobile endpoint inference with negligible battery drain.
+\item \textbf{Self-Supervised Contrastive Multi-View Learning:} Exploring multi-view contrastive learning to train multimodal representations on unannotated web traffic, reducing reliance on expensive human labeling.
+\item \textbf{Adaptive Adversarial Hardening:} Designing adversarial training pipelines that expose models to synthetically generated multi-vector evasion attacks during training.
+\end{enumerate}

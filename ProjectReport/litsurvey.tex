@@ -1,0 +1,94 @@
+% CHAPTER 2
+\chapter{Literature Survey}
+
+\section{Overview of the Problem Domain}
+
+Autonomous aerial reconnaissance for search and rescue (SAR) represents an interdisciplinary domain converging computer vision, embedded systems, distributed multi-agent systems, and emergency decision support. The primary operational objective is the rapid localization and assessment of human survivors in hazard-affected terrains such as post-earthquake rubble, flooded deltas, or wilderness expanses. Standard historical approaches rely on piloted aircraft or single remotely operated multi-rotors streaming uncompressed video to a base station. However, telemetry attenuation, battery limits (20--30 minutes), and human operator cognitive overload severely limit search throughput. Consequently, contemporary research focuses on autonomous multi-UAV collectives capable of decentralized flight coordination, onboard machine learning inference, and protocol-grounded disaster decision support.
+
+\section{Classical Machine Learning Approaches}
+
+Prior to the dominance of deep convolutional architectures, automated person detection from aerial imagery relied on hand-crafted feature extraction paired with shallow supervised classifiers:
+\begin{itemize}
+    \item \textbf{Histogram of Oriented Gradients (HOG) with Support Vector Machines (SVM):} Dalal and Triggs \cite{5} pioneered human detection using dense grids of local gradient histograms to capture edge profiles, classified via linear or non-linear SVMs. When applied to low-altitude UAV imagery, HOG+SVM pipelines reported detection accuracies between 60\% and 68\% at frame rates of 4 to 7 frames per second (FPS). However, these approaches suffer from extreme vulnerability to scale variations, rotational distortions from oblique camera angles, and illumination gradients, resulting in high false alarm rates in wilderness terrain.
+    \item \textbf{Haar-Like Features with AdaBoost Cascades:} Viola and Jones \cite{6} formulated integral image representations enabling rapid computation of rectangular Haar features, prioritized via AdaBoost cascades. While computationally lightweight and capable of achieving 25+ FPS on embedded processors, Haar cascades rely on rigid structural assumptions (facial or frontal silhouette geometry). In aerial SAR scenarios, victims are often prone, partially occluded by debris, or viewed from nadir angles, causing recall rates to drop below 42\%.
+    \item \textbf{Random Forests and $k$-Nearest Neighbors (KNN):} Breiman's Random Forest framework \cite{7} and distance-based KNN algorithms were extensively evaluated using color moments, Local Binary Patterns (LBP), and texture co-occurrence matrices. While achieving up to 71\% classification accuracy on constrained cropped benchmark patches, their manual feature engineering pipelines fail to generalize across diverse disaster environments with severe clutter, variable shadows, and complex backgrounds.
+\end{itemize}
+
+\section{Deep Learning Approaches}
+
+The advent of deep convolutional neural networks (CNNs) fundamentally transformed aerial object localization by automating hierarchical feature learning:
+\begin{itemize}
+    \item \textbf{Two-Stage Object Detectors (R-CNN Series):} Ren et al. \cite{8} introduced Faster R-CNN, combining a Region Proposal Network (RPN) with Fast R-CNN classification backbones. Evaluated on aerial benchmarks such as VisDrone \cite{16}, Faster R-CNN achieves high detection accuracy ($\text{mAP@0.5}$ of 78.4\% to 84.2\%) due to its decoupled proposal and classification stages. However, the computational complexity of the two-stage pipeline results in heavy memory footprints ($>150$ MB) and latency exceeding 120 ms per frame on desktop GPUs, making direct onboard execution on embedded companion computers infeasible without severe thermal throttling.
+    \item \textbf{Single-Stage Object Detectors (SSD and Early YOLO):} Liu et al. \cite{9} developed the Single Shot MultiBox Detector (SSD), while Redmon et al. \cite{10} introduced YOLO, framing object detection as a single spatial regression problem over bounding box coordinates and class probabilities. While achieving real-time inference speeds (30--45 FPS on server GPUs), early single-stage models struggled to detect small-scale targets (under $20 \times 20$ pixels) characteristic of high-altitude UAV feeds, often confusing foliage and rock clusters with human limbs.
+    \item \textbf{Vision Transformers (DETR and Swin):} Carion et al. \cite{11} proposed DETR (DEtection TRansformer), eliminating anchor generation and non-maximum suppression (NMS) in favor of bipartite matching and global self-attention. While demonstrating superior global context awareness and high recall on complex backgrounds, transformers exhibit immense training sample complexity and quadratic computational scaling with image resolution, rendering them impractical for low-power edge companion hardware.
+\end{itemize}
+
+\section{Recent and Hybrid Approaches}
+
+Recent research has prioritized lightweight edge optimization, multi-agent reinforcement learning (MARL), and agentic decision models:
+\begin{itemize}
+    \item \textbf{Lightweight Architectures and Edge Quantization:} Howard et al. \cite{12} introduced MobileNetV3 using hardware-aware Neural Architecture Search (NAS) and depthwise separable convolutions. Jocher et al. \cite{14} and Wang et al. \cite{13} formulated YOLOv8 and YOLOv7, incorporating cross-stage partial connections, anchor-free decoupled heads, and Mosaic data augmentations. Rodriguez et al. \cite{3} and Jacob et al. \cite{15} demonstrated that post-training 8-bit integer (INT8) quantization via ONNX Runtime and TensorRT can compress model parameters by 75\% and quadruple throughput on ARM architectures with less than 1.5\% loss in detection precision.
+    \item \textbf{Multi-Agent Reinforcement Learning and Auction Protocols:} Liu et al. \cite{1} investigated decentralized Partially Observable Markov Decision Processes (Dec-POMDP) for wilderness search under intermittent RF links, demonstrating that communication-aware MARL outperforms deterministic grid sweeps. Al-Haddad et al. \cite{2} developed an asynchronous market auction mechanism for UAV task allocation, achieving dynamic sector assignments in under 500 ms while tolerating sudden drone dropouts.
+    \item \textbf{Agentic Decision Support and RAG Integration:} Miller et al. \cite{4} explored multi-agent LLM systems coupled with Retrieval-Augmented Generation (RAG) \cite{24} for emergency triage, proving that grounding generative models in official Disaster Management Standard Operating Procedures (SOPs) \cite{25} eliminates hallucinations and accelerates operational dispatch by 47\%.
+\end{itemize}
+
+\section{Datasets Used in Prior Work}
+
+Table \ref{tab:datasets} summarizes the prominent open-access aerial datasets used in computer vision and search and rescue research:
+\begin{table}[htbp]
+\centering
+\caption{Benchmark datasets for aerial computer vision and search and rescue}
+\label{tab:datasets}
+\vspace{0.2cm}
+\resizebox{0.95\columnwidth}{!}{
+\begin{tabular}{|l|c|c|l|l|}
+\hline
+\textbf{Dataset} & \textbf{Year} & \textbf{Total Samples} & \textbf{Key Target Classes} & \textbf{Platform / Modality} \\
+\hline
+VisDrone \cite{16} & 2019--2022 & 10,209 images & Pedestrian, Person, Car, Bus, Van & Multi-rotor UAV (RGB) \\
+\hline
+Heridal SAR \cite{17} & 2019 & 68,000 images & Person (Wilderness / Mountain) & Aerial Fixed-Wing \& Drone \\
+\hline
+Okutama-Action \cite{18} & 2017 & 43-min video & Human actions (Walking, Lying, Running) & Oblique / Nadir UAV \\
+\hline
+DOTA \cite{19} & 2018 & 2,806 images & Small vehicles, Ships, Large structures & Satellite \& High-Altitude Drone \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Comparison of Related Works}
+
+Table \ref{tab:lit_comparison} provides an analytical comparison of the key paradigms across the literature against the proposed SARAS framework.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparative analysis of state-of-the-art methodologies and the proposed SARAS platform}
+\label{tab:lit_comparison}
+\vspace{0.2cm}
+\resizebox{0.95\columnwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Reference} & \textbf{Core Methodology} & \textbf{Benchmark Dataset} & \textbf{Accuracy / Performance} & \textbf{Key Operational Limitation} \\
+\hline
+Dalal \& Triggs \cite{5} & HOG + Linear SVM & INRIA / Aerial Crop & 64.2\% Accuracy, 5 FPS & Sensitive to pose, scale, and lighting \\
+\hline
+Ren et al. \cite{8} & Faster R-CNN (ResNet50) & VisDrone \cite{16} & 82.5\% mAP@0.5, 9 FPS & High memory; unsuited for edge companion SBC \\
+\hline
+Liu et al. \cite{1} & Dec-POMDP / CTDE MARL & Simulated Grid Terrain & 28\% search time reduction & High training sample complexity; no vision \\
+\hline
+Al-Haddad et al. \cite{2} & Market-Based Auction & Synthetic Polygon World & Reallocation $< 500$ ms & Lacks real-time onboard perception loop \\
+\hline
+Rodriguez et al. \cite{3} & INT8 YOLOv8 on Edge SBC & Heridal SAR \cite{17} & 82.4\% mAP@0.5, 18 FPS & Single-drone scope without swarm coordination \\
+\hline
+Miller et al. \cite{4} & Agentic RAG Emergency Triage & FEMA Guidelines & 96\% protocol adherence & No robotic perception or flight telemetry link \\
+\hline
+\textbf{SARAS (Proposed)} & \textbf{Dual Edge ML + Swarm Auction + RAG} & \textbf{VisDrone \cite{16} \& SITL} & \textbf{81.6\% mAP, 16.8 FPS, 96.6\% Eff.} & \textbf{Single physical UAV prototype + SITL swarm} \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Research Gap}
+
+A critical synthesis of the reviewed literature reveals a fundamental disconnection across prevailing aerial SAR solutions: computer vision researchers optimize deep edge detectors on static datasets in isolation from robotic flight controllers; multi-agent roboticists develop task allocation heuristics assuming perfect synthetic target sensing without sensor noise; and emergency management systems formulate triage models devoid of live spatial telemetry feeds. Existing systems either overwhelm telemetry bandwidth by streaming high-definition video back to base stations or suffer single-point failures in centralized orchestrators. SARAS bridges this research gap by establishing a closed-loop platform that unifies real-time onboard INT8 edge perception, decentralized asynchronous auction swarm coordination, and an agentic RAG triage pipeline into an integrated, fault-tolerant disaster response architecture, as detailed in Chapter 3.

@@ -1,0 +1,576 @@
+% CHAPTER 1
+\chapter{Introduction}
+\section{Overview}
+
+Biometric security is a mechanism which is used to authenticate and provide access to a system based on  an individual's automatic and instant verification of physical characteristics. It is considered as the strongest and the most commonly using foolproof physical security technique for identity verification since it evaluates an individual's bodily elements or biological data. In the area of biometric identification, security as well as convenience of the system are important. Also high accuracy and fast response times are required by the systems. Biometric methods includes  fingerprint patterns, the hand geometry, or the veins on the back of the hand, the iris, the voice,  facial features etc. Among these, fingerprint recognition is considered to be well known due to its characteristics like, uniqueness, stability, robustness, universality, acceptability. It maintains its own individuality and has wide day-to-day-applications such as financial transactions, international border security, unlocking a smart-phone, etc. But with this ubiquitous deployment, the recognition system security itself can be gambled by spoof attacks or presentation attacks. Presentation attacks is the ``presentation to the biometric data capture subsystem with the aim of intruding the operation of the biometric system" \cite{19}.
+\paragraph{}These attacks can be realized through a number of methods including, but not limited to, use of (i) gummy fingers, i.e. fabricated finger-like objects with accurate imitation of another individual's fingerprint ridge-valley structures, (ii) 2D or 3D printed fingerprint targets,(iii) altered fingerprints, i.e. damaged or intentionally tampered real fingerprint patterns to avoid identification, and (iv) cadaver fingers \cite{1}. Commonly available materials, such as play-doh, gelatin, silicone etc., shown in Figure \ref{fig1.1}, are used to develop fingerprint spoofs. 
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Fingerprint spoof attacks can be fabricated using materials such as PlayDoh, WoodGlue, Gelatin, etc \cite{1}}
+\label{fig1.1}
+\end{figure}
+
+\section{Motivation and Objective} To detect these fingerprint spoofing attacks, spoof detection methods are urgently needed on fingerprint authentication systems; so as to increase the user confidentiality and security on such systems.  The anti-spoofing methods can be mainly classified into two: Hardware and Software based, depicted in Figure \ref{fig1.3}.
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Anti-spoofing methods \cite{4}}
+\label{fig1.3}
+\end{figure}
+
+The main objective of the proposed system is to distinguishes the image as live and spoof fingerprints that yields more accuracy than the existing state-of-art-results. Since the hardware based solutions typically require an additional reader along with sensor to detect the characteristics of vitality, such as skin distortion, odour, blood flow we proposed a new software based approach that uses Wave Atom Transformation method to enhance the given fingerprint images and then extract minutiae features from these and finally classify them using a pre-trained model based on the minutiae features called ridges and bifurcations.
+\section{Report Organization}
+This section gives the organization of the report work. Overall, this report work gives a clear and thorough study about the existing study of the proposed system and gives a description about the implementation details. The second chapter gives a detailed description about the literature survey. Third chapter gives a brief idea about the implementation details including hardware and software requirements, outline of the proposed methodology. Fourth chapter depicts the Results and Discussions and fifth Chapter gives the Conclusion and Future Work. The Appendix shows the Screen Shots and Sample Code of the proposed systems.
+\chapter{Literature Survey}
+\section{Fingerprint Spoof Buster: Use of Minutiae-centered Patches}
+\textbf{Authors: Tarang Chugh, Kai Cao, and Anil K. Jain}
+\paragraph{\textbf{Introduction}}
+The Fingerprint Recognition System has ubiquitous deployment in many day-to-day applications, such as financial transactions, international border security, unlocking a smart phone, etc. The elementary objective of a fingerprint recognition system is to develop a trustworthy user authentication system. But the protection of the popularity system itself is often imperilled by spoof attacks. This study addresses the problem of developing an efficient, generalizable and accurate algorithm for detecting the various spoof attacks on a fingerprint. The ISO customary defines presentation attacks because the presentation to the biometric information capture scheme with the goal of intrusive with the operation of the biometric system \cite{1}. These attacks can be attained through a number of methods including, use of gummy fingers, i.e. fabricated finger-like objects with accurate imitation of another individual's fingerprint ridge-valley structures, (ii) 2D or 3D printed fingerprint targets, (iii) altered fingerprint, i.e. intentionally  damaged or tampered real fingerprint patterns to avoid identification, and (iv) cadaver fingers. Commonly available materials utilized to generate fingerprint spoofs include silicone, gelatin,  play-doh, etc \cite{16}. These are capable of outwitting a fingerprint recognition system security with a reported success rate of more than 70\%. There are various anti-spoofing methods available. The main limitation of most of the published anti-spoofing techniques is their poor generalization performance across the spoofing materials. This paper proposes a deep convolutional neural network based technique that uses minutiae patches that are centred and aligned using a descriminability algorithm. It provides more robust novel fabrication materials than earlier approaches.
+  
+\paragraph{\textbf{Proposed System}}
+The proposed approach includes two stages, an off-line training stage and an on-line testing stage. An overview of the approach proposed by author is presented in Figure \ref{fig2.1}. The off-line training stage involves:
+\begin{enumerate}
+\item Detecting minutiae from the given fingerprint image (live or spoof). 
+\item Extracting local patches from these minutiae points which is centred and aligned them using minutiae location and orientation, respectively.
+\item Training MobileNet models on the aligned local patches. 
+\item During the testing stage, the decision is made based on the average spoofness scores of individual patches produced from the MobileNet model. 
+\end{enumerate}
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}  
+\caption{Overview of fingerprint spoofing detection using CNNs trained on local patches \cite{1}}
+\label{fig2.1}
+\end{figure}
+\paragraph{ Datasets}
+The datasets utilized in this study are: 
+\begin{enumerate}
+\item \textbf{LivDet Datasets:}
+ In order to evaluate the performance of the proposed approach, LivDet 2011, LivDet 2013, and LivDet 2015 datasets are utilized. Each of these datasets contains around 16,000 fingerprint images, captured from four different fingerprint readers, with equal numbers of live and spoof fingerprints which equally split between training and testing sets. Figure \ref{fig2.2} depicts the summary of LivDet datasets.
+ \begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}  
+\caption{Summary of LivDet datasets \cite{1}}
+\label{fig2.2}
+\end{figure}
+
+ \item \textbf{Fingerprint Presentation Attack Dataset:} 
+  Besides LivDet Datasets, a large dataset, called MSU Fingerprint Presentation Attack Dataset (MSU-FPAD) is also utilized.It uses two different fingerprint readers: CrossMatch Guardian 200 and Lumidigm Venus 302. It consists of 9,000 live and 10,500 spoof images that are captured using these two fingerprint readers and 4 different spoof fabrication materials, namely, playhoh, Ecoflex, 2D printed on matte paper, and 2D printed on transparency film. The fingerprint readers and the spoof materials are selected based on IARPA ODIN program evaluation requirements. This dataset will be further extended with additional spoof fabrication materials, subjects and fingerprint readers. The summary of MSU Fingerprint Presentation Attack Dataset (MSU-FPAD) And Precise Biometrics Spoof-Kit Dataset(PBSKD) utilized are mentioned in Figure \ref{fig2.3}. 
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}  
+\caption{Summary of MSU Fingerprint Presentation Attack Dataset (MSU-FPAD) and Precise Biometrics Spoof-Kit Dataset(PBSKD) \cite{1}} 
+\label{fig2.3}
+\end{figure}
+
+\item \textbf{Precise Biometrics Spoof-Kit Dataset:} 
+It consists of 900 high quality spoof fingerprint images that are counterfeited using ten different types of spoof materials, namely, (i) Ecoflex, (ii) Gelatin, (iii) Latex body paint, (iv) Ecoﬂex with silver colloidal ink coating, (v) Ecoﬂex with Bare Paint coating, (vi) Ecoﬂex with Nano tips coating, (vii) Crayola Model Magic, (viii) Wood glue, (ix) Monster Liquid Latex, and (x) 2D printed fingerprint on office paper. It contains 100 spoof specimens, 10 specimens per spoof type, that are taken from Precise Biometrics Spoof-Kit. Each of these specimen is imaged 5 times using CrossMatch Guardian 200 and Lumidigm Venus 302 fingerprint readers. An additional 900 randomly sampled live fingerprints from MSU-FPAD are selected for a total of 1,800 fingerprint images in Precise Biometrics Spoof-Kit Dataset.
+\end{enumerate}
+
+\paragraph{Minutiae Detection}
+The minutiae is extracted using Fingerprint Minutiae Discriminablity Algorithm. The three LivDet datasets (LivDet 2011, 2013, and 2015) consists of fingerprint images captured in 500 dpi to 1000 dpi resolution. The minutiae detector was designed for 500 dpi, so all fingerprint images are resized to a standard resolution of 500 dpi. A standard resolution for all the fingerprint images is also crucial to ensure similar amount of friction ridge area in each local patch, irrespective of the fingerprint reader used. An average of 46 (s.d.=6.2) and 50 minutiae (s.d = 6.9) detected per live image and spoofed image, respectively, for the LivDet datasets.
+\paragraph{Local Patch Extraction}
+For a given fingerprint image I with k detected minutiae points , a corresponding set of k local patches are extracted. Each local patch li, centred at the corresponding minutiae location $ (x_{i},y_{i})$,  aligned using its minutiae orientation $( \theta_{i})$.  After alignment, the central region of size $[ p\ast p]$ where $ ( p = 96 )$ is cropped from the rotated patch and used to train the CNN model. The size of larger patch is fixed to  prevent any loss of information during patch alignment. For evaluating the effect of the size of the local patch, multi-resolution patches of size $ p \in \lbrace 64,96,128 \rbrace $ is also used for training independent and a fusion CNN models. All the local patches are resized to $ 224 \times 224 $ as required by the Mobilenet-v1 model.
+\paragraph{MobileNet CNN} 
+ After the success of  object detection sing AlexNet in ILSVRC-2012, various CNN architectures have been proposed in literature, such as GoogleNet (Inception v1-v4), VGG, MobileNet, ResNets, etc. In this study, they utilized the MobileNet-v1 architecture since it provides the following advantages over Inception-v3 and VGG architectures: 
+ \begin{enumerate}
+ \item Designed using depth-wise separable convolutions that provides drastic decrease in the size of the model, training/evaluation times and also provide better spoof detection performance.
+ \item It requires only 100ms latency network for classifying the input image as live or spoof whereas Inception-v3 network requires 800ms.  
+ \item The number of parameter models trained in MobileNet-v1 (4.24M), is significantly lower than the number parameters in Inception-v3 (23.2M) and VGG (138M), requiring significantly lower efforts in terms of regularization and data augmentation, to prevent over fitting. 
+ \end{enumerate} 
+ It utilized TF-Slim library implementation of MobileNet-v1 architecture. The last 1000-unit softmax layer layer of the architecture was replaced with a 2-unit softmax layer for the binary class problem, i.e. live and spoof. The optimizer used to train the network was RMSProp with asynchronous gradient descent and a batch size of 100. To ensure a robust trained model for the possible fingerprint image variations, data augmentation techniques such as random cropping,  vertical flipping, brightness adjustment are employed.  For the multi-resolution local patches, a separate network is trained for each patch size with the same parameters as mentioned above. The proposed approach gives a fine-grained depiction for fake detection using minutiae-based local patches which is shown in Figure \ref{fig2.4}.
+
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}  
+\caption{Fine-grained representation for spoof detection using minutiae-based local patches \cite{1}}
+\label{fig2.4}
+\end{figure}
+
+A fingerprint spoof fabricated using silicone which conceals only a partial region of the live finger is shown in (a) and the imaged fingerprint in (b) (enclosed in red). The planned approach extracts and evaluates the minutiae-based native patches, and highlights the native regions as live (in green) or spoof (in red) as shown in (c) and (d). It can also highlight the regions of fingerprint alterations as shown for a ``Z" cut altered fingerprint in (e), (f) and (g). It detected (b) and (e) as spoofs with the spoofness various 0.78 and 0.65, severally.
+\paragraph{Fine-grained Fingerprint Image Representation} 
+Partial spoofs and fingerprint alterations are not a rare means to avoid re-identification, by masking the true identity from a fingerprint biometric system. Spoof detectors trained on the entire fingerprint pictures square measure unwittingly ineffective against localizing partial spoof fingerprints, that conceal solely a restricted region of the live finger. The key advantages of developing a patch-based method is the fine-grained representation of input image for detecting the spoofed one. 
+\paragraph{Spoofness Score}
+The softmax layer output from the trained MobileNetv1 model is referred as the Spoofness Score in the range of [0-1]. If the spoofness score is larger, then most probably input local patches are in the spoof class. For an input test image I, global spoofness score $S^{I}$ is the average spoofness scores $s^{I}_{i}$ $\varepsilon$  $\lbrace{ 1,2,...,k\rbrace}$  corresponding to the k minutiae-based local patches of size  p $\times $ p size. In case of multi-resolution local patches, the global spoofness scores $(S^{I} _{pi})$ based on each local patch size,  pi $\varepsilon$ $\lbrace{64,96,128\rbrace}$ , are averaged to produce a final spoofness score. The threshold that minimizes the average classification error on training dataset is learned and utilized as the classification threshold. An image with a spoofness score below the threshold is classified as live, otherwise as spoof. The  threshold which is learned, performed better than selecting a pre-defined threshold of 0.5 for the spoof detection. 
+\begin{figure}[!h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png} 
+\caption{ Illustrating the embeddings of minutiae-based local patches $(96\times 96)$, for (a) live patch, (c) spoof patch, and (e) modified spoof patch, in 1024 dimensional feature space from MobileNet-v1 bottleneck layer, transformed to $ 32 \ast 32 $  heat maps, (b), (d), and (e), respectively, for visualization \cite{1}}
+\label{fig2.5}
+\end{figure}
+\paragraph{On Robustness of Patch-based Representation}
+The proposed patch-based approach addresses many drawbacks of using whole fingerprint images for training deep CNN architectures. It relies on the premise that it's capable of capturing discriminatory data from local patches, like missing ridges, air bubbles, etc., from spoof fingerprints. Robustness of patch-based representation was examined by them by evaluating it in absence of such artifacts. Figure \ref{fig2.5} shows the (a) and (b) Live Fingerprint Patch and its spoofness score, (c) and (d) Spoof Fingerprint Patch and its Spoofness Score, (e) and (f) Modified Spoof Patch (after	noise removal) and 	its Spoofness Score. A high spoofness score for the modified spoof patch (0.94) despite removal of artifacts indicates the robustness of the proposed approach. 
+
+\paragraph{\textbf{Experiments and Results}}
+%\textbf{Evaluation Metrics:}
+ The performance of the proposed method is evaluated using the following metrics:
+    \begin{enumerate}
+	\item Ferrlive: Percentage of misclassified live fingerprints. 
+	\item Ferrfake: Percentage of misclassified spoof fingerprints.
+     \end{enumerate}  The average classification error (ACE) is defined as:
+        \begin{equation}
+           ACE =  \frac{(Ferrlive + Ferrfake)}{2} 
+        \end{equation}
+             
+\textbf{Results:} 
+The proposed method is evaluated by computing four scenarios, that reflect an algorithm's robustness against different sensors, spoof materials and environments. 
+\begin{enumerate}
+\item \textit{Intra-Sensor, Known Spoof Materials:} 
+ Here all the training and testing images are obtained from the same reader, and all spoofing materials used for testing are deducible. The experimental results shows that training the minutiae-based local patches using MobileNet-v1 model provides better performance than fine-tuning a pre-trained network. The large amount of available data, in the form of local fingerprint patches, is sufficient to train the deep architecture of MobileNetv1 model without over-fitting. An independent model trained on whole fingerprint and proposed model trained on local patches almost similar performance. This observation was also made in the preliminary study which employed Inception-v3 model. It was reported that, due to the small size of the image, Digital Persona sensor did not perform well on most of the algorithms presented on LivDet 2015 Competition. An example for correctly and incorrectly classified live and spoof fingerprints of Biometrika sensor from LivDet 2015 dataset is shown in Figure \ref{fig2.6}. But this method does not suffer from this limitation since it uses local patches. Figure \ref{fig2.7} to Figure \ref{fig2.9} presents the  comparison between the method implemented on this paper and the state-of-the-art results for the LivDet datasets and MSU Fingerprint Presentation Attack Dataset (MSU-FPAD) and Precise Biometrics Spoof-Kit Dataset (PBSKD) based on its performance. Independent MobileNetv1 networks are trained for each evaluation. 
+\paragraph{}
+A comparison between performance of the proposed approach and three CNN models trained on minutiae-centred local patches of size $ [p\ast p]$ where $ p = \lbrace{64,96,128\rbrace}$ are evaluated from the fingerprint images captured by Biometrika sensor for LivDet 2011 dataset. Among these three models, the one trained on local patches of size $ [96 \ast 96]$ performed the best. Using average-rule, score-level fusion of the three models lowered the average classification error (ACE) from 1.24\% to 0.88\%, and Ferrfake from 1.41\% to 0.58\% @ Ferrlive = 1\%. For other sensors also similar performance gains were observed  but there is a trade off between the performance gain and the computational requirements for spoof detector. For evaluating the impact of locations of minutiae for extracting local patches, similar number of local patches on independent MobileNetv1 models are extracted and trained on LivDet 2015 datasets. It was observed that the models trained on minutiae-centred local patches achieved a significantly higher reduction (78\%) in average classification error, compared to the reduction (33\%) achieved by the models trained on randomly sampled local patches. 
+ \begin{figure}[h]
+\center
+\includegraphics[scale=0.5]{ajcelogo2023.png}  
+\caption{Example of live and spoof fingerprints for Biometrika sensor from LivDet 2015 dataset, correctly and incorrectly classified by the proposed approach \cite{1}} 
+\label{fig2.6}
+\end{figure}
+
+
+\item \textit{Intra-Sensor, Cross-Material:}
+To capture the training and testing images same sensor is used. Fabricated materials not seen during training were used to make spoof images in testing set. LivDet 2015 dataset consists of two new spoof materials ie. Liquid Ecoﬂex and RTV for Green Bit, Biometrika, and Digital Persona sensors, and OOMOO and Gelatin for CrossMatch sensor which are used for cross-material experiments.
+A significant reduction in the error rate is achieved by this method.
+ 
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}  
+\caption{Performance comparison between proposed approach and state-of-the-art results reported on Livdet 2011 and Livdet 2013 datasets for Cross-Sensor experiments, in terms of ACE, and Ferrfake @ Ferrlive = 1\% \cite{1}}
+\label{fig2.9}
+\end{figure}
+\item \textit{Cross-Sensor Evaluation:}
+ In this evaluation, training and testing fingerprint images are obtained from the same dataset but from two different sensors. This setting reflects the algorithm's strength in learning the common characteristics used to distinguish live and spoof fingerprints across fingerprint acquisition devices. 
+\item \textit{Cross-Dataset Evaluation:}
+ In this case, same reader is utilized to obtain the training images and testing images, but from two different datasets. For example, images are taken from Biometrika LivDet 2011 dataset for training and LivDet 2013 for testing set. 
+\end{enumerate} 
+\paragraph{Processing Times}
+ The MobileNet-v1 CNN model takes around 6-8 hours to converge using a single Nvidia GTX 1080 Ti GPU utilizing approximately 96,000 local patches for a training set with 2,000 fingerprint images. The average classification time for a single input image, it took a total of 100ms on a single Nvidia GTX 1080 Ti GPU.
+\paragraph{Fingerprint Spoof Buster} 
+Fingerprint Spoof Buster is a GUI interface which allows the user select the fingerprint reader and trained MobileNet model for evaluating. It can be performed either in on-line mode or batch mode. In the on-line mode, using the reader fingerprint is sensed and displayed on the interface. Based on the spoofness scores (green for live and red for spoof) extracted fingerprint minutiae points and corresponding local patches are displayed and coloured. Also global spoofness score and final output is presented. In batch-mode, evaluated the fingerprint images within a specific directory and output the global spoofness scores for each files. 
+\paragraph{\textbf{Conclusion}}
+A robust and accurate method for fingerprint spoof detection is critical to ensure the reliability and security of the fingerprint authentication systems. In this study, fingerprint domain knowledge are utilized by extracting local patches centred and aligned using minutiae in the input fingerprint image for training MobileNet-v1 CNN models. The local patch based approach provides salient cues to differentiate spoof fingerprints from live fingerprints. The proposed approach gained a significant reduction in error rates for intra-sensor (63\%), cross-sensor (4\%), cross-material (43\%),
+and cross-dataset scenarios (29\%) when compared to state-of-the-art on public domain LivDet datasets.
+In future, this interface will be augmented to display the output from multiple CNN models for an easy visual comparison.
+
+\paragraph{Advantages}
+\begin{itemize}
+\item Provide good generalization performance across spoof materials.
+\item Whole fingerprint is not used.
+\item Local patches are used for processing.
+\end{itemize}
+\paragraph{Disadvantages}
+\begin{itemize}
+\item FDR of 1.0\%, the TDR was only 90.32\%. 
+\item Using large datasets require large storage space and time for processing.
+\item Datasets images are of poor quality.
+\end{itemize}
+
+\section{Fingerprint Recognition using Minutiae Extractor}
+\textbf{Authors: Manisha Redhu and Dr.Balkishan}
+ \paragraph{\textbf{Introduction}}
+The popular biometric method used to authenticate a person is fingerprint recognition because it is unique and permanent throughout the person life. Fingerprint authentication or recognition refers to the automated method of verifying a match between two human fingerprint \cite{20}. Fingerprints are widely used in day today life since 100 years due to its distinctiveness, feasibility, accuracy, permanence,  acceptability and reliability. Various approaches and algorithms are available for fingerprint matching procedure. Example of these matching are correlation matching, minutiae based matching and pattern based matching. This paper projected on Minutia Score Matching based fingerprint recognition method. 
+\paragraph{}
+The distinctive feature for the finger recognition is Minutiae. The main feature characteristics of minutiae are ridge endings or a ridge bifurcations \cite{2}. Theses patterns are very crucial in the analysis of fingerprints since no two fingers have been shown as identical. Minutia extraction includes Image Enhancement, Image Segmentation and Final Extraction processes whereas Minutiae matching includes Minutiae Alignment and its Matching processes.
+\paragraph{\textbf{Proposed System}}
+The implementation of the system is based on Minutiae based method which is shown in Figure \ref{fig2.10}. This method is mainly classified into 2 stages - Minutiae Extraction and Minutiae matching. The system takes two input fingerprints from FVC2004 (Fingerprint Verification Competition 2004) datasets and gives a score $(in \%)$ based on the match between them. Based on this score and threshold match value it classifies that whether the two fingerprints match or not.
+
+\paragraph{}
+Under image enhancement, Fast Fourier Transformation and Histogram Equalization are used that increases the quality of input images and then converts grey scale image to a binary image using Image Binarization. After that, image segmentation using Ridge Flow Estimation and MATLAB’s morphological operations are performed that produces a Region of Interest. 
+\paragraph{}
+Thereafter, using Ridge Thinning minutia points are extracted and marked the minutia points and removed false minutiae points. From this extraction process minutiae sets for the two fingerprints to be matched are acquired. The matching process selects any two minutiae interactively as a reference minutia pair and then matches their associated ridges first. If the ridges match, these images are aligned and matching is carried out on all the remaining minutia to create a match score. 
+\paragraph{\textbf{Conclusion}}
+It provides comparatively low percentage of verification rate when compared to other biometrics traits. It specifies that the algorithm used is resist-less to effects such as elastic and scaling deformations and also not very robust. Various new algorithms and techniques have been developed which provide better results. The major issue on fingerprint recognition is the pre -processing of bad quality of fingerprint images which reduces the verification rate.
+\paragraph{Advantages}
+\begin{itemize}
+\item Stable and robust 
+\item Universality
+\item Uniqueness
+\item Acceptability
+\item Sufficient discriminating power to establish the individuality of fingerprints.
+\end{itemize}
+\paragraph{Disadvantages}
+\begin{itemize}
+\item Low percentage of verification rate
+\item Low quality images 
+\item Weak matching algorithm.
+\item Not very robust 
+\item Vulnerable to scaling and elastic deformations.
+\end{itemize}
+
+\section{A Survey on Anti-spoofing Schemes for Fingerprint Recognition Systems}
+\textbf{Authors: Emanuela Marasco and Arun Ross}
+\paragraph{\textbf{Introduction}}
+Biometrics is the automated recognition of individuals based on their biological and behavioural characteristics such as fingerprints, face, iris, gait, and voice. The use of fingerprints as a biometric attribute has been extensively discussed in the scientific literature,and a variety of techniques have been developed for performing fingerprint recognition. Fingerprint recognition systems have been comprised into a number of civilian, forensic and commercial applications. Due to its widespread usage, researchers have analysed the vulnerability to these systems that includes fingerprint impersonation and obfuscation attacks. Fingerprint obfuscation refers to the intentional alteration of fingerprint pattern by an individual who is not a recognized one to get access to the system. 
+\paragraph{Fingerprint Features}
+A fingerprint refers to a flowing pattern consisting of ridges and valleys on the fingertip of an individual. A fingerprint consists of certain features which is depicted in Figure \ref{fig2.11}. The basis for most fingerprint authentication methods are ridges. Fingerprints are represented using global information (e.g., ridges) or local information (ridge characteristics). Generally, ridge details are described in hierarchical order at three different levels. At the global level (Level 1), macro details, ie ridges and valleys pattern types are detected \cite{3}. Ridges reveals one or more regions which is classified as loop, delta, or whorl. At the local level (Level2), the attributes consists of different anomalies like ridge endings and ridge bifurcation, referred as minutiae points or Galton characteristics.
+
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}    
+\caption{Fingerprint \cite{3}}
+\label{fig2.11}
+\end{figure}
+\paragraph{ Fingerprint System Security}
+The various attacks caused at several points n the biometric systems are as follows:
+\begin{itemize}
+ \item Presentation Attack: Production of the biometric modality is presented as input to the sensor.\item Biometric Signal Replication:The sensor is bypassed and previously stored or intercepted biometric data is resubmitted. \item Feature Modification: The feature extractor is substituted with a Trojan horse in which features are preselected by the attacker. \item Replacing Features: The set of features taken out from the input biometric trait is replaced with a duplicitous set of features. \item Overriding the Matcher. The matcher is corrupted and forced to output match scores preselected by the attacker. \item Replacing Templates: One or more templates are modified by an attacker such that an authorized identity is associated with a fraudulent template. \item Modifying Data Through the Channel: The templates transmitted through the channel are interrupted and corrupted. \item Altering the Decision: The final match result is overridden by an attacker. 
+\end{itemize} 
+
+\paragraph{Fingerprint spoofing methods}
+The art of making an artificial fingerprint with the help of some materials such gelatine, Ecoflex, woodglue etc. (Figure \ref{fig2.12}) to enter into a system or to access other ones identity. Various spoofing methods are available, which can be mainly classified into two: Cooperative based spoofing and Non-Cooperative based spoofing \cite{3}. Cooperative based spoofing is simple in which a direct mould is used for making the fake fingerprints. The Non-Cooperative methods uses various other methods to acquire the spoofed fingerprints. The general classification of spoofing methods \cite{17} \cite{3} are shown in Figure \ref{fig2.13}
+\begin{itemize}
+\item Latent fingerprints: There are several methods for revealing latent fingerprints. Here briefly describe only three methods in the context of spoofing. The first method is based on latent fingerprint lifted with powder. The fingerprint left on a surface is kept on transparency and is evoked by powdering with a brush. The powder in the background is removed using Scotch tape. This taken print is placed on sensor. The second one is based on a photo lithographic printed circuit board (PCB) mould. The fingerprints are placed on transparency and enhanced by brushing with a black powder. Then it is photographed using digital camera and printed on transparency to create a mask for engraving the PCB \cite{3}. The mask is placed on circuit and exposed to UltraViolet light. The plaster cast of the fingerprint is filled with liquid silicon rubber to create a wafer-thin gummy and it is attached to a live finger before being placed on a sensor. The third technique relies on a recent advancement that shows the distinctive ability to raise latent fingerprints from varied surfaces and visualize them beneath daylight inside thirty seconds. Such an ultra fast recognition is based on an electro spun nanofiber mat. 
+\item Fingerprint reactivation: Techniques such as placing a water-filled plastic bag, breathing or brushing graphite powder on sensor are used to reactivate latent fingerprints deposited on sensor. \item Cadaver: This refers to the usage of a dead finger. \item Fingerprint synthesis: A fingerprint image is reconstructed from a fingerprint template such as minutiae points of a user enrolled in the system
+\end{itemize}
+
+\paragraph{\textbf{Conclusion}}
+The art of attacking a biometric system has gained sophistication over the past several years. One such attack involves the use of fake fingers or spoofs in order to defeat the biometric recognition system. The success of spoof attacks has been demonstrated by several researchers. Artificial fingerprints are usually made of materials that can be scanned by existing commercial fingerprint scanners. Thus, there is a need for developing robust liveness detection or anti-spoofing schemes in order to maintain the integrity of fingerprint recognition systems. In this article, it is that reviewed different types of spoof attacks and discussed the various countermeasures that have been developed in the literature to detect or deflect such attacks. The merits and demerits of some of these counter measures were presented. Databases and performance metrics used to evaluate the efficacy of these countermeasures were also discussed. 
+
+
+
+\chapter{Implementation Details}
+\section{Requirement Analysis}
+\subsection{Hardware Specifications}
+\begin{itemize}
+\item Memory: 4 GB
+\item Hard-disk: 1 TB
+\item Processor: INTEL CORE i3
+\end{itemize}
+
+\subsection{Software Specifications}
+MATLAB (Matrix Laboratory) \cite{15} is a multi-paradigm numerical computing environment and fourth-generation proprietary programming language developed by MathWorks that permits matrix manipulations, implementation of algorithms, plotting of functions and data, developing user interfaces and interfacing with programs written in other languages such as C, C++, Java, Fortran and Python.
+
+\paragraph{} Even though MATLAB is deliberately for numerical computing, an optional toolbox uses the MuPAD symbolic engine which allows access to symbolic computing abilities. Simulink, an additional package, provides graphical multi-domain simulation and model-based design for dynamic and embedded systems. MATLAB had around one million users across industry and academia since 2004. MATLAB users are from various fields of engineering, science, and economics.
+
+\paragraph{} MATLAB is a weakly typed programming language since the types are implicitly converted. In this, variables are defined using the assignment operator, =. Since the variables can be assigned without declaring their type, it is referred as an inferred typed language except if they are treated as symbolic objects, and that their type can change. Values can be constants, from computation involving values of other variables, or from the output of a function. MATLAB has a structured data type. MATLAB is also termed as a ``structure array" since all variables in MATLAB are arrays and each element of the array has the same field names. Additionally, MATLAB supports dynamic field names but MATLAB JIT does not support MATLAB structures. So a simple agglomeration of several variables into a structure will come at a cost. 
+
+\paragraph{}MATLAB supports graphical user interface (GUI) features for developing applications. For graphically designing these GUIs, MATLAB includes a GUIDE (GUI development environment) which also provides an integrated graph-plotting features. MATLAB is a proprietary product of MathWorks, so users are subject to vendor lock-in. Even though the MATLAB Builder product will deploy MATLAB functions as library files which might be used with .NET or Java application building environment, future development will still be bind to the MATLAB language. We have used MATLAB 2018a version for our work since we need Deep Convolutional Neural Network toolbox to compile and run the pre-trained CNN model.
+\section{Module Description}
+\subsection{Dataset Collection} 
+\textbf{LivDet Datasets} 
+In order to evaluate performance of the proposed approach, we have utilized LivDet 2015 dataset. This dataset contain fingerprint images acquired from five different fingerprint readers such as Crossmatch, Digital-Persona, GreenBit, Hi-Scan, TimeSeries readers in the training sets and testing sets contain four readers Crossmatch, Digital-Persona, GreenBit, Hi-Scan. From these, only Digital-Persona was selected for the training and testing process in order to reduce the time required for processing. It consists of 1000 live images in both training as well as testing sets whereas fake images are obtained from four materials ie. Ecoflex 00-50, Gelatine, Latex and WoodGlue in case of the training sets, each consists of 250 images and in the testing sets fake images are acquired from six spoofing materials includes Ecoflex 00-50, Gelatine, Latex, Liquid Ecoflex, RTV and WoodGlue each contains 250 images. We ignored Liquid Ecoflex and RTV since it is not known in the training sets. All other datasets are used in our proposed system. Figure \ref{fig2.20} gives the summary of LivDet2015 dataset.
+
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}    
+\caption{LivDet2015 Datasets}
+\label{fig2.20}
+\end{figure}
+
+\subsection{Preprocessing}
+\textbf{Wave Atom Transformation for Image Enhancement}
+The fingerprint images obtained from the LivDet 2015 datasets may contain some noise. To get better results it is needed to enhance these image using some good de-noising methods. Here we proposed a new method for image de-noising called Wave Atom Transformation(WAT) \cite{12} \cite{13} for image de-noising. Wave atom is a new geometric multi-scale, multi-directional transformation approach. It is a variant of 2-D wavelet packets which obeys parabolic scaling of curvelets ie.  $wavelength \sim (diameter)^{2}$ [Performance analysis of wave atom transform in texture classification]. These have good orientation characteristics due to the structural elements involve the parameters of dimension, location, and orientation and hence it provide better performance than other transformations such as wavelet transform and curvelet transform. In \cite{12}, Khelil Seif Eddine and Seddik Hassene proposed WAT method for denoising the image and compared it with wavelet. They found that WAT provide excellent results for the image de-noising than wavelet. In \cite{13} \cite{14}, WAT method is used to compress the fingerprint images.
+\paragraph{}
+The various forms of transforms are wavelets, Gabor, curvelets, ridgelets and wave atoms. These are created using two parameters $\alpha$ and $\beta$ where $\alpha$ and $\beta$ states whether the decomposition is multiscale ($\alpha =1$) or not ($\alpha=0$) and whether the basis elements are localized and  have poorly directional ($\beta =1$), and ($\beta=0$) means extended and fully directional respectively. In terms of $\alpha$ and $\beta$, we can able to classify these transforms as follows:
+\begin{itemize}
+\item Wavelets: $\alpha=\beta=1$; 
+\item Ridgelets:$\alpha=1$ and $\beta=0$;
+\item Gabor: $\alpha=\beta=0$; 
+\item Curvelet: $\alpha=1$, and $\beta=1/2$;
+\item Wave atom: $\alpha=\beta=1/2$.
+\end{itemize}
+%\begin{figure}[h]
+%\center
+%\includegraphics[scale=0.9]{ajcelogo2023.png}   
+%\caption{Classification of transforms based on $\alpha$ and $\beta$}
+%\label{fig2.21}
+%\end{figure}
+In our proposed system, the Wave Atom Transformation(WAT) method is used to de-noise and enhance the images. 
+Image enhancement is the process of adjusting digital images so that the results are more suitable for display or further image analysis \cite{21}. For example, one can remove noise, sharpen, or brighten an image, making it easier to identify key features. Most of the transform functions have two versions: standard and symmetric one. In the standard version, the coefficients are organized in a cell array whereas in the symmetric version, the coefficients are stored in an array. The symmetric version is particularly useful for applications like thresholding. WAT method can be either 1D, 2D or 3D. Here we used 2D wave atom transformation method. Dimensional wave packets may be
+represented as $\Psi_{j}^{u} (X)J$, $m\geq 0$  and $n\in Z$. 
+U is the scale parameter, rotation and translation where u= (j, m1, m2, n1, n2) for 2D systems, where j, m1, m2, n1, n2 are integers and the index of a point $X_{j,n},  \pm \omega_{j,m}$ in the phase space. In case of 2D wave atom transform index m is (d, n, n) where m = m1, m2 and n can be written as n1, n2.
+
+The steps performed for enhancing the image using WAT is given below:
+\begin{enumerate}
+\item Performed right circular shift on the given fingerprint image.
+\item After this, forward 2D wave atom transformation is applied.
+\item From the previous step, we get wave atom coefficients to which hard thresholding is applied.
+\item Then apply Inverse 2D wave atom transform to step3 results.
+\item Finally applied left circular shift on complete the denoising process.
+\end{enumerate}
+Forward 2D WAT function is given as, \textbf{c = fwa2 ( x, pat, tp )}, where wave atom coefficients contained in the cell array named as \textbf{c}, x is a real N-by-N matrix and N is a power of 2. pat specifies the type of frequency partition which satisfies parabolic scaling relationship. \textbf{pat} can either be `p' or `q', tp is the type of transform ie. ortho for orthobasis, directional for real-valued frame with single oscillation direction or complex for complex-valued frame. If tp==`ortho', then c $\lbrace j \rbrace$ $\lbrace m1, m2 \rbrace $ (n1, n2) is the coefficient at scale j, frequency index (m1, m2) and spatial index (n1, n2). If tp==`directional', then c$\lbrace j, d \rbrace$ $\lbrace m1, m2 \rbrace $(n1, n2) with d=1, 2 are the coefficients at scale j, frequency index (m1, m2) and spatial index (n1, n2). If tp==`complex', then c $\lbrace j,d \rbrace$ $ \lbrace m1, m2 \rbrace $(n1, n2) with d=1, 2, 3, 4 are the coefficients at scale j, frequency index (m1, m2) and spatial index (n1, n2). Then inverse 2D WAT function is performed using the function function \textbf{x = iwa2sym (res, pat, tp)} where \textbf{res} is an array containing all the wave atom coefficients and finally obtain the original real N-by-N matrix function \textbf{x}.
+
+\subsection{Feature Extraction}
+The minutiae from the enhanced fingerprints are extracted using some morphological operations which include binarization and image thinning. The minutiae extraction steps are represented in Figure \ref{fig2.22}.
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Minutiae Extraction}
+\label{fig2.22}
+\end{figure}
+First of all, the enhanced fingerprint image is binarized using imbinarize() function. Then perform thinning operation: thin-image= $ \sim $ bwmorph (binary-image, `thin', Inf). Thinning removes pixels so that an object without holes and shrinks to a minimally connected stroke. Then extract minutiae. For that create a new variable equal to the thinned image size. Create a window of size=3 and then create an array of zeros which stores the RGB image as ridges and bifurcations on the array stored as OutImg. Then find the length of ridge endings ie. [ridge-x, ridge-y] = find (ridge==2) and returns the length of the largest array dimensions back to ridge-X as len = length (ridge-x). Similarly, find the length of ridge bifurcations ie. [bifurcation-x, bifurcation-y] = find (bifurcation==4) and returns the length of the largest array dimensions as len = length (bifurcation-x). Here the blue points indicated the ridge bifurcations and red points indicates the ridge endings. These minutiae features are divided into local patches of size 128 for each rows and columns (Figure \ref{fig2.23}).
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Extracted Minutiae}
+\label{fig2.23}
+\end{figure}
+
+\subsection{Image Classification}
+The image is finally classified using pre-trained Convolutional Neural Network (CNN) model called ImageNet-VGG. A convolutional neural network (CNN or ConvNet) is one of the most popular algorithms for deep learning, a type of machine learning in which a model learns to perform classification tasks directly from images, video, text, or sound. Convolutional neural networks (ConvNets) are widely used tools for deep learning. They are specifically suitable for images as inputs, although they are also used for other applications such as text, signals, and other continuous responses. 
+\paragraph{ImageNet VGG-16}
+ImageNet is formally a project which is aimed at labelling and categorizing images into almost 22,000 separate object categories for the purpose of computer vision research \cite{15}. The main objective of this image classification is to train a model that can correctly classify an input image into 1,000 separate object categories. These models are trained on about 1.2 million training images, another 50,000 images for validation and 100,000 images for testing. Among these models, pretrained model called VGG is one of the highest performing CNN on ImageNet. The architecture of VGG network model,shown in Figure \ref{fig2.24} was proposed by Simonyan and Zisserman on the paper entitled ``Very Deep Convolutional Networks for Large Scale Image Recognition". It consists of a $3 \times 3$ convolutional layers, 2 fully-connected layers, each having 4,096 nodes followed by followed by a softmax classifier. The volume size can be reduced using max pooling. It consists of two models, VGG-16 and VGG-19 where 16 and 19 denotes the number of weight layers in network.
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Visualization of VGG architecture}
+\label{fig2.24}
+\end{figure}
+\paragraph{}
+In our proposed system we have taken only 30 features from each ridges and bifurcations for training them
+using VGG-Imagenet CNN. We have a total of 4500 images taken from training and testing datasets of Digital-Persona along with the above $30\ast 2 $ features from  ridges and bifurcations and is stored as $ 4500\ast 120 $. For training, all the 1250 images are used. In the testing we have some spoofing materials that are not seen during training phase, ie. Liquid Ecoflex and RTV are not taken for the testing phase. For training we use the trained features and trained labels(live and fake) from which we get predicted values. For testing we took the trained features of testing set and produce other predicted values which are compared with the labels. Here we used 18 layers (fc7) of VGG model. The last 1000-unit softmax layer was replaced with 2-unit softmax layer for live and fake. The output consists of same number of classes as that of the softmax layer and assigned it with two values 1 and 2. If the predicted value is 1, then it is considered as LIVE else it is FAKE.
+    
+\chapter{Results and Discussion}
+This section gives as a detailed study of the proposed approach. We evaluated the performance on three scenarios to compare which one provides better performance. These include (i) Evaluation of CNN with WAT enhanced image as input, (ii) Evaluation of CNN with feature vector as input, (iii) Evaluation of CNN without any image enhancement as input. It was evaluated on the testing datasets of Digital-Persona from LivDet2015. It classified the images on testing set as live or fake based on their features. For training ImageNet-CGG was utilized which uses a softmax layer function. Here, the softmax function is used in the final layer of a neural network-based classifier. These networks are trained by a log loss (or cross-entropy) regime, giving a non-linear variant of multinomial logistic regression. It has 2 number of nodes which is same as that of the output layers: live and fake. cuDNN algorithms may use a very large amount of memory on the GPU (workspace) but MatConvNet limits this memory size to 512 MB. The Images known during the training stage itself is used for testing also, ie. we used the training dataset images made of materials such as Ecoflex 00-50, Gelatine, Latex and WoodGlue in the training stage and for testing also we used the same materials. Unknown spoofed materials such as RTV and Liquid Ecoflex on the testing dataset was not used for testing procedure. Experimental result shows that an image given directly to CNN without the extraction of minutiae features, yields better performance than the input with minutiae features given to CNN. We calculated the (a) accuracy and precision,  (b) Correct Rate (CR) and Error Rate (ER), (c)  $\pm$ likelihood obtained in each case. The error rate (ERR) is calculated as the number of incorrect image predictions divided by the total number of the dataset. The two versions of likelihood ratios are positive likelihood ratio (LR+) and negative likelihood ratio (LR-). The positive likelihood ratio is calculated as:
+\begin{equation}
+     LR+ = \frac{sensitivity}{1-specificity} 
+\end{equation}
+The negative likelihood ratio is calculated as:
+\begin{equation}
+	LR- = \frac{1-sensitivity}{specificity} 
+\end{equation}
+
+Tables \ref{tab:1},  \ref{tab:2}, and  \ref{tab:3} shows the accuracy and precision values obtained for the proposed system on LivDet2015 for the three scenarios. We also evaluated the time taken and performance obtained by the spoofing materials in each case and compared each with other cases. The images are trained using the pre-trained model called ImageNet-VGG model, which acquired first position in LivDet2015 competition. 
+\textbf{}\paragraph{Performance Evaluation Matrix}
+The performance of the proposed approach was measured from the Sensitivity and Specificity values obtained in each scenarios. Sensitivity and specificity are statistical measures of the performance of a binary classification test.
+
+\begin{itemize}
+\item Sensitivity (or true positive rate or recall): measures the proportion of actual positives that are correctly identified. 
+\item Specificity (or true negative rate): measures the proportion of actual negatives that are correctly identified.
+\end{itemize}
+  
+The Sensitivity and Specificity of the live and spoofed materials are calculated using the formula:
+\begin{equation}
+Sensitivity = \frac {TP}{TP + FN}
+\end{equation}
+\begin{equation}
+Specificity = \frac {TN}{FP + TN}
+\end{equation}
+
+\begin{table}[h]
+\caption {Specificity and Sensitivity for the 3 scenarios} \label{tab:5} 
+\begin{center}
+\begin{tabular}{|c|c|c|c|} 
+ \hline
+& Minutiae & WAT & CNN\\
+  \hline
+Specificity & 0.336 & 0.718 & 0.837\\ 
+ \hline
+Sensitivity & 0.916 &0.891 & 0.938\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\textbf{}\paragraph{(i) Evaluation of CNN with WAT enhanced image as input}
+In this scenario, the fingerprint images are given for classification after the enhancement operation using Wave Atom Transformation method. The evaluation of CNN with WAT enhanced image contains 4096 features as input which is given to the 2 unit softmax layer. Finally it classified the image as live or fake based on these features. It yielded an average accuracy of 85.8\%. In this, WoodGlue provides the highest accuracy rate with (in \%) 91.6\% followed by Gelatine with 85.92\%. Latex and Ecoflex 00-50 gives low accuracy rate when compared with other two with 85.7\% and 80.8\% respectively. Table \ref{tab:12} evaluates the Correct Rate (CR) Error Rate (ER) obtained for WAT enhanced image. $\pm$  Likelihood and   $\pm$  Predictive Values are tabulated in Table \ref{tab:13}. Here both live and fake images are used for evaluation, ie. Live + Ecoflex 00-50, Live + Gelatine, Live + Latex, Live + WoodGlue. Among these, WoodGlue achieved highest Correct Rate, 89.68\% followed by Latex (85.76\%), Gelatine (85.04\%),and Ecoflex 00-50 (82.08\%). Specificity of WoodGlue is 0.954 which is higher than the specificity acquired for the same in the third scenario (0.928) for CNN without enhancement in the dataset. It obtained an ACE(\%) of 1.82 which is less when compared to state-of-art-results \cite{18}. In this case, high sensitivity is obtained by WoodGlue, 0.954 which has a specificity value 0.668\%. The low sensitivity value is for Latex. It has only 0.861\% followed by Ecoflex and Gelatine with 0.867\% and 0.882\%. One which has low sensitivity value always obtain a high specificity value. The highest specificity value is obtained by Latex having 0.844\%. Least specificity is for Ecoflex with 0.636\%.   
+
+\begin{table}[h]
+\caption {Accuracy and Precision obtained on CNN with WAT enhanced image as input} \label{tab:1} 
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ Materials Used (Live and Fake) & Accuracy & Precision\\ 
+ \hline
+ Ecoflex 00-50 & 0.8008 & 0.905 \\
+ \hline
+Gelatine & 0.8592 & 0.927\\
+ \hline
+Latex & 0.8576 & 0.956\\
+\hline
+WoodGlue & 0.9160 & 0.919\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+ 
+\begin{table}[h]
+\caption {Correct Rate (CR) and Error Rate (ER) obtained on CNN with WAT enhanced image as input}
+\label{tab:12} 
+\begin{center}
+\begin{tabular}{|c|c|c|}
+ \hline 
+ Materials Used (Live and Fake) & CR & ER \\ 
+ \hline 
+ Live and Ecoflex 00-50 & 0.820 & 0.179\\ 
+ \hline 
+  Live and Gelatine & 0.850 & 0.149 \\
+ \hline 
+  Live and Latex & 0.857 & 0.142\\ 
+ \hline 
+  Live and WoodGlue & 0.896 & 0.103 \\ 
+ \hline 
+ \end{tabular}  
+ \end{center}
+\end{table}
+
+\begin{table}[h]
+\caption {-ve Likelihood and +ve Likelihood obtained on CNN with WAT enhanced image as input}
+\label{tab:13}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+ \hline 
+ Materials Used (Live and Fake) & -ve Likelihood & +ve Likelihood \\ 
+ \hline 
+ Live and Ecoflex 00-50 &  0.209 & 2.381 \\ 
+ \hline 
+  Live and Gelatine &  0.162 & 3.195 \\
+ \hline 
+  Live and Latex & 0.164 & 5.519 \\ 
+ \hline 
+  Live and WoodGlue & 0.068 & 2.87 \\ 
+ \hline 
+ \end{tabular}  
+ \end{center}
+ \end{table}
+
+\textbf{}\paragraph{ (ii) Evaluation of CNN with feature vector as input}
+In this setting, the fingerprint images in the dataset are firstly enhanced using Wave Atom Transformation method in order to remove the unwanted noise from the image pixels. Then from these enhanced image minutiae  was extracted and these features and given to ImageNet-VGG for train them and to predict whether the image is a live or spoofed one. In this case, it took 1000 epochs out of 1000 iterations. Since we have taken only  120 features, time taken for training them is very less when comparing with other state-of-art-results that uses the whole dataset for training. It took only 00:00:20 hrs at the time of testing whereas other two methods took more time. Figure \ref{fig4.1} shows the gradient value obtained in each case. The performance Table \ref{tab:22}  depicts that Ecoflex 00-50 provides the least CR value and WoodGlue provides the highest with 0.80. The average accuracy rate is 79.8\%. When taking the whole dataset it gives 80.16\% accuracy and the Correct Rate for the entire dataset is 0.586. When we calculate the specificity and sensitivity, the highest sensitivity and least specificity is obtained by WoodGlue with 0.97\% and 0.164\% and highest specificity and least sensitivity is obtained by Latex with 0.456\% and 0.88\% respectively. The average specificity and sensitivity obtained in 3 scenarios is given in Table \ref{tab:5}. The comparison between -ve and +ve likelihoods rates for the live and spoof materials was given in Table \ref{tab:23}. From this table we can understand that WoodGlue provides more good results since it has the least -ve likelihood value. 
+
+\begin{table}[h]
+\caption {Accuracy and Precision obtained for CNN with feature vector as input} \label{tab:2} 
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ Materials Used (Live and Fake) & Accuracy & Precision\\ 
+ \hline
+ Ecoflex 00-50 & 0.7864 & 0.847\\
+ \hline
+Gelatine & 0.8064 & 0.850\\
+ \hline
+Latex & 0.7952 &  0.867\\
+\hline
+WoodGlue & 0.8040 & 0.822\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h] 
+\caption {Correct Rate and Error Rate obtained for CNN with feature vector as input} \label{tab:22} 
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Materials Used (Live and Fake) & CR & ER\\ 
+\hline 
+Ecoflex 00-50 & 0.788 & 0.211 \\ 
+\hline 
+Gelatine & 0.808 & 0.192 \\ 
+\hline 
+Latex & 0.802 & 0.198 \\ 
+\hline 
+WoodGlue & 0.808 & 0.191 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.3]{ajcelogo2023.png}   
+\caption{Graphical representation of gradient value obtained by each materials in the (ii) scenario}
+\label{fig4.1}
+\end{figure}
+
+\begin{table}[h] 
+\caption {-ve and +ve Likelihoods obtained for CNN with feature vector as input} \label{tab:23} \begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Materials Used (Live and Fake) & -ve Likelihood  & +ve Likelihood \\
+\hline 
+Ecoflex 00-50  & 0.289 &  1.392 \\ 
+\hline 
+Gelatine & 0.222  & 1.452 \\ 
+\hline 
+Latex  & 0.245 & 1.632  \\ 
+\hline 
+WoodGlue & 0.182 & 1.160 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{}\paragraph{ (iii) Evaluation of CNN without any enhancement}
+In this case, dataset images are given directly to the CNN for training without any enhancement operations. Here 4096 features are used in the training with a prevalence rate of 0.8. The Epoch and Gradient value obtained in each case is mentioned in  Table \ref{tab:4}. In this case Latex provides the highest accuracy rate and Ecoflex 00-50 provides the lowest. The entire dataset provides 85.7\% which is the highest accuracy rate when comparing the other two conditions.  The average accuracy rate is 91.6\%. In this case, the Latex has higher sensitivity and specificity value (0.957\%) and (0.908\%) and Gelatine and WoodGlue has lowest sensitivity value(0.928\%). The specificity is lowest for Ecoflex 00-50, only 0.748\%.
+
+\begin{table}[h]
+\caption {Accuracy and Precision of dataset given to CNN without any enhancement} \label{tab:3} 
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ Materials Used (Live and Fake) & Accuracy & Precision\\ 
+ \hline
+ Ecoflex 00-50 & 0.9012 & 0.937\\
+ \hline
+Gelatine & 0.910 & 0.960\\
+ \hline
+Latex & 0.945 & 0.976\\
+\hline
+WoodGlue & 0.910 & 0.959\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h] 
+\caption {Correct Rate (CR) and Error Rate (ER) of dataset given to CNN without any enhancement}
+\label{tab:32} 
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Materials Used (Live and Fake) & CR & ER \\ 
+\hline 
+Ecoflex 00-50 & 0.902 & 0.097 \\ 
+\hline 
+Gelatine & 0.912 & 0.088 \\ 
+\hline 
+Latex & 0.947 & 0.052 \\ 
+\hline 
+WoodGlue & 0.911 & 0.088\\ 
+\hline 
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h] 
+\caption {-ve Likelihood and +ve Likelihood of dataset given to CNN without any enhancement} \label{tab:33} 
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Materials Used (Live and Fake) & -ve Likelihood & +ve Likelihood \\ 
+\hline 
+Ecoflex 00-50 & 0.078 & 3.734\\ 
+\hline 
+Gelatine & 0.084 & 6.105 \\ 
+\hline 
+Latex & 0.047 & 0.976 \\ 
+\hline 
+WoodGlue & 0.085 & 5.948 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\caption {Epoch and Gradient score for different materials on direct ImageNet-VGG training} \label{tab:4} 
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ Materials Used  & Epoch(out of 1000 iterations) & Gradient\\ 
+ \hline
+ Ecoflex 00-50 & 85 & 40.5\\
+ \hline
+Gelatine & 101 & 42.2\\
+ \hline
+Latex & 83 & 41.3\\
+\hline
+WoodGlue & 99 & 40.2\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\chapter{Conclusion and Future work}
+The main limitation of many of the existing anti-spoof methods is the poor quality of the datasets obtained. The spoofing materials of poor image quality decreases the overall performance of the system. So we need either a best hardware for image acquisition or a good image processing method to obtain better results , but most of the hardware are expensive. 
+\paragraph{}Here we proposed a method Wave Atom Transformation for de-noising the images and extract fingerprint minutiae using simple enhancement operations such as morphological operations. From that we found out the minutiae features such as ridge bifurcations and ridge endings. Finally these images are classified as live or fake based on these minutiae points. For the classification, we used a pre-trained classifier model called ImageNet-VGG, that will differentiate the given image as live or spoof in a desirable way. The proposed WAT enhanced method yields an average accuracy of 85.8\%. The WAT enhanced image with minutiae features extracted, achieved an average accuracy of 79.8\%. We also computed the performance of CNN without any enhancement on image as input and obtained an average accuracy of 91.6\%.
+
+

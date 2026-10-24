@@ -1,0 +1,74 @@
+% CHAPTER 4
+\chapter{Implementation}
+
+\section{Hardware and Software Requirements}
+[Specify all computational hardware and software environments used during development, training, and deployment:]
+\begin{itemize}
+    \item \textbf{Workstation Hardware:} [CPU processor model, GPU accelerator with VRAM, system RAM, storage type.]
+    \item \textbf{Target / Edge Hardware:} [If applicable: embedded processor, mobile device, or edge SBC specs.]
+    \item \textbf{Operating System:} [e.g., Ubuntu 22.04 LTS, Windows 11, macOS.]
+    \item \textbf{Software Stack:} [Python version, CUDA/cuDNN versions, driver versions.]
+\end{itemize}
+
+\section{Tools and Frameworks}
+Table \ref{tab:tools} outlines the primary libraries, development toolkits, and platforms utilized in this project:
+
+\begin{table}[htbp]
+\centering
+\caption{Software frameworks and toolkits utilized in the implementation}
+\label{tab:tools}
+\vspace{0.2cm}
+\resizebox{0.95\columnwidth}{!}{
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Framework / Library} & \textbf{Version} & \textbf{Functional Purpose in Project} \\
+\hline
+PyTorch / TensorFlow & [Version] & Core deep learning modeling, gradient computation, and backpropagation. \\
+\hline
+OpenCV / PIL & [Version] & Image preprocessing, transformation, and visual rendering utilities. \\
+\hline
+scikit-learn & [Version] & Dataset partitioning, baseline modeling, and evaluation metric computation. \\
+\hline
+Next.js / Streamlit / Flask & [Version] & Web interface / command dashboard for user interaction and demo. \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Dataset Partitioning}
+[Describe how the dataset was split into training, validation, and testing subsets (e.g., 70:15:15 or 80:10:10). Detail whether the split was purely randomized, class-stratified, or subject/patient-wise to prevent data leakage.]
+
+\section{Hyperparameter Settings}
+Table \ref{tab:hyperparameters} summarizes the exact hyperparameter values configured during model training:
+
+\begin{table}[htbp]
+\centering
+\caption{Hyperparameter settings configured for model training}
+\label{tab:hyperparameters}
+\vspace{0.2cm}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Hyperparameter} & \textbf{Configured Value} \\
+\hline
+Input Resolution & [$H \times W \times C$, e.g., $640 \times 640 \times 3$] \\
+\hline
+Epochs & [e.g., 100] \\
+\hline
+Batch Size & [e.g., 16 or 32] \\
+\hline
+Optimizer & [e.g., AdamW / SGD] \\
+\hline
+Initial Learning Rate & [e.g., 0.001] \\
+\hline
+Learning Rate Schedule & [e.g., Cosine Annealing with Warmup] \\
+\hline
+Weight Decay / Regularization & [e.g., 0.0005] \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Model Training Procedure}
+[Provide a step-by-step description of the training workflow: batch loading, forward pass, loss calculation, backpropagation, validation monitoring, and checkpoint saving. State the total training time and convergence epoch.]
+
+\section{Deployment and User Interface}
+[Describe the deployment target: web application, mobile app, edge device daemon, or API service. Detail how end-users or domain practitioners interact with the system, and include illustrative UI screenshots or system outputs.]

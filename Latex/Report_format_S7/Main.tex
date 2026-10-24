@@ -1,0 +1,82 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{graphicx}
+\usepackage{sectsty}
+\chapterfont{\Large\centering\MakeUppercase}
+\usepackage{amsmath}
+\usepackage{setspace}
+\onehalfspacing  % Standard 1.5 line spacing as per S7 formatting guidelines
+\usepackage{array}  % for setting column width in tables
+%\usepackage{mathptmx}  % Uncomment for Times New Roman font if preferred
+
+% Page Setup: A4, Left=3cm, Right=2.5cm, Top=2.5cm, Bottom=2.5cm
+\usepackage[top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.5cm]{geometry}
+
+% Header and Footer setup (Fancyhdr)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % Clear header and footer
+\rhead{\nouppercase{\textit{\leftmark}}}
+\lfoot{\textit{Department of CSE, Amal Jyothi College of Engineering}}
+\rfoot{\textit{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Enable URL / Hyperlinks styling (optional, neat)
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
+
+\begin{document}
+
+% 1. Title Page (No page number)
+\input{Title.tex}
+
+% 2. Certificate Page (No visible page number)
+\input{Certf.tex}
+
+% Front Matter (Roman numerals i, ii, iii...)
+\pagenumbering{roman}
+\pagestyle{plain} % Plain page numbering (bottom center or clean) for front matter
+
+% Optional Vision & Mission / Record Book Page
+%\input{VisionMission.tex}
+
+% 3. Acknowledgement
+\input{Ackn.tex}
+
+% 4. Abstract
+\input{Abstract.tex}
+
+% 5. Table of Contents
+\tableofcontents
+\clearpage
+
+% 6. List of Tables (if tables are present)
+\listoftables
+\clearpage
+
+% 7. List of Figures (if figures are present)
+\listoffigures
+\clearpage
+
+% 8. List of Abbreviations
+\input{Abbrevations.tex}
+\clearpage
+
+% Main Report Body (Arabic numerals: 1, 2, 3...)
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+% Chapters (Introduction, Literature Survey, Methodology, Results, Conclusion)
+\input{intro.tex}
+
+% References Section
+\input{Bibilo.tex}
+
+% Optional Appendix
+\input{Appendix.tex}
+
+\end{document}

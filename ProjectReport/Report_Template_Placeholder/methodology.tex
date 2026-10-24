@@ -1,0 +1,40 @@
+% CHAPTER 3
+\chapter{Proposed Methodology}
+
+\section{System Overview}
+[Introduce the overall system architecture conceptually. Start by referencing the block diagram in Figure \ref{fig:pipeline}, then provide a detailed walkthrough of data flow through each processing stage, from raw inputs to final outputs.]
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{assets/ajcelogo2023.png}
+\caption{Overall system architecture and pipeline of the proposed framework}
+\label{fig:pipeline}
+\end{figure}
+
+\section{Dataset Description}
+[Describe the dataset utilized: source repository, acquisition protocol, sample volume, class breakdown, class balance/imbalance characteristics, and sample representative records or images.]
+
+\section{Data Preprocessing and Augmentation}
+[Detail each step of data preparation: data cleaning, noise removal, resizing, normalization/standardization, missing value handling, class imbalance mitigation (e.g., SMOTE, focal weighting), and data augmentation techniques. Provide theoretical justification for why each step was selected.]
+
+\section{Feature Extraction and Representation}
+[Explain how input raw data is transformed into informative representations: whether through handcrafted descriptors, learned deep convolutional embeddings, multi-scale feature pyramids, or self-attention contextual vectors.]
+
+\section{Proposed Model Architecture}
+[Provide an architectural breakdown of the proposed model: layer-wise topology, receptive fields, activation functions, residual connections, and parameter count. Explain why this specific architecture suits the problem constraints.]
+
+\section{Loss Function and Optimization}
+[State the exact mathematical formulation of the loss function, defining every mathematical symbol clearly:]
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \alpha \mathcal{L}_{\text{primary}} + \beta \mathcal{L}_{\text{auxiliary}}
+\end{equation}
+[Define the optimization algorithm (e.g., Adam, AdamW, SGD with momentum) and the learning rate scheduling strategy (e.g., Cosine Annealing, StepLR, ReduceLROnPlateau).]
+
+\section{Training Strategy}
+[Describe the training methodology: transfer learning from pre-trained foundation weights, two-stage fine-tuning, cross-validation, regularization schemes (dropout, weight decay), and early stopping criteria.]
+
+\section{Evaluation Metrics}
+[Provide exact mathematical formulas for all quantitative evaluation metrics: Accuracy, Precision, Recall, F1-Score, AUC-ROC, mean Average Precision (mAP), and task-specific operational latency or throughput metrics. State why these metrics are appropriate for the problem.]
+\begin{equation}
+    \text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}

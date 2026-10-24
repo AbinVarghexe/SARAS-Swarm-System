@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SARAS // Tactical Swarm Command</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="hud-grid-overlay"></div>
+  
+  <div class="shell">
+    <!-- TOP TACTICAL COMMAND BAR -->
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="radar-glyph">
+          <div class="radar-sweep"></div>
+          <span class="radar-dot"></span>
+        </div>
+        <div class="brand-text">
+          <div class="sys-tag">SEARCH & RESCUE AUTONOMOUS SWARM // SYSTEM ARCHITECTURE</div>
+          <h1>SARAS <span>TACTICAL COMMAND</span></h1>
+        </div>
+      </div>
+
+      <!-- OPERATING MODE SWITCHER -->
+      <div class="mode-switcher-container">
+        <div class="mode-label">MISSION ARCHITECTURE:</div>
+        <div class="mode-switcher" role="tablist">
+          <button class="mode-btn active" id="mode-pure-sim" data-mode="pure_sim">
+            <span class="mode-indicator"></span>
+            <span class="mode-title">PURE SIMULATION</span>
+            <span class="mode-sub">HAZARDOUS DISASTER ZONE</span>
+          </button>
+          <button class="mode-btn" id="mode-hybrid-real" data-mode="hybrid_real">
+            <span class="mode-indicator"></span>
+            <span class="mode-title">HYBRID OPERATIONS</span>
+            <span class="mode-sub">1 PHYSICAL DRONE + N COMPANIONS</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- HARDWARE & STATUS PILLS -->
+      <div class="status-group">
+        <!-- MAVLink / Mission Planner Status -->
+        <div class="status-pill" id="mavlink-pill" title="MAVLink telemetry connection to Mission Planner (UDP 14550)">
+          <span class="pill-dot" id="mavlink-dot"></span>
+          <span class="pill-label">MAVLINK 14550</span>
+          <strong id="mavlink-status">STANDBY</strong>
+        </div>
+
+        <!-- Fleet Size Stepper -->
+        <div class="stepper-pill">
+          <span class="pill-label">FLEET:</span>
+          <button class="step-btn" id="drone-dec" title="Decrease drone count">-</button>
+          <strong id="drone-count-display">4 DRONES</strong>
+          <button class="step-btn" id="drone-inc" title="Increase drone count">+</button>
+        </div>
+
+        <!-- Mission Clock -->
+        <div class="clock-pill">
+          <span class="pill-label">UTC MISSION:</span>
+          <strong id="mission-clock">00:00</strong>
+        </div>
+
+        <!-- Controls -->
+        <div class="control-actions">
+          <button class="tactical-btn" id="pause-btn" title="Pause/Resume mission">PAUSE</button>
+          <button class="tactical-btn secondary" id="reassign-btn" title="Trigger auction re-allocation">RE-BID</button>
+          <button class="tactical-btn secondary" id="reset-btn" title="Reset mission">RESET</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- DISASTER INCIDENT SUB-BANNER -->
+    <section class="incident-banner">
+      <div class="incident-main">
+        <div class="incident-tag">
+          <span class="alert-pulse"></span>
+          <span>INCIDENT #KL-2024-WYND // LEVEL 4 DISASTER RESPONSE</span>
+        </div>
+        <h2>Wayanad Landslide Disaster Zone <em>/ Sector Chooralmala</em></h2>
+        <p class="incident-meta">
+          <span>COORDINATES: <strong>11.5360°N, 76.1390°E</strong></span>
+          <span class="meta-sep">|</span>
+          <span>ELEVATION: <strong>850m MSL</strong></span>
+          <span class="meta-sep">|</span>
+          <span>HAZARDS: <strong>MUD DEBRIS, SMOKE PLUMES, RIDGE GUSTS</strong></span>
+        </p>
+      </div>
+
+      <div class="stat-readouts">
+        <div class="readout-box">
+          <span class="r-label">SECTOR COVERAGE</span>
+          <div class="r-val-wrap">
+            <span class="r-val" id="coverage-val">0%</span>
+            <div class="r-bar"><i id="coverage-fill"></i></div>
+          </div>
+        </div>
+        <div class="readout-box">
+          <span class="r-label">CONFIRMED VICTIMS</span>
+          <span class="r-val alert" id="detected-val">0 / 8</span>
+        </div>
+        <div class="readout-box">
+          <span class="r-label">ACTIVE HAZARDS</span>
+          <span class="r-val warning" id="hazards-val">4 ACTIVE</span>
+        </div>
+        <div class="readout-box">
+          <span class="r-label">SWARM REASSIGNMENTS</span>
+          <span class="r-val" id="reassignments-val">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIMARY TACTICAL WORKSPACE -->
+    <section class="tactical-workspace">
+      
+      <!-- LEFT COLUMN: VIDEO HUD + TACTICAL MAP -->
+      <div class="tactical-main-col">
+        
+        <!-- PHYSICAL DRONE-01 LIVE VIDEO HUD FEED (Shown prominently in Hybrid Mode, previewable in Pure Sim) -->
+        <article class="tactical-panel video-panel" id="video-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="dot-live red-pulse"></span>
+              <h3>PHYSICAL DRONE-01 // LIVE EO/IR RECONNAISSANCE</h3>
+              <span class="badge cyan-badge" id="video-node-badge">NODE D1 [PHYSICAL]</span>
+              <span class="badge amber-badge">YOLOv8 DETECTOR ACTIVE</span>
+            </div>
+            <div class="panel-tools">
+              <span class="stream-metric" id="stream-fps">24.0 FPS</span>
+              <span class="stream-sep">·</span>
+              <span class="stream-metric" id="stream-latency">18 MS LATENCY</span>
+              <button class="tool-btn" id="toggle-video-btn" title="Toggle video display">COLLAPSE</button>
+            </div>
+          </div>
+
+          <div class="video-display-wrap" id="video-wrap">
+            <img class="video-feed" id="video-stream" src="/api/video/feed" alt="Drone-01 Real-Time Aerial Camera Feed" crossorigin="anonymous">
+            
+            <!-- Floating HUD Quick Telemetry Bar -->
+            <div class="video-hud-overlay">
+              <div class="hud-stat-box top-left">
+                <span class="hud-lbl">CAM SOURCE</span>
+                <strong id="hud-cam-source">AERIAL SAR TEST FEED (480P)</strong>
+              </div>
+              <div class="hud-stat-box top-right">
+                <span class="hud-lbl">AI TARGET TRACKER</span>
+                <strong class="target-alert" id="hud-target-count">2 VICTIMS ACQUIRED</strong>
+              </div>
+              <div class="hud-stat-box bottom-left">
+                <span class="hud-lbl">AIRFRAME TELEMETRY</span>
+                <span class="hud-vals" id="hud-flight-data">ALT: 35.0M | SPD: 12.0M/S | BATT: 94%</span>
+              </div>
+              <div class="hud-stat-box bottom-right">
+                <span class="hud-lbl">TARGET FIX</span>
+                <span class="hud-vals" id="hud-target-gps">11.5362°N, 76.1394°E</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- TACTICAL GEOSPATIAL MAP -->
+        <article class="tactical-panel map-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="dot-live green-pulse"></span>
+              <h3>GEOSPATIAL SITUATIONAL MAP // DISASTER ARENA</h3>
+              <span class="badge slate-badge">WAYANAD GRID // 1000m × 1000m</span>
+            </div>
+            <div class="map-legend">
+              <span class="leg-item"><i class="leg-icon leg-phys"></i>PHYSICAL D1</span>
+              <span class="leg-item"><i class="leg-icon leg-virt"></i>VIRTUAL SWARM</span>
+              <span class="leg-item"><i class="leg-icon leg-hazard"></i>HAZARDS</span>
+              <span class="leg-item"><i class="leg-icon leg-victim"></i>VICTIM</span>
+              <span class="leg-item"><i class="leg-icon leg-base"></i>HQ BASE</span>
+            </div>
+          </div>
+
+          <div class="map-container-wrap">
+            <div id="tactical-map" aria-label="SARAS Disaster Arena Tactical Map"></div>
+            
+            <!-- Map corner telemetry HUD labels -->
+            <div class="map-hud-tag top-left-hud">
+              CHOORALMALA NORTH RIDGE<br>
+              <small>TERRAIN: STEEP SLOPE / SOIL LIQUEFACTION</small>
+            </div>
+            <div class="map-hud-tag bottom-right-hud">
+              RESCUE BASE HQ / R-POINT 01<br>
+              <small>COORDINATION POINT</small>
+            </div>
+          </div>
+
+          <div class="panel-footer">
+            <div class="footer-status">
+              <span class="pulse-indicator"></span>
+              <span>TELEMETRY STREAM: <strong id="stream-rate">WEBSOCKET LIVE (8.3 Hz)</strong></span>
+            </div>
+            <div class="footer-info">
+              <span>ACTIVE SECTOR GRID: <strong id="grid-status">3×3 (9 SECTORS)</strong></span>
+            </div>
+            <div class="footer-coord">
+              ANCHOR: <strong>11.5360°N, 76.1390°E</strong>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- RIGHT COLUMN: FLEET ROSTER, HAZARDS, TRIAGE & AI AGENT -->
+      <aside class="tactical-side-col">
+
+        <!-- SWARM FLEET TELEMETRY ROSTER -->
+        <article class="tactical-panel roster-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h3>SWARM FLEET ROSTER</h3>
+              <span class="badge green-badge" id="roster-active-badge">4/4 ONLINE</span>
+            </div>
+          </div>
+          <div class="roster-list" id="drone-roster">
+            <!-- Dynamic Drone Cards injected by JS -->
+          </div>
+        </article>
+
+        <!-- ENVIRONMENTAL HAZARD MONITOR -->
+        <article class="tactical-panel hazard-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h3>DISASTER HAZARDS</h3>
+              <span class="badge warning-badge" id="hazard-count-badge">4 IDENTIFIED</span>
+            </div>
+          </div>
+          <div class="hazard-list" id="hazard-roster">
+            <!-- Dynamic Hazard Cards injected by JS -->
+          </div>
+        </article>
+
+        <!-- VICTIM TRIAGE & RESCUE PRIORITIZATION QUEUE -->
+        <article class="tactical-panel triage-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h3>VICTIM TRIAGE QUEUE</h3>
+              <span class="badge alert-badge" id="triage-count-badge">0 LOCATED</span>
+            </div>
+            <span class="panel-sub-label">SORTED BY URGENCY</span>
+          </div>
+          <div class="triage-list" id="victim-roster">
+            <!-- Dynamic Triage Cards injected by JS -->
+          </div>
+        </article>
+
+        <!-- DECISION SUPPORT & KNOWLEDGE AGENT -->
+        <article class="tactical-panel agent-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="ai-sparkle">✦</span>
+              <h3>SAR DECISION SUPPORT</h3>
+              <span class="badge blue-badge">AI / SOP AGENT</span>
+            </div>
+          </div>
+          <div class="agent-advisory-box">
+            <div class="advisory-title">ACTIVE RECOMMENDATION:</div>
+            <p class="advisory-text" id="ai-recommendation">
+              Awaiting confirmed detections. Swarm executing auction sweep across northern landslide debris sectors.
+            </p>
+          </div>
+          <div class="agent-query-wrap">
+            <div class="quick-queries">
+              <button class="quick-chip" data-q="What is the standard drone protocol when a victim with critical injuries is found?">Critical Victim Protocol</button>
+              <button class="quick-chip" data-q="How does battery failure trigger autonomous sector reassignment?">Fault Recovery Logic</button>
+              <button class="quick-chip" data-q="What are the wind and smoke safety thresholds for flight operations in Wayanad?">Hazard Limits</button>
+            </div>
+            <form class="query-form" id="agent-form">
+              <input type="text" id="agent-input" class="query-input" placeholder="Query SARAS Disaster SOP knowledge..." autocomplete="off">
+              <button type="submit" class="query-submit">ASK <span>→</span></button>
+            </form>
+            <div class="agent-response-box" id="agent-response" style="display:none;">
+              <div class="resp-label">AGENT SOP RESPONSE:</div>
+              <p class="resp-content" id="agent-response-text"></p>
+            </div>
+          </div>
+        </article>
+
+      </aside>
+    </section>
+  </div>
+
+  <div class="toast-notice" id="toast-notice"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>

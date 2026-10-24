@@ -1,0 +1,406 @@
+=== SUMMARY OF DIFFERENCES ===
+Amith Pages: 42
+Abin Pages: 46
+
+=== TITLE PAGE (PAGE 1) ===
+--- AMITH ---
+INTERPRETABLE HYBRID MULTICHANNEL
+DEEP LEARNING MODEL FOR HEART
+DISEASE CLASSIFICATION USING 12-LEAD
+ECG SIGNAL
+A SEMINAR REPORT
+submitted by
+AMITH THOMAS ABRAHAM
+AJC23CS045
+to
+the APJ Abdul Kalam Technological University
+in partial fulfillment of the requirement for the award of the Degree of
+Bachelor of Technology
+in
+Computer Science and Engineering
+Under the guidance of
+Ms. Lida K Kuriakose
+Assistant Professor
+Department of Computer Science and Engineering
+Amal Jyothi College of Engineering (Autonomous)
+Kanjirappally – 686518
+October 2026
+--- ABIN ---
+MULTIMODAL PHISHING WEBSITE
+DETECTION USING EXPLAINABLE
+ARTIFICIAL INTELLIGENCE
+A SEMINAR REPORT
+submitted by
+ABIN BIJU JOSEPH
+AJC23CS006
+to
+the APJ Abdul Kalam Technological University
+in partial fulfillment of the requirement for the award of the Degree of
+Bachelor of Technology
+in
+Computer Science and Engineering
+Under the guidance of
+Prof. Lida K. Kuriakose
+Assistant Professor
+Department of Computer Science and Engineering
+Amal Jyothi College of Engineering (Autonomous)
+Kanjirappally – 686518
+October 2026
+
+=== CERTIFICATE PAGE (PAGE 2) ===
+--- AMITH ---
+DEPARTMENT OF COMPUTER SCIENCE AND
+ENGINEERING
+AMAL JYOTHI COLLEGE OF ENGINEERING
+(AUTONOMOUS)
+KANJIRAPPALLY – 686518
+CERTIFICATE
+This is to certify that the seminar report entitled “Interpretable Hybrid Mul-
+tichannel Deep Learning Model for Heart Disease Classification Using 12-
+Lead ECG Signal”submittedbyAMITH THOMAS ABRAHAM (AJC23CS045)
+to the APJ Abdul Kalam Technological University in partial fulfillment of the require-
+ments for the award of the Degree of Bachelor of Technology in Computer Science and
+Engineering during the year 2026–2027, is a bonafide work carried out by him under
+my guidance and supervision.
+Ms. Lida K Kuriakose Dr. Anju J Prakash Ms. Shiney Thomas
+Internal Supervisor Seminar Coordinators
+Dr. Juby Mathew
+Head of Department, CSE
+--- ABIN ---
+DEPARTMENT OF COMPUTER SCIENCE AND
+ENGINEERING
+AMAL JYOTHI COLLEGE OF ENGINEERING
+(AUTONOMOUS)
+KANJIRAPPALLY – 686518
+CERTIFICATE
+Thisistocertifythattheseminarreportentitled“Multimodal Phishing Website
+Detection Using Explainable Artificial Intelligence” submitted by Abin Biju
+Joseph (AJC23CS006) to the APJ Abdul Kalam Technological University in partial
+fulfillment of the requirements for the award of the Degree of Bachelor of Technology
+in Computer Science and Engineering during the year 2026–2027, is a bonafide work
+carried out by him under my guidance and supervision.
+Prof. Lida K. Kuriakose Dr. Anju J Prakash Ms. Shiney Thomas
+Assistant Professor Seminar Coordinators
+Internal Supervisor
+Dr. Juby Mathew
+Head of Department, CSE
+
+=== TABLE OF CONTENTS ===
+--- AMITH (Page 6 & 7) ---
+CONTENTS
+ACKNOWLEDGEMENT i
+ABSTRACT ii
+ABBREVIATIONS viii
+1 Introduction 1
+1.1 Overview of 12-Lead Electrocardiography and Clinical Significance . . . 1
+1.2 Cardiac Electrophysiology and Waveform Morphology . . . . . . . . . . 2
+1.3 Shortcomings of Conventional Computerized Interpretation of ECG . . 3
+1.4 The Black-Box Problem in Deep Learning for Cardiology . . . . . . . . 4
+1.5 Motivation and Specific Research Objectives . . . . . . . . . . . . . . . 4
+1.6 Report Organization . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2 Literature Survey 7
+2.1 Evolution of Machine Learning in ECG Diagnostics . . . . . . . . . . . 7
+2.2 Few-Shot and 1D Convolutional Neural Network Approaches . . . . . . 7
+2.3 Deep Residual Networks and Diagnostic Benchmarks . . . . . . . . . . 8
+2.4 Hybrid Temporal and Multi-Channel Models . . . . . . . . . . . . . . . 8
+2.5 Explainable Artificial Intelligence (XAI) in Cardiovascular Medicine . . 9
+2.6 Critical Analysis and Summary of Identified Research Gaps . . . . . . 9
+3 Proposed Methodology 10
+3.1 End-to-End System Architecture and Workflow . . . . . . . . . . . . . 10
+3.2 Benchmark 12-Lead ECG Datasets . . . . . . . . . . . . . . . . . . . . 11
+3.3 Signal Denoising and Preprocessing Pipeline . . . . . . . . . . . . . . . 12
+3.3.1 Discrete Cosine Transform (DCT)-Based Baseline Wander Re-
+moval . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+3.3.2 Power-Line Interference (PLI) Notch Filtering . . . . . . . . . . 13
+3.3.3 Channel-Wise Min-Max Normalization . . . . . . . . . . . . . . 13
+3.4 Deep Hybrid Network Architecture . . . . . . . . . . . . . . . . . . . . 14
+3.4.1 12 Parallel Dilated 1D-CNN Blocks with Skip Connections . . . 15
+iv
+3.4.2 Stacked Bidirectional LSTM (BiLSTM) Layers . . . . . . . . . 15
+3.4.3 Multiplicative Attention Mechanism . . . . . . . . . . . . . . . 15
+3.4.4 Spatial 2D-CNN, Global Average Pooling, and Dense Layers . . 16
+3.5 Hyperparameter Tuning and Optimization Strategy . . . . . . . . . . . 16
+3.6 Post-Hoc Model Interpretability Frameworks . . . . . . . . . . . . . . . 17
+4 Results and Discussions 18
+4.1 Experimental Environment and Evaluation Metrics . . . . . . . . . . . 18
+4.2 Classification Performance Across Benchmark Datasets . . . . . . . . . 19
+4.2.1 Performance on Chapman Arrhythmia Dataset . . . . . . . . . 19
+4.2.2 Performance on PTB-XL Dataset . . . . . . . . . . . . . . . . . 20
+4.2.3 Performance on CODE-15% and Gold-Standard Clinical Valida-
+tion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+4.3 State-of-the-Art Comparative Analysis . . . . . . . . . . . . . . . . . . 21
+4.4 Component Analysis and Ablation Study . . . . . . . . . . . . . . . . . 21
+4.5 Model Interpretability and Clinical Explainability Analysis . . . . . . . 23
+4.5.1 Population-Level Lead Attribution . . . . . . . . . . . . . . . . 23
+4.5.2 Patient-Specific Instance-Level Heatmap Verification . . . . . . 23
+5 Conclusion and Future Work 25
+5.1 Conclusion and Research Contributions . . . . . . . . . . . . . . . . . . 25
+5.2 Limitations and Future Research Directions . . . . . . . . . . . . . . . 26
+REFERENCES 27
+A Algorithmic Implementations 30
+A.1 Discrete Cosine Transform (DCT) Baseline Wander Cancellation . . . . 30
+A.2 Multi-Channel Dilated Hybrid Model Definition in Keras . . . . . . . . 31
+v
+--- ABIN (Page 9 & 10) ---
+CONTENTS
+DEPARTMENT VISION & MISSION i
+ACKNOWLEDGEMENT iii
+ABSTRACT v
+ABBREVIATIONS xi
+1 Introduction 1
+1.1 Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Motivation and Problem Statement . . . . . . . . . . . . . . . . . . . . 2
+1.3 Objectives of the Seminar Study . . . . . . . . . . . . . . . . . . . . . . 3
+1.4 Report Organization . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2 Literature Survey 5
+2.1 Evolution of Phishing Detection Systems . . . . . . . . . . . . . . . . . 5
+2.2 Behavior-Based Multichannel Phishing Detection via EM-BERT and
+SPCA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2.3 Dynamic Optimization for Symbolic URL Analysis in Cloud Environ-
+ments (DAOA-DLPC) . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+2.4 Comparative Evaluation of Convolutional and Recurrent Architectures 8
+2.5 Paradigm Shift: Multimodal Late Fusion and Explainability . . . . . . 9
+3 Proposed Methodology 11
+3.1 System Architecture Overview . . . . . . . . . . . . . . . . . . . . . . . 11
+3.2 Modality 1: Tabular URL Features and Metadata via CatBoost . . . . 12
+3.2.1 Feature Engineering Pipeline . . . . . . . . . . . . . . . . . . . 12
+3.2.2 CatBoost Classification Model . . . . . . . . . . . . . . . . . . . 13
+3.3 Modality 2: Character-Level Symbolic URL via 1D-CNN . . . . . . . . 13
+3.3.1 Character Representation . . . . . . . . . . . . . . . . . . . . . 13
+3.3.2 Convolutional Feature Extraction . . . . . . . . . . . . . . . . . 13
+3.4 Modality 3: HTML Source Code Representation via Fine-Tuned Code-
+BERT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+vii
+3.4.1 Transformer Architecture and Pre-training . . . . . . . . . . . . 14
+3.4.2 DOM Preprocessing and Tokenization . . . . . . . . . . . . . . 14
+3.5 Modality 4: Screenshot-Based Visual Analysis via EﬀicientNet-B7 . . . 15
+3.5.1 Image Capture and Normalization . . . . . . . . . . . . . . . . 15
+3.5.2 EﬀicientNet-B7 Backbone . . . . . . . . . . . . . . . . . . . . . 15
+3.6 Late-Fusion Trainable Meta-Classifier . . . . . . . . . . . . . . . . . . . 15
+3.6.1 Cost-Sensitive Optimization . . . . . . . . . . . . . . . . . . . . 16
+3.7 Multimodal Explainable AI (XAI) Suite . . . . . . . . . . . . . . . . . 16
+3.8 Local LLM Agent for Consolidated Incident Reporting . . . . . . . . . 17
+3.9 Microservice Deployment and SIEM Streaming Pipeline . . . . . . . . . 18
+4 Results and Discussions 19
+4.1 Experimental Setup and Benchmark Datasets . . . . . . . . . . . . . . 19
+4.1.1 Dataset Profiles . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+4.1.2 Hardware and Computing Environment . . . . . . . . . . . . . 20
+4.2 Performance Evaluation Metrics . . . . . . . . . . . . . . . . . . . . . . 20
+4.3 Multimodal Late Fusion vs Individual Modality Branches . . . . . . . . 20
+4.4 Zero-Day Phishing Detection Benchmark . . . . . . . . . . . . . . . . . 21
+4.5 SOC Analyst Usability and Interpretability Evaluation . . . . . . . . . 22
+4.6 System Latency and Microservice Throughput . . . . . . . . . . . . . . 23
+5 Conclusion and Future Work 25
+5.1 Summary of Seminar Work . . . . . . . . . . . . . . . . . . . . . . . . 25
+5.2 Key Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+5.3 Operational Limitations and Challenges . . . . . . . . . . . . . . . . . 26
+5.4 Future Research Directions . . . . . . . . . . . . . . . . . . . . . . . . . 27
+REFERENCES 28
+A Sample Implementation Source Code 30
+B Sample Generated Incident Report for SOC Triage 32
+viii
+
+=== ABBREVIATIONS ===
+--- AMITH (Page 10) ---
+ABBREVIATIONS
+1D One-Dimensional GSVT Grouped Supraventricular Tachy-
+cardia
+2D Two-Dimensional HYP Hypertrophy
+1dAVb First-Degree AV Block IDCT Inverse Discrete Cosine Transform
+AF Atrial Flutter LBBB Left Bundle Branch Block
+AFIB Atrial Fibrillation MI Myocardial Infarction
+AUC Area Under ROC Curve ML Machine Learning
+AUPRC Area Under PR Curve NORM Normal ECG
+BiLSTM Bidirectional LSTM PLI Power-Line Interference
+BW Baseline Wander RBBB Right Bundle Branch Block
+CD Conduction Disturbance ReLU Rectified Linear Unit
+CIE Computerized ECG Interpretation SB Sinus Bradycardia
+CNN Convolutional Neural Network SHAP SHapley Additive exPlanations
+CODE Clin. Outcomes in Digital ECG SI Sinus Irregularity
+CVD Cardiovascular Disease SR Sinus Rhythm
+DCT Discrete Cosine Transform ST Sinus Tachycardia
+DL Deep Learning STTC ST/T Change
+DNN Deep Neural Network SVT Supraventricular Tachycardia
+ECG Electrocardiogram TNMG Telehealth Net. of Minas Gerais
+FC Fully Connected Layer WHO World Health Organization
+GAP Global Average Pooling XAI Explainable Artificial Intelligence
+Grad- Grad-Weighted Class Act.
+CAM++ Map++
+viii
+--- ABIN (Page 13) ---
+ABBREVIATIONS
+AI Artificial Intelligence
+XAI Explainable Artificial Intelligence
+PaaS Phishing-as-a-Service
+SOC Security Operations Center
+SIEM Security Information and Event Management
+CNN Convolutional Neural Network
+1D-CNN One-Dimensional Convolutional Neural Network
+RNN Recurrent Neural Network
+LSTM Long Short-Term Memory
+BiLSTM Bidirectional Long Short-Term Memory
+GRU Gated Recurrent Unit
+BiGRU Bidirectional Gated Recurrent Unit
+BERT Bidirectional Encoder Representations from Transformers
+CodeBERT Pre-trained Transformer for Code and Natural Language
+SHAP Shapley Additive Explanations
+Grad-CAM Gradient-weighted Class Activation Mapping
+IG Integrated Gradients
+LLM Large Language Model
+RAG Retrieval-Augmented Generation
+SPCA Spherical Principal Component Analysis
+DAOA Dynamic Arithmetic Optimization Algorithm
+DOM Document Object Model
+URL Uniform Resource Locator
+DNS Domain Name System
+WHOIS Protocol for Querying Registered Internet Domain Databases
+SSL/TLS Secure Sockets Layer / Transport Layer Security
+ROC-AUC Receiver Operating Characteristic - Area Under Curve
+FPR False Positive Rate
+TPR True Positive Rate
+xi
+
+=== CHAPTER 1 (First page of Chapter 1) ===
+--- AMITH (Page 11) ---
+CHAPTER 1
+INTRODUCTION
+1.1 Overview of 12-Lead Electrocardiography and
+Clinical Significance
+Cardiovascular diseases (CVDs), encompassing coronary artery disease, heart failure,
+and diverse cardiac arrhythmias, represent the paramount contributor to human mor-
+tality worldwide. According to oﬀicial global epidemiological assessments released by
+the World Health Organization (WHO), cardiovascular pathologies were accountable
+for approximately 17.9 million deaths in 2019 alone, representing nearly 32% of all
+global deaths [1, 2]. Among non-communicable conditions, acute and chronic cardiac
+illnesses maintain the highest global disease burden. Alarmingly, greater than 75%
+of these deaths occur in low- and middle-income nations, where access to specialized
+cardiological healthcare infrastructure is severely constrained and the ratio of certified
+expert cardiologists to patients is strikingly deficient [1].
+Theelectrocardiogram(ECG)remainsthegoldstandard,non-invasive,cost-effective,
+and universally deployed clinical modality for recording the rhythmic electrical poten-
+tials of the human myocardium [3]. During each heartbeat, an organized wave of
+electrical depolarization and repolarization traverses cardiac myocytes, generating bio-
+electric vector fields that propagate through body tissues to the surface of the skin.
+Anelectrocardiographcapturesthesemicroscopicpotentialdifferentialsviaanarrange-
+ment of surface electrodes placed strategically on the patient’s upper extremities, lower
+extremities, and thorax.
+Standard clinical electrophysiology utilizes a 12-lead arrangement composed of:
+• Three Bipolar Limb Leads (I, II, III): Recorded between physical limb
+electrodes to monitor bioelectric activity along frontal anatomical planes.
+• ThreeAugmentedUnipolarLimbLeads (aVR,aVL, aVF):Electronically
+referenced limb derivations capturing complementary frontal orientations.
+• Six Precordial (Chest) Leads (V ,V ,V ,V ,V ,V ): Positioned systemati-
+1 2 3 4 5 6
+1
+--- ABIN (Page 14) ---
+CHAPTER 1
+INTRODUCTION
+1.1 Overview
+Phishing continues to stand as one of the most prolific, damaging, and rapidly evolv-
+ing vectors in modern cybersecurity. In a classic phishing attack, malicious adversaries
+engineer deceptive electronic communications, websites, or credential-harvesting por-
+tals that closely masquerade as legitimate institutional entities, such as retail banks,
+cloud software providers, corporate intranets, or government services. According to
+annual intelligence summaries from the Anti-Phishing Working Group (APWG) [13],
+phishing volumes have expanded exponentially, accounting for a dominant proportion
+of all documented initial network access compromises and enterprise data breach entry
+points.
+A primary catalyst for this heightened threat velocity is the industrialization of cy-
+bercrime through the emergence of Phishing-as-a-Service (PaaS) platforms. PaaS
+kits lower the technical threshold for launching distributed, evasive social engineering
+campaigns. Even low-skilled threat actors can rent pre-packaged, turnkey attack toolk-
+its hosted across decentralized cloud infrastructures. These commercialized phishing
+kits incorporate real-time proxying frameworks, automated TLS/SSL certificate is-
+suance, dynamic DNS redirection, and adaptive anti-analysis techniques that prevent
+security crawlers from inspecting the landing pages. Financial, banking, and cryp-
+tocurrency ecosystems are particularly targeted, where compromised user credentials
+lead immediately to catastrophic monetary fraud and unauthorized asset transfers.
+Traditionally, web filtering and endpoint defense mechanisms have depended upon
+static signature blacklists, such as Google Safe Browsing and OpenPhish [1]. While
+blacklists offer rapid lookup speeds and near-zero false positive rates for already-
+identified threats, they are fundamentally reactive. Attackers routinely circumvent
+blacklist databases by employing fast-flux DNS configurations, randomized domain
+name generation algorithms (DGAs), domain typosquatting, and disposable subdo-
+mains hosted on trusted content delivery networks (CDNs). Consequently, the op-
+erational lifespan of a modern phishing page is frequently measured in mere hours
+1
+
+=== RUNNING HEADERS & FOOTERS (Body page 2) ===
+--- AMITH (Page 12) ---
+Chapter 1. Introduction
+cally across the thoracic wall over the anterior, septal, and lateral surfaces of
+the myocardium to monitor electrical depolarization vectors across horizontal
+transverse planes.
+By capturing the cardiac depolarization vector from twelve discrete three-dimensional
+perspectives simultaneously, the 12-lead ECG allows clinicians to detect minute ab-
+normalities ranging from subtle conduction delays to localized myocardial infarctions
+[4].
+1.2 Cardiac Electrophysiology and Waveform Mor-
+phology
+A single physiological cycle of myocardial contraction and relaxation is designated as
+a cardiac cycle, typically depicted in standard ECG traces as illustrated in Figure 1.1.
+Figure 1.1: Magnified single cardiac cycle highlighting P, Q, R, S, T waves and asso-
+ciated intervals [1].
+The standard cardiac cycle comprises characteristic electrical deflections and tran-
+sitional intervals:
+1. P Wave and P-R Interval: The P wave represents sequential depolarization of
+the right and left atria originating at the sinoatrial (SA) node. The subsequent
+P-R interval (spanning from P-wave onset to ventricular depolarization onset)
+quantifies electrical conduction transit time through the atrioventricular (AV)
+node and His-Purkinje system. Pathological prolongation directly indicates first-
+degree atrioventricular block (1dAVb).
+2. QRS Complex and Q-T Interval: The high-amplitude, rapid deflection QRS
+complex documents rapid synchronized ventricular depolarization. Widening of
+Department of CSE, Amal Jyothi College of Engineering 2
+--- ABIN (Page 15) ---
+Chapter 1. Introduction
+or minutes, rendering static lookup lists largely ineffective during the critical early
+incubation phase of zero-day attacks.
+To transcend the shortcomings of signature matching, the security research com-
+munity turned to machine learning (ML) and deep learning (DL) techniques. Early
+automated classifiers examined lexical URL features, Document Object Model (DOM)
+syntactic characteristics, or raw pixel renderings. However, existing commercial and
+academic solutions predominantly adhere to unimodal inspection paradigms:
+• Lexical URL-only Classifiers: While lightweight and non-intrusive, lexical
+URL models are easily deceived by URL shorteners, open redirects, homoglyph
+substitutions, and benign-looking subpaths created on legitimate hosting plat-
+forms.
+• HTML/DOM-only Models: Classifiers analyzing page source code can be
+neutralized through polymorphic script obfuscation, heavy client-side JavaScript
+rendering, and dynamic DOM injection executed only upon real human mouse
+interaction.
+• Visual-only Classifiers: Deep vision models analyzing rendered screenshots
+effectively capture brand mimicry, but incur severe computational latency dur-
+ing headless browser crawling and are easily blinded by subtle CSS alterations,
+transparent overlays, or canvas-rendered graphics.
+1.2 Motivation and Problem Statement
+While modern deep learning classifiers have markedly elevated automated detection ac-
+curacy, their enterprise utility within real-world Security Operations Centers (SOCs)
+remains severely encumbered by their “black-box” nature. A standard deep neural net-
+workproducesascalarconfidencescoreorclassificationprobability(e.g., p(phishing) =
+0.94), butoffersnocontextualrationaleexplainingwhichsemantic, structural, orvisual
+features provoked the malicious verdict.
+In high-throughput enterprise SOCs, security analysts are inundated with thou-
+sands of security events per shift, leading to severe alert fatigue. When a mission-
+critical business partner or executive login page is flagged by an automated filter,
+analysts cannot blindly block the domain without verifiable evidentiary justification.
+Doing so risks disrupting vital business continuity if the alert proves to be a false pos-
+itive. Conversely, ignoring an alert due to ambiguity risks exposing the organization
+to credential harvesting and lateral network infiltration.
+Consequently, there is an imperative operational requirement for systems that si-
+multaneously achieve:
+Department of CSE, Amal Jyothi College of Engineering 2
+
+=== LINES / RULES (Page 12 Amith vs Page 15 Abin) ===
+Amith curves/lines: 2 lines, 0 curves
+  Amith line: y0=48.6, y1=48.6, x0=85.0, x1=524.4, width=439.4
+  Amith line: y0=786.3, y1=786.3, x0=85.0, x1=524.4, width=439.4
+Abin curves/lines: 2 lines, 0 curves
+  Abin line: y0=48.6, y1=48.6, x0=85.0, x1=524.4, width=439.4
+  Abin line: y0=786.3, y1=786.3, x0=85.0, x1=524.4, width=439.4
+
+=== IMAGES IN ABIN'S REPORT ===
+Page 1 has 1 images:
+  x0=249.8, top=474.8, w=109.8, h=101.7
+Page 2 has 1 images:
+  x0=249.8, top=178.3, w=109.8, h=101.7

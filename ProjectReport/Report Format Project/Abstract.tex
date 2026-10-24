@@ -1,0 +1,13 @@
+%\begin{titlepage}
+%\begin{center} 
+%\Large\textbf {ABSTRACT}
+%\end{center}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{ABSTRACT} % to add abstract to table of contents
+\begin{spacing}{1.5}
+In biometrics, Fingerprint Recognition has unique identification among all other biometric modalities. It is a leading technology for identification of individual's and security of systems. With these pervasive applications in our day-to-day life, such as financial transactions, international border security, unlocking a smart phone, etc., the system is susceptible to the presentation attacks. This study tackles the issues in developing a reliable and efficient algorithms for detecting fingerprint spoof attacks.
+\paragraph{}
+%\noindent
+The proposed method incorporates Wave Atom Transformation (WAT) for de-noising the images from publicly available dataset LivDet 2015. From these de-noised images, fingerprint minutiae is extracted using simple enhancement operations such as morphological operations. Finally the image is classified using a pre-trained model called ImageNet-VGG, that will differentiate the image as live or spoof based on minutiae features such as ridges and bifurcations. The proposed WAT enhanced image given as input to CNN yields an average accuracy of 85.8\%. An average accuracy of 79.8\% was achieved for WAT enhanced as well as minutiae extracted features given to CNN. 
+\end{spacing}
+%\end{titlepage}

@@ -1,0 +1,30 @@
+\documentclass[12pt]{report}
+\usepackage[top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\nouppercase{\textit{\leftmark}}}
+\lfoot{\textit{Department of CSE, Amal Jyothi College of Engineering}}
+\rfoot{\textit{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+\pagenumbering{roman}
+\pagestyle{plain}
+Page 1 roman
+\clearpage
+Page 2 roman
+\clearpage
+
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\chapter{First Chapter}
+Body on chapter page.
+\clearpage
+Body on page 2 of chapter.
+\clearpage
+Body on page 3 of chapter.
+
+\end{document}

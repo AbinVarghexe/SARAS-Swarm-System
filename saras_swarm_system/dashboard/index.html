@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARAS Mission Control — Autonomous Swarm Command</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Apple SF Pro / Inter & JetBrains Mono Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        // Apply saved theme preference or default to dark
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('saras-shadcn-theme');
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Top Apple Tactical Command Bar -->
+        <header class="tactical-header">
+            <div class="brand">
+                <div class="mac-traffic-lights">
+                    <span class="mac-dot red" title="Reload Command System" onclick="location.reload()"></span>
+                    <span class="mac-dot yellow" title="Minimize Optical HUD" onclick="minimizeVideoFeed()"></span>
+                    <span class="mac-dot green" title="Toggle Optical HUD" onclick="toggleVideoFeed()"></span>
+                </div>
+                <div class="logo-pulse"></div>
+                <div class="brand-text">
+                    <h1>SARAS <span class="badge-acronym">MISSION CONTROL</span></h1>
+                    <p class="subtitle">Search And Rescue Autonomous Swarm • Tactical Avionics & AI Triage</p>
+                </div>
+            </div>
+
+            <div class="header-metrics">
+                <div class="metric-chip">
+                    <span class="m-label">SWARM TELEMETRY</span>
+                    <span id="stat-health" class="m-val status-healthy">HEALTHY</span>
+                </div>
+                <div class="metric-chip metric-chip-clickable" title="Click to configure swarm fleet size" onclick="promptFleetSize()">
+                    <div class="m-chip-header">
+                        <span class="m-label">ACTIVE UAVs</span>
+                        <span class="m-subaction">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            CONFIG
+                        </span>
+                    </div>
+                    <span id="stat-drones" class="m-val">4 / 4</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">AREA COVERED</span>
+                    <span id="stat-coverage" class="m-val">0.0%</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">CONFIRMED DETECTIONS</span>
+                    <span id="stat-victims" class="m-val highlight-amber">0</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">DISPATCH LOGIC</span>
+                    <span id="stat-policy" class="m-val badge-policy">AUCTION</span>
+                </div>
+                <button class="btn btn-hud-toggle" id="btn-toggle-camera" onclick="toggleVideoFeed()" title="Toggle Live Optical UAV HUD Stream">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+                    <span>OPTICAL HUD</span>
+                </button>
+                <a href="/triage" class="btn btn-hud-toggle" style="background: rgba(248, 113, 113, 0.22); border-color: rgba(248, 113, 113, 0.45); color: #ffffff; text-decoration: none;" title="Open Casualty Triage & Medical Dispatch Dashboard">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    <span>CASUALTY COMMAND</span>
+                </a>
+                <a href="/api/reports/triage-pdf" target="_blank" class="btn btn-hud-toggle" style="background: rgba(2, 132, 199, 0.22); border-color: rgba(2, 132, 199, 0.45); color: #ffffff; text-decoration: none;" title="Export Comprehensive Casualty Triage PDF Report">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>TRIAGE PDF</span>
+                </a>
+                <button class="btn btn-hud-toggle" id="btn-theme-toggle" onclick="toggleShadcnTheme()" title="Toggle shadcn/ui Theme (Dark / Light)">
+                    <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <span id="theme-label">THEME</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Command Workspace -->
+        <div class="main-body">
+            <!-- Left Sidebar: Swarm Telemetry & Tactical Flight Controls -->
+            <aside class="sidebar-left">
+                <!-- Drone Fleet Telemetry -->
+                <section class="card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator"></span>
+                            <h2>SWARM TELEMETRY DECK</h2>
+                        </div>
+                        <span class="live-dot">LIVE MESH</span>
+                    </div>
+
+                    <!-- Apple Fleet Size Stepper & Quick Preset Bar -->
+                    <div class="fleet-control-bar">
+                        <div class="fleet-stepper-wrap">
+                            <span class="fleet-stepper-label">ACTIVE AIRFRAMES:</span>
+                            <div class="apple-stepper">
+                                <button class="stepper-btn" onclick="stepFleetSize(-1)" title="Decrease drone count">−</button>
+                                <span id="fleet-size-val" class="stepper-val">4 UAVs</span>
+                                <button class="stepper-btn" onclick="stepFleetSize(1)" title="Increase drone count">+</button>
+                            </div>
+                        </div>
+                        <div class="fleet-presets" id="fleet-presets-bar">
+                            <button class="preset-pill" data-n="2" onclick="setFleetCount(2)">2</button>
+                            <button class="preset-pill" data-n="3" onclick="setFleetCount(3)">3</button>
+                            <button class="preset-pill active" data-n="4" onclick="setFleetCount(4)">4</button>
+                            <button class="preset-pill" data-n="6" onclick="setFleetCount(6)">6</button>
+                            <button class="preset-pill" data-n="8" onclick="setFleetCount(8)">8</button>
+                        </div>
+                    </div>
+
+                    <div id="drone-list" class="drone-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- Tactical Controls & Fault Injection -->
+                <section class="card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator"></span>
+                            <h2>FAULT INJECTION & ABLATION</h2>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Task Allocation Policy:</label>
+                        <div class="btn-group">
+                            <button id="btn-policy-auction" class="btn active" onclick="setPolicy('AUCTION')">Market Auction</button>
+                            <button id="btn-policy-greedy" class="btn" onclick="setPolicy('GREEDY')">Greedy Baseline</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Dynamic Fault Scenarios:</label>
+                        <div class="grid-buttons">
+                            <button class="btn btn-danger" onclick="injectFault('Drone-2', 'dropout')" title="Simulate UAV-2 RF communication lost-link">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                                <span>Drop UAV-2 Link</span>
+                            </button>
+                            <button class="btn btn-warning" onclick="injectFault('Drone-1', 'battery', 12)" title="Simulate battery drain critical threshold">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="10" x="2" y="7" rx="2"/><line x1="22" x2="22" y1="11" y2="13"/><line x1="6" x2="6" y1="11" y2="13"/></svg>
+                                <span>Drain UAV-1 (12%)</span>
+                            </button>
+                            <button class="btn btn-success" onclick="injectFault('Drone-2', 'restore')" title="Restore UAV-2 communication mesh">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+                                <span>Restore UAV-2</span>
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetSim()" title="Return swarm to base staging pads">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.5 2.7L21 8"/><path d="M21 3v5h-5"/></svg>
+                                <span>Reset Mission</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary full-width" onclick="runAblationBenchmark()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>Run Policy Ablation (IEEE Metrics)</span>
+                    </button>
+                </section>
+            </aside>
+
+            <!-- Center: Tactical Map & Airspace Visualizer -->
+            <main class="map-container">
+                <div id="map"></div>
+
+                <!-- Apple Floating Tactical Region Marking Dock -->
+                <div class="map-drawing-toolbar" id="map-drawing-toolbar">
+                    <div class="toolbar-title">
+                        <span class="tool-tag">TACTICAL AIRSPACE</span>
+                    </div>
+                    <div class="toolbar-buttons">
+                        <button class="draw-btn" id="btn-draw-polygon" onclick="startDrawingMode('polygon')" title="Click vertices on satellite map to delineate custom search polygon">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L22 8.5V15.5L12 22L2 15.5V8.5L12 2Z"/><circle cx="12" cy="2" r="1.5"/><circle cx="22" cy="8.5" r="1.5"/><circle cx="22" cy="15.5" r="1.5"/><circle cx="12" cy="22" r="1.5"/><circle cx="2" cy="15.5" r="1.5"/><circle cx="2" cy="8.5" r="1.5"/></svg>
+                            <span>Polygon</span>
+                        </button>
+                        <button class="draw-btn" id="btn-draw-box" onclick="startDrawingMode('box')" title="Click opposite corners to define a bounding box sector">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><circle cx="3" cy="3" r="1.5"/><circle cx="21" cy="3" r="1.5"/><circle cx="21" cy="21" r="1.5"/><circle cx="3" cy="21" r="1.5"/></svg>
+                            <span>Box</span>
+                        </button>
+                        <button class="draw-btn" id="btn-draw-circle" onclick="startDrawingMode('circle')" title="Click center and radius to designate hazard geofence">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                            <span>Hazard Radius</span>
+                        </button>
+                        <button class="draw-btn" id="btn-user-gps" onclick="locateUserLiveGps()" title="Lock map to your real device GPS location and relocate swarm base">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                            <span>Live GPS</span>
+                        </button>
+                        <div class="map-layer-pill-wrap">
+                            <select id="map-layer-select" class="layer-select-pill" onchange="switchMapLayer(this.value)" title="Choose Base Map Provider">
+                                <option value="google-hybrid" selected>Google Maps (Hybrid HD)</option>
+                                <option value="google-satellite">Google Maps (Satellite)</option>
+                                <option value="google-roadmap">Google Maps (Roadmap)</option>
+                                <option value="google-terrain">Google Maps (Terrain)</option>
+                                <option value="mapbox-satellite">Mapbox Satellite HD</option>
+                                <option value="mapbox-dark">Mapbox Dark Tactical</option>
+                                <option value="esri-satellite">ESRI Satellite</option>
+                            </select>
+                        </div>
+                        <button class="draw-btn draw-btn-clear" id="btn-clear-draw" onclick="clearCustomRegions()" title="Clear all custom marked regions">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            <span>Clear</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Apple Floating Marked Tactical Regions Manager Dock -->
+                <div id="marked-regions-dock" class="marked-regions-dock hidden">
+                    <div class="dock-header">
+                        <div class="dock-title-wrap">
+                            <span class="dock-pulse-dot"></span>
+                            <span class="dock-title">MARKED REGIONS</span>
+                            <span id="marked-regions-badge" class="dock-count-badge">0</span>
+                        </div>
+                        <button class="dock-clear-btn" onclick="clearCustomRegions()" title="Delete all marked regions from mission">Delete All</button>
+                    </div>
+                    <div id="marked-regions-list" class="marked-regions-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Floating Real-Time GPS Acquired Banner -->
+                <div id="gps-location-banner" class="gps-location-banner hidden">
+                    <div class="gcs-dot-pulse"></div>
+                    <span id="gps-banner-text">Live GPS Acquired: 12.97500° N, 77.59700° E</span>
+                    <button class="banner-action-btn" onclick="relocateSwarmToGps()">Relocate Swarm Base Here</button>
+                    <button class="banner-close-btn" onclick="hideGpsBanner()">✕</button>
+                </div>
+
+                <!-- Floating Mission Staging Status Banner -->
+                <div id="mission-staging-banner" class="mission-staging-banner">
+                    <div class="logo-pulse" style="width: 7px; height: 7px;"></div>
+                    <span><b>Swarm Staged at Launch Pad (<span id="staging-drone-count">4</span> UAVs Ready).</b> Mark a search perimeter using <b>Polygon</b> or <b>Box</b> above to deploy the autonomous swarm.</span>
+                </div>
+
+                <!-- Floating visionOS Real-Time Cursor Coordinate Badge -->
+                <div id="map-cursor-coord-badge" class="cursor-coord-badge hidden">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                    <span id="cursor-coord-text">LAT: 0.00000° | LON: 0.00000°</span>
+                </div>
+
+                <!-- Interactive Drawing Status Pill -->
+                <div id="drawing-status-pill" class="drawing-status-pill hidden">
+                    <div class="drawing-pill-indicator"></div>
+                    <span id="drawing-instructions-text">Click map to place perimeter vertices...</span>
+                    <span id="drawing-live-coords" class="badge mono live-coords-pill">LAT: -- | LON: --</span>
+                    <span id="drawing-points-count" class="badge">0 pts</span>
+                    <div class="drawing-pill-actions">
+                        <button class="btn-pill-action success" onclick="finishCurrentDrawing()">Confirm Zone</button>
+                        <button class="btn-pill-action danger" onclick="cancelDrawing()">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Floating visionOS Tactical UAV Optical HUD Window -->
+                <div id="uav-video-window" class="apple-video-window">
+                    <div class="video-window-header">
+                        <div class="video-title">
+                            <span class="live-rec-badge">REC</span>
+                            <span id="active-video-title">UAV-01 OPTICAL HUD</span>
+                        </div>
+                        <div class="window-action-buttons">
+                            <button class="icon-btn" title="Toggle Window Scale" onclick="toggleVideoSize()">⤢</button>
+                            <button class="icon-btn" title="Minimize Window" onclick="minimizeVideoFeed()">−</button>
+                            <button class="icon-btn" title="Close Video Stream" onclick="toggleVideoFeed()">✕</button>
+                        </div>
+                    </div>
+                    <!-- Apple Drone Switcher Pills -->
+                    <div class="drone-switcher-bar" id="video-drone-tabs">
+                        <button class="drone-tab active" id="tab-drone-1" onclick="switchVideoDrone('Drone-1')">UAV-1</button>
+                        <button class="drone-tab" id="tab-drone-2" onclick="switchVideoDrone('Drone-2')">UAV-2</button>
+                        <button class="drone-tab" id="tab-drone-3" onclick="switchVideoDrone('Drone-3')">UAV-3</button>
+                        <button class="drone-tab" id="tab-drone-4" onclick="switchVideoDrone('Drone-4')">UAV-4</button>
+                    </div>
+                    <!-- Live Video Feed Display & Tactical Reticle Overlay -->
+                    <div class="video-feed-wrapper" id="video-feed-wrapper">
+                        <img id="drone-video-feed" src="/api/video/feed?drone_id=Drone-1" alt="Live Drone Optical HUD Feed" onerror="handleVideoError(this)" />
+                        <!-- Tactical Aerospace HUD Overlay -->
+                        <div class="hud-reticle-overlay">
+                            <!-- Top Heading Compass Ribbon -->
+                            <div class="hud-heading-tape">
+                                <span>340</span><span>•</span><span>350</span><span>•</span><span class="hud-north">N</span><span>•</span><span>010</span><span>•</span><span>020</span>
+                            </div>
+                            <!-- Center Artificial Horizon Reticle -->
+                            <div class="hud-crosshair-reticle">
+                                <div class="hud-ladder-line top"></div>
+                                <div class="hud-center-dot"></div>
+                                <div class="hud-ladder-line bottom"></div>
+                            </div>
+                            <!-- Corner Optical Brackets -->
+                            <div class="hud-bracket top-left"></div>
+                            <div class="hud-bracket top-right"></div>
+                            <div class="hud-bracket bottom-left"></div>
+                            <div class="hud-bracket bottom-right"></div>
+                        </div>
+                        <div class="video-scanlines"></div>
+                        <div class="video-telemetry-badge">
+                            <span id="video-stream-status">1080p • 15 FPS • TARGET LOCK ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Overlay Legend -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="legend-box unsearched"></span> Unsearched</div>
+                    <div class="legend-item"><span class="legend-box searching"></span> Searching</div>
+                    <div class="legend-item"><span class="legend-box covered"></span> Covered</div>
+                    <div class="legend-item"><span class="legend-pin critical"></span> Critical Victim</div>
+                    <div class="legend-item"><span class="legend-pin urgent"></span> Urgent Victim</div>
+                    <div class="legend-item"><span class="legend-pin stable"></span> Stable Victim</div>
+                    <div class="legend-item"><span class="legend-pin gcs-pin"></span> Operator GCS</div>
+                    <button class="sample-chip legend-mapbox-chip" onclick="promptMapboxToken()">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        <span>Mapbox HD Satellite</span>
+                    </button>
+                </div>
+            </main>
+
+            <!-- Right Sidebar: Triage Engine, Alerts & RAG Assistant -->
+            <aside class="sidebar-right">
+                <!-- AI Triage Recommendations -->
+                <section class="card triage-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator"></span>
+                            <h2>TACTICAL TRIAGE & CASUALTY</h2>
+                        </div>
+                        <span id="triage-count" class="badge">0</span>
+                    </div>
+                    <div id="triage-list" class="triage-list">
+                        <div class="empty-state">No casualties detected. Swarm is conducting autonomous sweep passes...</div>
+                    </div>
+                </section>
+
+                <!-- Emergency SOP RAG Assistant -->
+                <section class="card rag-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator"></span>
+                            <h2>EMERGENCY SOP COPILOT (RAG)</h2>
+                        </div>
+                        <span class="badge badge-rag">TF-IDF SOP</span>
+                    </div>
+                    <div class="rag-chat-area">
+                        <div id="rag-response-box" class="rag-response-box">
+                            <p class="placeholder-text">Query tactical emergency procedures regarding swiftwater rescue, hypothermia triage, structural collapse extraction, or swarm lost-link protocols.</p>
+                        </div>
+                        <div class="rag-input-wrapper">
+                            <input type="text" id="rag-input" placeholder="Query SOP (e.g. Flood hypothermia SOP or pinned casualty)..." onkeypress="handleRagKey(event)" />
+                            <button class="btn btn-primary" onclick="sendRagQuery()">Query</button>
+                        </div>
+                        <div class="sample-queries">
+                            <span class="sample-chip" onclick="quickQuery('What is the protocol for hypothermia in swiftwater flood?')">Swiftwater Hypothermia</span>
+                            <span class="sample-chip" onclick="quickQuery('What is the SOP for pinned limb crush in landslide?')">Crush Extraction</span>
+                            <span class="sample-chip" onclick="quickQuery('What happens when drone loses heartbeat link?')">Lost-Link Recovery</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live Alert Event Stream -->
+                <section class="card alert-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator"></span>
+                            <h2>LIVE INCIDENT EVENT STREAM</h2>
+                        </div>
+                        <span id="alert-counter" class="badge">0</span>
+                    </div>
+                    <div id="alert-list" class="alert-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Ablation Modal for IEEE Evaluation -->
+    <div id="benchmark-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3>IEEE Paper 2: Swarm Task Allocation Ablation Study</h3>
+                    <p class="modal-subtitle">Empirical Comparison: Market Auction vs Greedy Allocation</p>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="benchmark-content">
+                <p>Loading comparative metrics...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marked Region Configuration & Dispatch Modal -->
+    <div id="region-modal" class="modal hidden">
+        <div class="modal-content apple-region-dialog">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="modal-icon-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                    </div>
+                    <div>
+                        <h3 id="region-modal-title">Configure Tactical Airspace</h3>
+                        <p class="modal-subtitle">Autonomous Geofencing & Deconfliction Parameters</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeRegionModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="region-stats-grid">
+                    <div class="region-stat-card">
+                        <span class="stat-lbl">ESTIMATED AREA</span>
+                        <span id="region-stat-area" class="stat-val highlight-cyan">0.00 ha</span>
+                    </div>
+                    <div class="region-stat-card">
+                        <span class="stat-lbl">PERIMETER LENGTH</span>
+                        <span id="region-stat-perimeter" class="stat-val">0 m</span>
+                    </div>
+                    <div class="region-stat-card">
+                        <span class="stat-lbl">BOUNDARY VERTICES</span>
+                        <span id="region-stat-vertices" class="stat-val">0 points</span>
+                    </div>
+                </div>
+
+                <div class="region-form-group">
+                    <label for="region-name-input">Project Sector Designation:</label>
+                    <input type="text" id="region-name-input" value="Custom Search Sector" placeholder="e.g. Sector Alpha — Flash Flood Zone" />
+                </div>
+
+                <div class="region-form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <label style="margin:0;">Tactical Region Color:</label>
+                        <span id="selected-color-name" style="font-size:0.62rem; font-family:var(--font-apple-mono); color:var(--apple-cyan); font-weight:700;">Electric Cyan</span>
+                    </div>
+                    <div class="color-swatches-grid" id="region-color-palette">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <div class="region-form-group">
+                    <label>Tactical Airspace Classification:</label>
+                    <div class="btn-group region-type-group">
+                        <button type="button" class="btn active" id="type-search" onclick="setRegionType('SEARCH')">Search Sweep</button>
+                        <button type="button" class="btn" id="type-nofly" onclick="setRegionType('NO_FLY')">No-Fly Geofence</button>
+                        <button type="button" class="btn" id="type-hazard" onclick="setRegionType('HAZARD')">Debris Hazard</button>
+                    </div>
+                </div>
+
+                <div class="region-form-group" id="priority-selector-group">
+                    <label>Task Allocation Priority Multiplier:</label>
+                    <div class="priority-pills">
+                        <button type="button" class="priority-pill" data-p="1.0" onclick="setPriorityWeight(1.0)">Standard (1.0x)</button>
+                        <button type="button" class="priority-pill active" data-p="2.5" onclick="setPriorityWeight(2.5)">High Priority (2.5x)</button>
+                        <button type="button" class="priority-pill" data-p="5.0" onclick="setPriorityWeight(5.0)">Critical (5.0x)</button>
+                    </div>
+                </div>
+
+                <!-- Geographic Boundary Coordinates & Airspace Deconfliction -->
+                <div class="region-form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label style="margin: 0;">Boundary Waypoints (Latitude / Longitude):</label>
+                        <span class="deconfliction-badge">AIRSPACE RESERVED</span>
+                    </div>
+                    <div id="region-coords-preview-box" class="coords-preview-box">
+                        <!-- Populated dynamically with each vertex Lat & Lon -->
+                    </div>
+                    <p class="deconfliction-notice">
+                        Autonomous Deconfliction Guarantee: This coordinate polygon is exclusively allocated. Non-tasked UAVs maintain autonomous standoff distance and will not intersect this volume.
+                    </p>
+                </div>
+
+                <div class="region-form-group" id="deployment-mode-group">
+                    <label>Fleet Allocation Strategy:</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn active" id="deploy-swarm" onclick="setDeployMode('SWARM')">Deploy Swarm Partition (<span id="deploy-swarm-count">4</span> UAVs)</button>
+                        <button type="button" class="btn" id="deploy-single" onclick="setDeployMode('SINGLE')">Dedicate Single UAV (Project)</button>
+                    </div>
+                </div>
+
+                <!-- Dedicated Single Drone Selector -->
+                <div class="region-form-group hidden" id="single-drone-select-group">
+                    <label for="target-drone-select">Assign Exclusive Project Airframe:</label>
+                    <select id="target-drone-select" class="apple-select">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="region-modal-footer">
+                    <button class="btn btn-secondary" onclick="discardMarkedRegion()">Discard</button>
+                    <button class="btn btn-primary" id="btn-dispatch-region" onclick="dispatchMarkedRegion()">
+                        Lock Airspace & Deploy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

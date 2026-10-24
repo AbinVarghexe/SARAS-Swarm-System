@@ -1,0 +1,88 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{graphicx}
+\usepackage{sectsty}
+\chapterfont{\Large\centering\MakeUppercase}
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,positioning,fit,calc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
+
+% Page Setup: A4, Left=3cm, Right=2.5cm, Top=2.5cm, Bottom=2.5cm, Headheight=15pt
+\usepackage[top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.5cm,headheight=15pt]{geometry}
+
+% Header and Footer setup (Fancyhdr)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\nouppercase{\textit{\leftmark}}}
+\lfoot{\textit{Department of CSE, Amal Jyothi College of Engineering}}
+\rfoot{\textit{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% 1. Title Page (No page number)
+\input{Title.tex}
+
+% 2. Certificate Page (No page number)
+\input{Certf.tex}
+
+% Front Matter (Roman numerals starting at i for Acknowledgement)
+\pagenumbering{roman}
+\pagestyle{plain}
+\setcounter{page}{1}
+
+% 4. Acknowledgement (Page i)
+\input{Ackn.tex}
+\clearpage
+
+% 5. Abstract (Pages ii, iii)
+\input{Abstract.tex}
+\clearpage
+
+% 6. Table of Contents (Pages iv, v)
+\tableofcontents
+\clearpage
+
+% 7. List of Tables (Page vi)
+\listoftables
+\clearpage
+
+% 8. List of Figures (Page vii)
+\listoffigures
+\clearpage
+
+% 9. List of Abbreviations (Page viii - 2-column)
+\input{Abbrevations.tex}
+\clearpage
+
+% Main Report Body (Arabic numerals starting at 1 for Chapter 1)
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\setcounter{page}{1}
+
+% Chapters
+\input{Chapters/Chapter1.tex}
+\input{Chapters/Chapter2.tex}
+\input{Chapters/Chapter3.tex}
+\input{Chapters/Chapter4.tex}
+\input{Chapters/Chapter5.tex}
+
+% References
+\input{Bibilo.tex}
+
+% Appendices
+\input{Appendix.tex}
+
+\end{document}

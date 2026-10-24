@@ -1,0 +1,208 @@
+%% template.tex; Solar Physics
+%% 
+% spr-sola available options:
+%  hyperref      -- loads hyperref.sty with options (pdfborder={0 0 0 },urlcolor=blue,breaklinks)
+%  nonatbib      -- do not load natbib.sty (style loads it by default)
+%  solaromanenum -- makes enumerated list with roman numerals and a single right-bracket
+%  linksfromyear -- puts a link on a year citation (hyperref must be loaded). Loaded by default
+%  nolinksfromyear -- suppress  linksfromyear
+%  optionalrh    -- for optional running title/author
+%  showbiblabels -- to show bibitem label at end of bibitem (via \endbibitem command)
+%
+\documentclass[namedreferences,hyperref,optionalrh,solaromanenum]{spr-sola}
+
+\usepackage{graphicx}                    % For eps figures, newer & more powerfull
+%\usepackage{amssymb}                    % useful mathematical symbols
+\usepackage{color}                       % For color text: \color command
+%\usepackage{breakurl}                         % For breaking URLs easily trough lines in DVI mode
+\def\UrlFont{\rm}                        % define the fonts for the URLs
+
+% Definitions for equations
+\renewcommand{\vec}[1]{{\mathbfit #1}}
+\newcommand{\deriv}[2]{\frac{{\mathrm d} #1}{{\mathrm d} #2}}
+\newcommand{\rmd}{{\ \mathrm d}}
+\newcommand{\uvec}[1]{\hat{\mathbf #1}}
+\newcommand{\pder}[2]{\f{\partial #1}{\partial #2}}
+\newcommand{\grad}{{\bf \nabla}}
+\newcommand{\curl}{{\bf \nabla}\times}
+\newcommand{\vol}{{\mathcal V}}
+\newcommand{\bndry}{{\mathcal S}}
+\newcommand{\dv}{~{\mathrm d}^3 x}
+\newcommand{\da}{~{\mathrm d}^2 x}
+\newcommand{\dl}{~{\mathrm d} l}
+\newcommand{\dt}{~{\mathrm d}t}
+\newcommand{\intv}{\int_{\vol}^{}}
+\newcommand{\inta}{\int_{\bndry}^{}}
+\newcommand{\avec}{\vec A}
+\newcommand{\ap}{\vec A_p}
+
+\newcommand{\bb}{\vec B}
+\newcommand{\jj}{\vec j}
+\newcommand{\rr}{\vec r}
+\newcommand{\xx}{\vec x}
+
+% Definitions for the journal names
+\newcommand{\adv}{{\it Adv. Space Res.}} 
+\newcommand{\annG}{{\it Ann. Geophys.}} 
+\newcommand{\aap}{{\it Astron. Astrophys.}}
+\newcommand{\aaps}{{\it Astron. Astrophys. Suppl.}}
+\newcommand{\aapr}{{\it Astron. Astrophys. Rev.}}
+\newcommand{\ag}{{\it Ann. Geophys.}}
+\newcommand{\aj}{{\it Astron. J.}} 
+\newcommand{\apj}{{\it Astrophys. J.}}
+\newcommand{\apjl}{{\it Astrophys. J. Lett.}}
+\newcommand{\apss}{{\it Astrophys. Space Sci.}} 
+\newcommand{\cjaa}{{\it Chin. J. Astron. Astrophys.}} 
+\newcommand{\gafd}{{\it Geophys. Astrophys. Fluid Dyn.}}
+\newcommand{\grl}{{\it Geophys. Res. Lett.}}
+\newcommand{\ijga}{{\it Int. J. Geomagn. Aeron.}}
+\newcommand{\jastp}{{\it J. Atmos. Sol.-Terr. Phys.}}
+\newcommand{\jgr}{{\it J. Geophys. Res.}}
+\newcommand{\mnras}{{\it Mon. Not. R. Astron. Soc.}}
+\newcommand{\nat}{{\it Nature}}
+\newcommand{\pasp}{{\it Publ. Astron. Soc. Pac.}}
+\newcommand{\pasj}{{\it Publ. Astron. Soc. Japan}}
+\newcommand{\pre}{{\it Phys. Rev. E}}
+\newcommand{\solphys}{{\it Sol. Phys.}}
+\newcommand{\sovast}{{\it Soviet  Astron.}} 
+\newcommand{\ssr}{{\it Space Sci. Rev.}} 
+\chardef\us=`\_
+
+%% Local definitions
+%% please place your own definitions here and don't use \def but
+%% \newcommand{}{} or 
+%% \renewcommand{}{} if it is already defined in LaTeX
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+
+\begin{frontmatter}
+
+\title{Article title}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Authors Names
+%
+% \author[addressref={},corref,email={}]{\inits{}\fnm{}\snm{}\orcid{}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Runningheads
+%
+%\runningauthor{}
+%\runningtitle{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Affilations 
+%% id shold be the same with \author addressref value.
+%\address[id={}]{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Abstract 
+%\begin{abstract}
+%\end{abstract}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Keywords
+%
+%\begin{keyword}
+%\kwd{}
+%\kwd{}
+%\kwd{}
+%\end{keyword}
+
+
+\end{frontmatter}
+%-------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Sections
+%
+% \section{}%\label{s:?} 
+
+
+
+
+%% Figure 
+%
+% \begin{figure} 
+% \centerline{\includegraphics[width=0.5\textwidth,clip=]{<fig.eps>}}
+% \caption{}%\label{fig:?}
+% \end{figure}
+
+
+
+%% Table
+%
+% \begin{table}
+% \caption{}%\label{tbl:?}
+% \begin{tabular}{}     
+% \hline
+% \multicolumn{2}{c}{<>}
+% <data>
+% \hline
+% \end{tabular}
+% \end{table}
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Appendix
+%
+% \appendix   
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Acknowledgements
+%
+% \begin{acks}
+%
+% \end{acks}
+
+
+%% Available additional data environments:
+%% required: authorcontribution, fundinginformation, dataavailability
+%% optional: materialsavailability, codeavailability
+% \begin{authorcontribution}
+%
+% \end{authorcontribution}
+%
+% \begin{fundinginformation}
+%
+% \end{fundinginformation}
+%
+% \begin{dataavailability}
+%
+% \end{dataavailability}
+%
+% \begin{ethics}
+% \begin{conflict}
+%
+% \end{conflict}
+% \end{ethics}
+
+
+%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bibliography
+%
+% Using BibTeX
+%
+% \bibliographystyle{spr-mp-sola}
+% \bibliography{<bib file>}  
+%
+% Without BibTeX 
+% \begin{thebibliography}{}
+% \bibitem[\protect\citeauthoryear{Author}{Year}]{key}
+%   <bibliographical entry>
+%
+% \bibitem[\protect\citeauthoryear{}{}]{}
+%   
+%  
+% \end{thebibliography}
+
+\end{document}

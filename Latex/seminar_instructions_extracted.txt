@@ -1,0 +1,397 @@
+--- PAGE 1 ---
+Seminar Report - Formatting Instructions (S7, 2026–27)
+Department of Computer Science and Engineering,
+Amal Jyothi College of Engineering (Autonomous), Kanjirappally
+These instructions are derived directly from the LaTeX template (Report_format_S7.zip). Students preparing the
+report must follow them exactly.
+1. Page Setup
+Parameter Value
+Paper size A4
+Left margin (binding edge) 1.2 in / 3 cm
+Right margin 1.0 in / 2.5 cm
+Top margin 1.0 in / 2.5 cm
+Bottom margin 1.0 in / 2.5 cm
+2. Font and Spacing
+Parameter Value
+Body font (LaTeX) Computer Modern Roman (default report class font)
+Body font (Word equivalent) Times New Roman
+Body size 12 pt
+Line spacing 1.5 (one-and-a-half)
+Paragraph alignment Justified
+Chapter headings "CHAPTER n" + title, bold, centered, larger size (≈14–16 pt)
+Section headings (1.1, 1.2 …) Bold, left-aligned, numbered by chapter
+Sub-section headings (1.1.1 …) Bold, left-aligned
+3. Page Numbering
+● Preliminary pages (Acknowledgement, Abstract, Contents, List of Tables, List of Figures,
+Abbreviations): lower-case Roman numerals — i, ii, iii …
+● Main report (Chapter 1 onward through References): Arabic numerals starting at 1,
+continuing through the References section.
+● Title page and Certificate page carry no visible page number.
+4. Document Order (front matter → body)
+Students may add extra chapters as needed based on their base paper - not limited to 5.
+1.Title page (see No.5)
+2.Certificate page
+3. Acknowledgement
+4. Abstract
+5.Contents (Table of Contents)
+6. List of Tables (only if the report has tables)
+7. List of Figures (only if the report has figures)
+8. Abbreviations (only if abbreviations/acronyms are used)
+9.Chapter 1 – Introduction
+10.Chapter 2 – Literature Survey
+
+--- PAGE 2 ---
+11. Chapter 3 – Proposed Methodology
+12. Chapter 4 – Results and Discussions
+13. Chapter 5 – Conclusion and Future Work
+14. References
+15. Appendix
+5. Title Page Contents (in order)
+● Title of seminar (bold, caps, large)
+● "A SEMINAR REPORT submitted by"
+● Name of student, Register No. (bold)
+● "to the APJ Abdul Kalam Technological University in partial fulfillment of the requirement
+for the award of the Degree of Bachelor of Technology in Computer Science and
+Engineering"
+● "Under the guidance of" + Guide's name and designation (Assistant/Associate
+Professor/Professor)
+● College logo
+● "Department of Computer Science and Engineering, Amal Jyothi College of Engineering
+(Autonomous), Kanjirappally-686518"
+● Month and year (e.g. October 2026)
+6. Certificate Page
+● Standard certificate paragraph naming the seminar title, student name, register number,
+university, degree, branch, and academic year.
+● Signature block: Internal Supervisor (guide) on the left; Seminar Coordinators (Dr. Anju J
+Prakash, Ms. Shiney Thomas) on the right; Head of Department (Dr. Juby Mathew) below,
+centered.
+7. Chapter Content Guidelines
+Chapter 1 – Introduction
+1.1 Overview, 1.2 Motivation and Objectives, 1.3 Report Organization (summarize what each subsequent
+chapter covers).
+Chapter 2 – Literature Survey
+Discussion of prior/related work with appropriate sub-headings; every claim must carry a numbered citation,
+e.g. [1].
+Chapter 3 – Proposed Methodology
+Subsections as needed for the specific paper/system (methods, data collection, experimental setup, key topics,
+figures/tables).
+Chapter 4 – Results and Discussions
+Findings, summary of key findings, critical analysis; include result tables/figures.
+Chapter 5 – Conclusion and Future Work
+Summarize outcomes and possible extensions.
+
+--- PAGE 3 ---
+8. Tables and Figures
+● Numbered by chapter: Table x.y, Figure x.y (e.g., Table 4.1, Figure 4.1).
+● Caption placed above tables and below figures.
+● Every table/figure must be listed in the List of Tables / List of Figures with page number.
+● Every table/figure must be referred to in the body text before it appears.
+9. Abbreviations Page
+Two-column list: abbreviation on the left, full expansion on the right, alphabetically or order-of-first-
+use.
+10. References
+● Numbered in square brackets in order of citation: [1], [2], …
+● Each entry: Author(s), "Title of paper," Journal/Conference name, volume/issue, year.
+● In-text citations must match the reference list numbering exactly.
+11. Binding Order
+Binding style: Soft bind, 1 copy
+Before the report is bound, attach after the report as Appendix (in this order):
+1. The seminar PPT, printed 4 slides per page.
+2. The Seminar Base Paper.
+SAMPLE REPORT TEMPLATE
+
+--- PAGE 4 ---
+TITLE OF SEMINAR
+A SEMINAR REPORT
+submitted by
+NAME OF STUDENT
+REGISTER NO
+to
+the APJ Abdul Kalam Technological University
+in partial fulfillment of the requirement for the award of the Degree
+of
+Bachelor of Technology
+in
+Computer Science and Engineering
+Under the guidance of
+Dr./Prof./Mr./Ms. NAME OF FACULTY
+Assistant Professor/Associate Professor/Professor
+Department of Computer Science and Engineering
+Amal Jyothi College of Engineering(Autonomous)
+Kanjirappally-686518
+October 2026
+
+--- PAGE 5 ---
+DEPT. OF COMPUTER SCIENCE AND ENGINEERING
+AMAL JYOTHI COLLEGE OF ENGINEERING
+(AUTONOMOUS)
+KANJIRAPPALLY
+CERTIFICATE
+This is to certify that the seminar report entitled “ Seminar Title ” submitted by
+Student Name (Register No.) to the APJ Abdul Kalam Technological Univer-
+sity in partial fulfillment of the requirements for the award of the Degree of Bachelor
+of Technology in Computer Science and Engineering during the year 2026-2027, is a
+bonafide work carried out by him/her under my guidance and supervision.
+Dr./Prof./Mr./Ms. GuideName Dr. AnjuJPrakash Ms. ShineyThomas
+Internal Supervisor Seminar Coordinators
+Dr.Juby Mathew
+Head of Department, CSE
+
+--- PAGE 6 ---
+ACKNOWLEDGEMENT
+First of all I sincerely thank the Almighty GOD who is most beneficent and merciful
+for giving me knowledge and courage to complete the seminar successfully.
+I derive immense pleasure in expressing my sincere thanks to our Manager, Rev.
+Fr. Boby Alex Mannamplackal, to our Director(Administrator), Fr. Dr. Roy
+Abraham Pazhayaparampil and to our Principal, Dr. Lillykutty Jacob for their
+kind co-operation in all aspects of my seminar.
+I express my gratitude to Dr. Juby Mathew, HOD, Department of Computer Sci-
+ence and Engineering his support during the entire course of this seminar work.
+I express my sincere thanks to Ms. XYZ, my internal guide and Dr. Anju J
+Prakash and Ms. Shiney Thomas, our Seminar Co-ordinators for their encourage-
+ment and motivation during the seminar.
+I also express my gratitude to all the teaching and non teaching staff of the college
+especially to our department for their encouragement and help during my seminar.
+Finally I appreciate the patience and solid support of my parents and enthusiastic
+friends for their encouragement and moral support for this effort.
+NAME OF STUDENT
+i
+
+--- PAGE 7 ---
+ABSTRACT
+Integrity is the practice of being honest and showing a consistent and uncompromising
+adherence to strong moral and ethical principles and values. In ethics, integrity is
+regarded as the honesty and truthfulness or accuracy of one’s actions. Integrity can
+standinoppositiontohypocrisy,inthatjudgingwiththestandardsofintegrityinvolves
+regarding internal consistency as a virtue, and suggests that parties holding within
+themselves apparently conflicting values should account for the discrepancy or alter
+their beliefs. The word integrity evolved from the Latin adjective integer, meaning
+whole or complete. In this context, integrity is the inner sense of “wholeness” deriving
+from qualities such as honesty and consistency of character. As such, one may judge
+that others “have integrity” to the extent that they act according to the values, beliefs
+and principles they claim to hold.
+An individual’s value system provides a framework within which the individual acts
+in ways which are consistent and expected. Integrity can be seen as the state or
+condition of having such a framework, and acting congruently within the given frame-
+work.Oneessentialaspectofaconsistentframeworkisitsavoidanceofanyunwarranted
+(arbitrary) exceptions for a particular person or group—especially the person or group
+that holds the framework. In law, this principle of universal application requires that
+even those in positions of official power be subject to the same laws as pertain to their
+fellow citizens.
+ii
+
+--- PAGE 8 ---
+CONTENTS
+ACKNOWLEDGEMENT i
+ABSTRACT ii
+ABBREVIATIONS vi
+1 Introduction 1
+1.1 Overview. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Motivation and Objectives . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.3 Report Organization . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+2 Literature Survey 2
+2.1 Discussion of earlier/older works . . . . . . . . . . . . . . . . . . . . . . 2
+2.2 Create appropriate subheadings . . . . . . . . . . . . . . . . . . . . . . 2
+3 Proposed Methodology 4
+3.1 Add required subtopics as per paper . . . . . . . . . . . . . . . . . . . 4
+3.1.1 Xyz . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.2 Xy Z . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.2.1 Xy Z . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.2.2 Xy Z . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+4 Results and Discussions 6
+5 Conclusion and Future Work 8
+REFERENCES 9
+iii
+
+--- PAGE 9 ---
+LIST OF TABLES
+4.1 Correct Rate and Error Rate obtained for CNN with feature vector as
+input . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+iv
+
+--- PAGE 10 ---
+LIST OF FIGURES
+4.1 Graphical representation of gradient value obtained by each materials
+in the (ii) scenario . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+v
+
+--- PAGE 11 ---
+ABBREVATIONS
+WAT Wave Atom Transformation
+LPQ Local Phase Quantization
+CNN Convolutional Neural Network
+LBP Local Binary Pattern
+PCB Printed Circuit Board
+BSIF Binarized Statistical Image Features
+LivDet Liveness Detection
+VGG Visual Geometry Group
+vi
+
+--- PAGE 12 ---
+CHAPTER 1
+INTRODUCTION
+1.1 Overview
+Biometric security is a mechanism which is used to authenticate and ....
+1.2 Motivation and Objectives
+..To detect these fingerprint spoofing .... etc.
+1.3 Report Organization
+This section gives the organization of the report work. Overall, this report work gives
+a clear and thorough study about the existing study of the proposed system and gives
+a description about the implementation details. The second chapter gives a detailed
+description about the literature survey. Third chapter gives a brief idea about the
+implementation details including hardware and software requirements, outline of the
+proposed methodology. Fourth chapter depicts the Results and Discussions and fifth
+Chapter gives the Conclusion and Future Work. The Appendix shows the Screen Shots
+and Sample Code of the proposed systems.
+1
+
+--- PAGE 13 ---
+CHAPTER 2
+LITERATURE SURVEY
+2.1 Discussion of earlier/older works
+The Fingerprint Recognition System has ubiquitous deployment in many day-to-day
+applications, such as financial transactions, international border security, unlocking a
+smart phone[1]
+Introduction The Fingerprint Recognition System has ubiquitous deployment in
+many day-to-day applications, such as financial transactions,[4] international border
+security, unlocking a smart phone, etc.
+2.2 Create appropriate subheadings
+This paper proposes a method to obtain the discriminant features for fingerprints
+whether they are real or spoofed, by performing feature level extractions [10]. The fin-
+gerprint image is preprocessed using five preprocessing operations. The preprocessing
+operations were selected which have the lowest validation errors.
+1. Image reduction with different ratios Images are reduced using “Bilinear Inter-
+polation”. They are used to verify the effect of resolution on the classifier per-
+formance.
+2. Region Of Interest (ROI) Many fingerprints from some datasets are not centered;
+background represents large part of image. To input the classification system the
+2
+
+--- PAGE 14 ---
+Chapter 2. Literature Survey
+largest area that comprises foreground fingerprints, a simple ROI method is used.
+They are used to verify the effect of resolution on the classifier performance.They are
+used to verify the effect of resolution on the classifier performance. They are used to
+verify the effect of resolution on the classifier performance. They are used to verify the
+effect of resolution on the classifier performance. They are used to verify the effect of
+resolution on the classifier performance.
+Department of CSE,Amal Jyothi College of Engineering 3
+
+--- PAGE 15 ---
+CHAPTER 3
+PROPOSED METHODOLOGY
+3.1 Add required subtopics as per paper
+3.1.1 Xyz
+Research Methods: Description of the methods and techniques used in the paper.
+Data Collection: How data was gathered, if applicable.
+Experimental Setup: Details of any experiments or simulations conducted.
+Key Topics: Detailed discussion of the main topics covered in the paper.
+Figures/Tables: Include and describe any figures, tables, or charts used in the paper
+for better understanding.
+MATLAB supports graphical user interface (GUI) features for developing appli-
+cations. For graphically designing these GUIs, MATLAB includes a GUIDE (GUI
+development environment) which also..
+3.2 Xy Z
+3.2.1 Xy Z
+From these, only Digital-Persona was selected for the training and testing process in
+order to reduce the time required for processing. It consists of 1000 live images in both
+training as well as testing sets whereas fake images are obtained from four materials
+4
+
+--- PAGE 16 ---
+Chapter 3. Proposed Methodology
+ie. Ecoflex
+3.2.2 Xy Z
+Wave Atom Transformation for Image Enhancement The fingerprint images
+obtained from the LivDet 2015 datasets may contain some noise.... and assigned it
+with two values 1 and 2. If the predicted value is 1, then it is considered as LIVE else
+it is FAKE.
+Department of CSE,Amal Jyothi College of Engineering 5
+
+--- PAGE 17 ---
+CHAPTER 4
+RESULTS AND DISCUSSIONS
+This section gives as a detailed analysis of the proposed approach. Findings: Summary
+of the key findings or results presented.
+Summary of Key Findings: Major takeaways from the seminar.
+Analysis: Critical analysis of the information presented, including insights and impli-
+cations.
+We evaluated the performance on three scenarios to compare which one provides better
+performance.
+Evaluation of CNN with feature vector as input Inthissetting, thefingerprint
+images in the dataset are firstly enhanced using Wave Atom Transformation method in
+order to remove the unwanted noise from the image pixels..... It took only 00:00:20 hrs
+at the time of testing whereas other two methods took more time. Figure 4.1 shows the
+gradient value obtained in each case. The performance Table 4.1 depicts that Ecoflex
+00-50
+Table 4.1: Correct Rate and Error Rate obtained for CNN with feature vector as input
+Materials Used (Live and Fake) CR ER
+Ecoflex 00-50 0.788 0.211
+Gelatine 0.808 0.192
+Latex 0.802 0.198
+WoodGlue 0.808 0.191
+6
+
+--- PAGE 18 ---
+Chapter 4. Results and Discussions
+Figure 4.1: Graphical representation of gradient value obtained by each materials in
+the (ii) scenario
+Department of CSE,Amal Jyothi College of Engineering 7
+
+--- PAGE 19 ---
+CHAPTER 5
+CONCLUSION AND FUTURE WORK
+The main limitation of many of the existing anti-spoof methods is the poor quality
+of the datasets obtained. The spoofing materials of poor image quality decreases the
+overall performance of the system. So we need either a best hardware for image ac-
+quisition or a good image processing method to obtain better results , but most of the
+hardware are expensive.
+Here we proposed a method ..... The proposed WAT enhanced method yields an av-
+erage accuracy of 85.8%. The WAT enhanced image with minutiae features extracted,
+achieved an average accuracy of 79.8%. We also computed the performance of CNN
+without any enhancement on image as input and obtained an average accuracy of
+91.6%.
+8
+
+--- PAGE 20 ---
+REFERENCES
+[1] Tarang Chugh, Kai Cao, and Anil K. Jain, “Fingerprint Spoof Buster: Use
+of Minutiae-centered Patches,” IEEE Transactions On Information Forensics And
+Security, 2018.
+[2] Manisha Redhu and Dr.Balkisha, “Fingerprint Recognition Using Minu-
+tiae Extractor,” International Journal of Engineering Research and Applications
+(IJERA),Vol. 3, Issue 4, Jul-Aug 2013.
+[3] Emanuela Marasco and Arun Ross, “A Survey on Anti-spoofing Schemes
+for Fingerprint Recognition Systems,” ACM Comput. Surv.47, 2, Article 28, Nov
+2014.
+[4] Kumar Abhishek, Ashok Yogi, “A Minutiae Count Based Method for Fake
+FingerprintDetection,”SecondInternationalSymposiumonComputerVisionand
+the Internet (VisionNet’15), 2015.
+[5] Joshua J. Engelsma, Kai Cao, and Anil K. Jain, “RaspiReader: An
+Open Source Fingerprint Reader Facilitating Spoof Detection,” Life Fellow, IEEE,
+arXiv:1708.07887v1 [cs.CV], 25 Aug 2017.
+[6] Athos Antonelli, Raffaele Cappelli, Dario Maio, and Davide Maltoni,
+“Fake Finger Detection by Skin Distortion Analysis,” IEEE Transactions on In-
+formation Forensics and Security, Vol. 1, No. 3, Sep, 2006.
+[7] Rodrigo Frassetto Nogueira1, Roberto de Alencar Lotufo,and Rubens
+Campos Machado, “Fingerprint Liveness Detection using Convolutional Neural
+Networks,” IEEE Transactions on Information Forensics and Security, 1556-6013
+(c) 2015.
+9
+
+--- PAGE 21 ---
+REFERENCES
+[8] Diego Gragnaniello, Giovanni Poggi, and Carlo Sansone and Luisa Ver-
+doliva, “FingerprintLivenessDetectionbasedonWeberLocalImageDescriptor,”
+IEEE Journal, 2013.
+[9] Luca Ghiani, Gian Luca Marcialis, and Fabio Roli, “Fingerprint Liveness
+DetectionbyLocalPhaseQuantization,”21stInternationalConferenceonPattern
+Recognition(ICPR 2012), Nov 2012.
+[10] Samruddhi S. Kulkarni and Dr. Hemprasad Y. Patil , “A Fingerprint
+Spoofing Detection System Using LBP,” International Conference on Electrical,
+Electronics, and Optimization Techniques (ICEEOT), 2016.
+While binding, after this report add
+PPT (printed four slides per page.
+Then add the Seminar Base Paper.
+Department of CSE,Amal Jyothi College of Engineering 10
+

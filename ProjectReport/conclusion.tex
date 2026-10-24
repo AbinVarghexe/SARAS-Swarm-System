@@ -1,0 +1,35 @@
+% CHAPTER 6
+\chapter{Conclusion and Future Work}
+
+\section{Conclusion}
+
+This project presented the design, implementation, and empirical validation of SARAS (Search And Rescue Autonomous Swarm), an intelligent, decentralized, and coordinated multi-UAV robotic framework designed for post-disaster search, survivor detection, and emergency decision support. By bridging embedded edge perception with decentralized multi-agent coordination, SARAS fundamentally eliminates the operational vulnerabilities of single-pilot drones and centralized dispatchers.
+
+The experimental outcomes confirm that all five engineering objectives delineated in Section 1.4 were successfully attained:
+\begin{enumerate}
+    \item \textbf{Edge Perception Engine Optimization:} The 8-bit integer quantized YOLOv8 nano detector achieved an onboard inference throughput of \textbf{16.8 FPS} with \textbf{81.6\% mAP@0.5} on the embedded Raspberry Pi 4 companion computer, surpassing the targeted 15 FPS real-time threshold.
+    \item \textbf{Decentralized Task Allocation:} The asynchronous market-based auction consensus protocol achieved \textbf{100\% spatial search coverage} across a $1\text{ km}^2$ disaster theater in \textbf{11.4 minutes}, reducing redundant flight trajectory overlap down to \textbf{3.4\%} (exceeding the sub-5\% target).
+    \item \textbf{Autonomous Fault Recovery:} The peer-to-peer heartbeat consensus engine successfully detected simulated vehicle dropouts within \textbf{6.0 seconds} and re-auctioned orphaned sectors to surviving drones in under \textbf{420 milliseconds}.
+    \item \textbf{Agentic AI Decision Support:} The integrated multi-agent RAG pipeline successfully indexed disaster management operating procedures, providing incident commanders with verified casualty priority rankings and protocol-compliant triage guidelines in under \textbf{1.2 seconds}.
+    \item \textbf{System Integration and Validation:} The end-to-end framework was fully integrated and validated across high-fidelity Gazebo SITL disaster simulations and embedded companion hardware prototyping.
+\end{enumerate}
+
+\section{Limitations}
+
+Despite the verified capabilities of the SARAS platform, several operational limitations must be noted:
+\begin{itemize}
+    \item \textbf{Single Physical UAV Prototype:} While multi-agent coordination was rigorously validated in software-in-the-loop simulation up to 8 drones, physical flight tests were restricted to a single quadcopter airframe due to institutional airspace restrictions and hardware budgets.
+    \item \textbf{Monocular Optical Sensor Constraints:} The perception system relies on standard RGB vision. In dense forest canopies, thick smoke plumes, or complete nocturnal darkness, optical detection accuracy degrades significantly.
+    \item \textbf{Thermal and Compute Budgets:} Operating continuous neural inference at 16.8 FPS elevates companion SBC core temperatures, requiring passive heatsinks and limiting additional concurrent on-device ML workloads.
+    \item \textbf{Shared Channel RF Bandwidth:} Asynchronous auction message complexity scales quadratically with fleet size, which may lead to channel congestion in large swarms ($N > 12$) operating on congested 2.4 GHz channels.
+\end{itemize}
+
+\section{Future Work}
+
+To build upon the established foundations of SARAS, four concrete research avenues are identified:
+\begin{enumerate}
+    \item \textbf{Multispectral and Thermal Sensor Fusion:} Integrating miniature radiometric long-wave infrared (LWIR) thermal sensors (e.g., FLIR Lepton 3.5) with RGB feeds to enable 24/7 all-weather survivor localization through dense smoke and nocturnal environments.
+    \item \textbf{Decentralized Ad-Hoc RF Mesh Networking:} Implementing hardware-agnostic peer-to-peer mesh protocols (such as B.A.T.M.A.N.-adv or LoRa mesh) to enable inter-UAV communication over multi-kilometer non-line-of-sight wilderness expanses without Wi-Fi infrastructure.
+    \item \textbf{Multi-Agent Reinforcement Learning (MARL) Flight Policies:} Upgrading the market auction heuristic to a decentralized learned policy trained via Proximal Policy Optimization (PPO) in Isaac Sim, incorporating dynamic micro-climate wind gusts and continuous 3D battery kinematics.
+    \item \textbf{Multi-Center Civil Defense Field Deployments:} Conducting collaborative disaster simulation trials in partnership with state disaster management authorities (SDMA) and fire and rescue services to benchmark the system under operational field deployments.
+\end{enumerate}

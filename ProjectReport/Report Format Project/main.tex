@@ -1,0 +1,43 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{graphicx}
+\usepackage{sectsty}
+\chapterfont{\Large\centering\MakeUppercase}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+%\setlength{\parindent}{20cm}
+\usepackage{setspace}
+%\onehalfspacing
+\usepackage{array}  % for setting column width in tables
+%\usepackage{Times} or
+%\usepackage{mathptmx}  for Times New Roman
+\usepackage[top=3cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+\lhead{}
+\lfoot{\textit{Department of Computer Science and Engineering,AJCE}}
+\cfoot{}
+\rfoot{\textit{\thepage}}
+\rhead{\nouppercase{\textit{\leftmark\ }}}
+\renewcommand{\footrulewidth}{0.4pt}
+\begin{document}
+\input{./title.tex}	
+\doublespacing	
+\thispagestyle{empty} 
+\pagenumbering{roman}
+\input{./declaration.tex}
+\input{./certificate.tex}
+\input{./ackn.tex}
+\input{./abstract.tex}
+%\pagenumbering{roman}
+\tableofcontents
+\listoftables
+\listoffigures  
+\input{./Abbrevations.tex}  
+% add Abbrevation ,Nomenclature chapters if needed
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\input{./intro.tex}
+% add other chapters here using above command eg: \input{./results.tex}
+\input{./bibilo.tex}
+%\input{./Appendix.tex}
+%\input{./Publications.tex} % Add a chapter for list of Publication
+\end{document}

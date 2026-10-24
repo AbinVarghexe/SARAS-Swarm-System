@@ -1,0 +1,123 @@
+\appendix
+
+\chapter{Sample Implementation Source Code}
+
+\section*{Asynchronous Multimodal Late-Fusion Pipeline}
+The Python script below illustrates the asynchronous coordinator orchestrating concurrent execution of the detection branches and late-fusion meta-classification:
+
+\begin{spacing}{1.1}
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+import asyncio
+import numpy as np
+from pydantic import BaseModel
+from typing import Dict, Any
+
+class DetectionResult(BaseModel):
+    url: str
+    is_phishing: bool
+    confidence: float
+    branch_scores: Dict[str, float]
+    explanations: Dict[str, Any]
+
+class MultimodalPhishingDetector:
+    def __init__(self, cb_worker, cnn_worker, 
+                 code_worker, vision_worker, meta_clf):
+        self.catboost = cb_worker
+        self.cnn1d = cnn_worker
+        self.codebert = code_worker
+        self.effnet = vision_worker
+        self.meta_clf = meta_clf
+
+    async def predict_url(self, target_url: str) -> DetectionResult:
+        # Launch concurrent asynchronous feature collection
+        task_cb = asyncio.create_task(
+            self.catboost.analyze(target_url))
+        task_cnn = asyncio.create_task(
+            self.cnn1d.analyze(target_url))
+        task_code = asyncio.create_task(
+            self.codebert.analyze(target_url))
+        task_vis = asyncio.create_task(
+            self.effnet.analyze(target_url))
+
+        # Await completion across parallel workers
+        res_cb, res_cnn, res_code, res_vis = await asyncio.gather(
+            task_cb, task_cnn, task_code, task_vis
+        )
+
+        # Assemble intermediate probability vector
+        p_vec = np.array([[res_cb.prob, res_cnn.prob, 
+                           res_code.prob, res_vis.prob]])
+
+        # Execute cost-sensitive late-fusion meta-classification
+        ensemble_prob = float(self.meta_clf.predict_proba(p_vec)[0, 1])
+        is_phish = bool(ensemble_prob >= 0.50)
+
+        # Compile structured explanations across branches
+        explanations = {
+            "shap_features": res_cb.shap_values,
+            "cnn_typosquat_tokens": res_cnn.integrated_gradients,
+            "codebert_attention_tags": res_code.attention_map,
+            "effnet_gradcam_heatmap": res_vis.gradcam_overlay
+        }
+
+        return DetectionResult(
+            url=target_url,
+            is_phishing=is_phish,
+            confidence=ensemble_prob,
+            branch_scores={
+                "CatBoost": res_cb.prob,
+                "1D_CNN": res_cnn.prob,
+                "CodeBERT": res_code.prob,
+                "EfficientNet": res_vis.prob
+            },
+            explanations=explanations
+        )
+\end{lstlisting}
+\end{spacing}
+
+\chapter{Sample Generated Incident Report for SOC Triage}
+
+The listing below illustrates a structured incident report synthesized by the local LLM agent with Retrieval-Augmented Generation (RAG) for an enterprise SOC analyst:
+
+\begin{spacing}{1.1}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+=================================================================
+CRITICAL SECURITY INCIDENT REPORT: PHISHING DETECTED
+Target URL: https://login-microsoft365-verify.auth-update.xyz
+Verdict: PHISHING (Severity: CRITICAL | Confidence: 99.1%)
+Timestamp: 2026-10-14T08:24:11Z | Event ID: INC-2026-9042
+=================================================================
+
+1. EXECUTIVE THREAT SUMMARY:
+The target URL is a confirmed spear-phishing landing page 
+impersonating Microsoft 365 cloud authentication services. 
+The site was engineered using automated credential-harvesting 
+frameworks designed to bypass multi-factor authentication (MFA).
+
+2. MULTI-TIERED FORENSIC ATTRIBUTIONS:
+* Tabular Metadata (TreeSHAP):
+  - Domain Age: 2 days (Hazard Weight: +0.42)
+  - Free TLS Certificate issued by Let's Encrypt (+0.28)
+  - Shannon Entropy: 4.38 bits (+0.19)
+* Lexical Character Sequence (1D Integrated Gradients):
+  - Typosquatting token identified in host subpath:
+    'login-microsoft365-verify' (Attribution: +0.51)
+* HTML DOM Structure (CodeBERT Attention):
+  - Attention peaks on hidden form action tag:
+    <form action="http://45.142.122.9/post.php" method="POST">
+  - Credential input dispatched to external unverified IP.
+* Visual Layout Impersonation (EfficientNet Grad-CAM):
+  - Class activation heatmap isolates exact mimicry (97.8% 
+    similarity) with official Microsoft corporate login logo.
+
+3. MITRE ATT&CK CONTEXT (RAG ENRICHMENT):
+- T1566.002 - Phishing: Spearphishing Link
+- T1556 - Modify Authentication Process (Credential Harvesting)
+
+4. RECOMMENDED CONTAINMENT ACTIONS:
+1. Ingest domain 'auth-update.xyz' into perimeter firewall.
+2. Invalidate active sessions for internal users visiting URL.
+3. Purge emails with this URL hash from Exchange queues.
+=================================================================
+\end{lstlisting}
+\end{spacing}

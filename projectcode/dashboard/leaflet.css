@@ -1,0 +1,15 @@
+#live-map{position:absolute;inset:0;z-index:1;background:#15221c}
+.leaflet-container{font-family:"DM Mono",monospace;background:#15221c}
+.leaflet-tile{filter:brightness(.48) saturate(.55) hue-rotate(75deg) contrast(1.1)}
+.leaflet-control-zoom{border:1px solid #34473a!important}
+.leaflet-control-zoom a{background:#111815!important;color:#b8f34a!important;border-color:#34473a!important}
+.leaflet-control-attribution{background:#0b100ecc!important;color:#65776b!important;font-size:8px}
+.leaflet-control-attribution a{color:#9ab38d!important}
+.saras-pin{display:grid;place-items:center;width:27px;height:27px;border:1px solid #b8f34a;background:#172218e8;color:#b8f34a;transform:rotate(45deg);box-shadow:0 0 18px #b8f34a80}
+.saras-pin span{transform:rotate(-45deg);font:11px "DM Mono",monospace}
+.saras-pin.failed{border-color:#ff5f5f;color:#ff5f5f;box-shadow:0 0 18px #ff5f5f80}
+.victim-pin{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid #ffb08c;background:#ff7b45;color:#1b100a;box-shadow:0 0 0 7px #ff7b4525;font:12px "DM Mono",monospace}
+.base-pin{display:grid;place-items:center;width:29px;height:29px;border:1px solid #b8f34a;border-radius:50%;background:#111815e8;color:#b8f34a;font:18px "DM Mono",monospace}
+.sector-label{color:#b8f34a;background:#111815d9;border:1px solid #b8f34a55;padding:3px 5px;font:9px "DM Mono",monospace;white-space:nowrap}
+.map-wrap .map-label{z-index:500;pointer-events:none;text-shadow:0 1px 3px #000}
+.map-footer small{color:#b8f34a;margin-left:5px}

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARAS Casualty & Triage Command — Disaster Medical Dispatch</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Apple SF Pro / Inter & JetBrains Mono Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('saras-shadcn-theme');
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch(e) {}
+        })();
+    </script>
+    <style>
+        /* Dedicated Casualty Dashboard Specific Styles */
+        .triage-app-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            background: radial-gradient(circle at 50% 0%, #151c2e 0%, #080c14 60%, #030508 100%);
+            overflow: hidden;
+        }
+
+        .triage-main-split {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Casualty Feed Panel */
+        .casualty-feed-pane {
+            width: 540px;
+            background: var(--apple-bg-window);
+            backdrop-filter: blur(28px) saturate(200%);
+            -webkit-backdrop-filter: blur(28px) saturate(200%);
+            border-right: 1px solid var(--apple-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+        }
+
+        .pane-toolbar {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--apple-divider);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pane-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .severity-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--apple-border);
+            color: var(--text-secondary);
+            font-size: 0.64rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-chip:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+        .filter-chip.active {
+            background: var(--apple-blue);
+            border-color: var(--apple-blue);
+            color: #ffffff;
+            box-shadow: 0 0 10px var(--apple-blue-glow);
+        }
+
+        .casualty-scroll-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Casualty Incident Card */
+        .casualty-card {
+            background: var(--apple-glass-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--apple-border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: var(--shadow-card);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .casualty-card:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+        }
+        .casualty-card.selected {
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 16px var(--apple-blue-glow);
+        }
+
+        /* Severity Edge Indicator */
+        .casualty-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--apple-blue);
+        }
+        .casualty-card.severity-critical::before { background: var(--apple-red); }
+        .casualty-card.severity-urgent::before { background: var(--apple-amber); }
+        .casualty-card.severity-stable::before { background: var(--apple-green); }
+
+        .c-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .c-id-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .c-id-title {
+            font-size: 0.86rem;
+            font-weight: 800;
+            font-family: var(--font-apple-mono);
+            color: #ffffff;
+        }
+
+        .severity-badge {
+            font-size: 0.58rem;
+            font-weight: 800;
+            font-family: var(--font-apple-mono);
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .severity-badge.critical {
+            background: rgba(248, 113, 113, 0.18);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: var(--apple-red);
+        }
+        .severity-badge.urgent {
+            background: rgba(251, 191, 36, 0.18);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            color: var(--apple-amber);
+        }
+        .severity-badge.stable {
+            background: rgba(52, 211, 153, 0.18);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: var(--apple-green);
+        }
+
+        .c-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px;
+            border-radius: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .c-metric-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .c-metric-lbl {
+            font-size: 0.52rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .c-metric-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-family: var(--font-apple-mono);
+            color: #ffffff;
+        }
+
+        /* Drone Inspection Snapshot Frame */
+        .snapshot-preview-frame {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+        }
+        .snapshot-preview-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .snapshot-preview-frame:hover img {
+            transform: scale(1.03);
+        }
+
+        .snapshot-badge-top {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--apple-cyan);
+            font-size: 0.56rem;
+            font-family: var(--font-apple-mono);
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: var(--radius-pill);
+            pointer-events: none;
+        }
+
+        .snapshot-zoom-hint {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 0.58rem;
+            padding: 3px 8px;
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .c-action-prescription {
+            font-size: 0.72rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+            background: rgba(10, 132, 255, 0.12);
+            border-left: 3px solid var(--apple-blue);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .c-tags-wrap {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .c-tag {
+            font-size: 0.58rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 2px 7px;
+            border-radius: var(--radius-pill);
+        }
+
+        .c-buttons-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        /* Right Map Canvas */
+        .triage-map-pane {
+            flex: 1;
+            position: relative;
+            background: #000000;
+        }
+        #triage-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Full Snapshot Modal */
+        .image-modal-dialog {
+            width: 820px;
+            max-width: 95vw;
+        }
+        .full-snapshot-view {
+            width: 100%;
+            max-height: 520px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .full-snapshot-view img {
+            width: 100%;
+            height: auto;
+            max-height: 520px;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="triage-app-layout">
+        <!-- Top Apple Tactical Command Bar -->
+        <header class="tactical-header">
+            <div class="brand">
+                <div class="mac-traffic-lights">
+                    <span class="mac-dot red" title="Reload System" onclick="location.reload()"></span>
+                    <span class="mac-dot yellow" title="Minimize" onclick="history.back()"></span>
+                    <span class="mac-dot green" title="Flight Operations" onclick="location.href='/'"></span>
+                </div>
+                <div class="logo-pulse" style="background: var(--apple-red); box-shadow: 0 0 12px var(--apple-red-glow);"></div>
+                <div class="brand-text">
+                    <h1>SARAS <span class="badge-acronym" style="background: rgba(248,113,113,0.18); border-color: rgba(248,113,113,0.4); color: var(--apple-red);">CASUALTY TRIAGE COMMAND</span></h1>
+                    <p class="subtitle">Disaster Casualty Prioritization • Optical Inspection Recon • Medical Evac Dispatch</p>
+                </div>
+            </div>
+
+            <div class="header-metrics">
+                <a href="/" class="btn btn-secondary" style="text-decoration: none; padding: 6px 12px; border-radius: var(--radius-pill); font-size: 0.68rem; display: flex; align-items: center; gap: 6px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    <span>FLIGHT OPERATIONS DECK</span>
+                </a>
+                <div class="metric-chip">
+                    <span class="m-label">CRITICAL (IMMEDIATE)</span>
+                    <span id="stat-critical-count" class="m-val" style="color: var(--apple-red);">0</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">URGENT (SEVERE)</span>
+                    <span id="stat-urgent-count" class="m-val" style="color: var(--apple-amber);">0</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">STABLE (MINOR)</span>
+                    <span id="stat-stable-count" class="m-val" style="color: var(--apple-green);">0</span>
+                </div>
+                <div class="metric-chip">
+                    <span class="m-label">TOTAL CASUALTIES</span>
+                    <span id="stat-total-count" class="m-val highlight-cyan">0</span>
+                </div>
+                <button class="btn btn-hud-toggle" onclick="locateUserLiveGps()" title="Acquire device live GPS for GCS range calculation">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                    <span>GCS LIVE GPS</span>
+                </button>
+                <a href="/api/reports/triage-pdf" target="_blank" class="btn btn-hud-toggle" style="background: rgba(2, 132, 199, 0.25); border-color: rgba(2, 132, 199, 0.6); color: #ffffff; text-decoration: none;" title="Download publication-grade PDF report with exact GPS fixes and aerial recon snapshots">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>EXPORT PDF REPORT</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Split Workspace -->
+        <div class="triage-main-split">
+            <!-- Left: Casualty Feed Sorted by Urgency Score -->
+            <aside class="casualty-feed-pane">
+                <div class="pane-toolbar">
+                    <div class="pane-title-row">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator" style="background: var(--apple-red); box-shadow: 0 0 8px var(--apple-red-glow);"></span>
+                            <h2 style="font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">PRIORITIZED CASUALTY LOG</h2>
+                        </div>
+                        <span id="live-triage-status" class="live-dot">SORTED BY SEVERITY</span>
+                    </div>
+
+                    <!-- Severity Filter Chips -->
+                    <div class="severity-filter-bar">
+                        <button class="filter-chip active" data-filter="ALL" onclick="filterCasualties('ALL')">All (<span id="filter-all-n">0</span>)</button>
+                        <button class="filter-chip" data-filter="CRITICAL" onclick="filterCasualties('CRITICAL')" style="color: #fca5a5;">Critical (<span id="filter-crit-n">0</span>)</button>
+                        <button class="filter-chip" data-filter="URGENT" onclick="filterCasualties('URENT')" style="color: #fde68a;">Urgent (<span id="filter-urg-n">0</span>)</button>
+                        <button class="filter-chip" data-filter="STABLE" onclick="filterCasualties('STABLE')" style="color: #a7f3d0;">Stable (<span id="filter-sta-n">0</span>)</button>
+                    </div>
+                </div>
+
+                <!-- Casualty List Container -->
+                <div id="casualty-list-container" class="casualty-scroll-list">
+                    <div class="empty-state">Loading prioritized casualty stream...</div>
+                </div>
+            </aside>
+
+            <!-- Right: Tactical Satellite Map -->
+            <main class="triage-map-pane">
+                <div id="triage-map"></div>
+
+                <!-- Map Provider Quick Switcher Pill Dock -->
+                <div class="map-drawing-toolbar">
+                    <span class="tool-tag">TACTICAL MAP</span>
+                    <div class="map-layer-pill-wrap">
+                        <select id="triage-map-layer-select" class="layer-select-pill" onchange="switchTriageMapLayer(this.value)">
+                            <option value="google-hybrid" selected>Google Maps (Hybrid HD)</option>
+                            <option value="google-satellite">Google Maps (Satellite)</option>
+                            <option value="google-roadmap">Google Maps (Roadmap)</option>
+                            <option value="google-terrain">Google Maps (Terrain)</option>
+                            <option value="mapbox-satellite">Mapbox Satellite HD</option>
+                            <option value="mapbox-dark">Mapbox Dark Tactical</option>
+                            <option value="esri-satellite">ESRI Satellite</option>
+                        </select>
+                    </div>
+                    <button class="draw-btn" onclick="fitAllCasualties()" title="Zoom to fit all casualties in view">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                        <span>Fit All</span>
+                    </button>
+                </div>
+
+                <!-- Map Legend -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="legend-pin critical"></span> Critical (Immediate)</div>
+                    <div class="legend-item"><span class="legend-pin urgent"></span> Urgent (Delayed)</div>
+                    <div class="legend-item"><span class="legend-pin stable"></span> Stable (Minor)</div>
+                    <div class="legend-item"><span class="legend-pin gcs-pin"></span> Operator GCS</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- High-Resolution Inspection Snapshot Modal -->
+    <div id="snapshot-modal" class="modal hidden">
+        <div class="modal-content image-modal-dialog">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="modal-icon-badge">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                    </div>
+                    <div>
+                        <h3 id="modal-snapshot-title">Optical Inspection Snapshot</h3>
+                        <p class="modal-subtitle" id="modal-snapshot-subtitle">UAV Optical Sensor Telemetry & Flir Thermal Lock</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeSnapshotModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="full-snapshot-view">
+                    <img id="modal-snapshot-img" src="" alt="Drone Aerial Optical Inspection Snapshot" />
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+                    <span id="modal-snapshot-coords" class="mono" style="font-size: 0.68rem; color: var(--apple-cyan);">LAT: -- | LON: --</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" onclick="retakeSnapshotFromModal()">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Capture Fresh Frame</span>
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadSnapshotImage()">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Export Inspection Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // SARAS Casualty Triage & Medical Dispatch Dashboard Application Logic
+        let triageMap;
+        let triageLayers = {};
+        let activeLayerKey = "google-hybrid";
+        let casualtyMarkers = {};
+        let rangeLines = {};
+        let currentCasualties = [];
+        let activeFilter = "ALL";
+        let userGpsPosition = { lat: 12.9750, lon: 77.5970 };
+        let gcsMarker = null;
+        let currentModalVictimId = null;
+
+        const DEFAULT_MAPBOX_TOKEN = localStorage.getItem("saras_mapbox_token") || "";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initTriageMap();
+            fetchSortedCasualties();
+            setInterval(fetchSortedCasualties, 2000); // 2s continuous live polling
+            locateUserLiveGps();
+        });
+
+        function initTriageMap() {
+            triageMap = L.map("triage-map", {
+                center: [12.9750, 77.5970],
+                zoom: 16,
+                zoomControl: true,
+                attributionControl: false
+            });
+
+            const mapboxToken = localStorage.getItem("saras_mapbox_token") || DEFAULT_MAPBOX_TOKEN;
+
+            // Google Maps Tile Layers
+            triageLayers["google-hybrid"] = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+                maxZoom: 22, subdomains: ["mt0", "mt1", "mt2", "mt3"], attribution: "© Google Maps"
+            });
+            triageLayers["google-satellite"] = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+                maxZoom: 22, subdomains: ["mt0", "mt1", "mt2", "mt3"], attribution: "© Google Maps"
+            });
+            triageLayers["google-roadmap"] = L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+                maxZoom: 22, subdomains: ["mt0", "mt1", "mt2", "mt3"], attribution: "© Google Maps"
+            });
+            triageLayers["google-terrain"] = L.tileLayer("https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}", {
+                maxZoom: 22, subdomains: ["mt0", "mt1", "mt2", "mt3"], attribution: "© Google Maps"
+            });
+            triageLayers["mapbox-satellite"] = L.tileLayer(
+                `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
+                { maxZoom: 22, tileSize: 512, zoomOffset: -1, attribution: "© Mapbox" }
+            );
+            triageLayers["mapbox-dark"] = L.tileLayer(
+                `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
+                { maxZoom: 22, tileSize: 512, zoomOffset: -1, attribution: "© Mapbox" }
+            );
+            triageLayers["esri-satellite"] = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                { maxZoom: 19, attribution: "ESRI Satellite" }
+            );
+
+            // Default to Google Hybrid
+            activeLayerKey = localStorage.getItem("saras_map_provider") || "google-hybrid";
+            if (triageLayers[activeLayerKey]) {
+                triageLayers[activeLayerKey].addTo(triageMap);
+            } else {
+                triageLayers["google-hybrid"].addTo(triageMap);
+            }
+
+            const selectEl = document.getElementById("triage-map-layer-select");
+            if (selectEl) selectEl.value = activeLayerKey;
+
+            setTimeout(() => { if (triageMap) triageMap.invalidateSize(); }, 300);
+            window.addEventListener("resize", () => { if (triageMap) triageMap.invalidateSize(); });
+        }
+
+        function switchTriageMapLayer(key) {
+            if (!triageLayers[key] || !triageMap) return;
+            Object.keys(triageLayers).forEach(k => {
+                if (triageMap.hasLayer(triageLayers[k])) triageMap.removeLayer(triageLayers[k]);
+            });
+            triageLayers[key].addTo(triageMap);
+            activeLayerKey = key;
+            localStorage.setItem("saras_map_provider", key);
+        }
+
+        function locateUserLiveGps() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                userGpsPosition = { lat, lon };
+
+                // Place or update GCS marker
+                const gcsIconHtml = `
+                    <div class="gcs-marker-beacon">
+                        <div class="gcs-pulse-ring"></div>
+                        <div class="gcs-center-pin">📍</div>
+                    </div>
+                `;
+                const gcsIcon = L.divIcon({
+                    className: "gcs-map-marker",
+                    html: gcsIconHtml,
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                });
+
+                if (gcsMarker) {
+                    gcsMarker.setLatLng([lat, lon]);
+                } else {
+                    gcsMarker = L.marker([lat, lon], { icon: gcsIcon, zIndexOffset: 2000 }).addTo(triageMap);
+                    gcsMarker.bindPopup("<b>OPERATOR GCS (LIVE GPS)</b><br/>Command Post Staging");
+                }
+            }, (err) => console.log("GCS GPS note:", err.message), { enableHighAccuracy: true });
+        }
+
+        async function fetchSortedCasualties() {
+            try {
+                const res = await fetch("/api/victims/sorted");
+                if (res.ok) {
+                    const data = await res.json();
+                    currentCasualties = data;
+                    renderCasualtySummary(data);
+                    renderCasualtyList(data);
+                    renderCasualtyMapMarkers(data);
+                }
+            } catch (e) {
+                console.error("Failed to load sorted casualties:", e);
+            }
+        }
+
+        function renderCasualtySummary(list) {
+            let crit = 0, urg = 0, stab = 0;
+            list.forEach(c => {
+                const cat = (c.triage_category || "").toUpperCase();
+                if (cat.includes("CRIT")) crit++;
+                else if (cat.includes("URG")) urg++;
+                else stab++;
+            });
+
+            document.getElementById("stat-critical-count").textContent = crit;
+            document.getElementById("stat-urgent-count").textContent = urg;
+            document.getElementById("stat-stable-count").textContent = stab;
+            document.getElementById("stat-total-count").textContent = list.length;
+
+            document.getElementById("filter-all-n").textContent = list.length;
+            document.getElementById("filter-crit-n").textContent = crit;
+            document.getElementById("filter-urg-n").textContent = urg;
+            document.getElementById("filter-sta-n").textContent = stab;
+        }
+
+        function filterCasualties(category) {
+            activeFilter = category;
+            document.querySelectorAll(".severity-filter-bar .filter-chip").forEach(btn => {
+                if (btn.getAttribute("data-filter") === category) btn.classList.add("active");
+                else btn.classList.remove("active");
+            });
+            renderCasualtyList(currentCasualties);
+        }
+
+        function renderCasualtyList(list) {
+            const container = document.getElementById("casualty-list-container");
+            if (!container) return;
+
+            const filtered = list.filter(c => {
+                if (activeFilter === "ALL") return true;
+                const cat = (c.triage_category || "").toUpperCase();
+                return cat.includes(activeFilter.substring(0, 4));
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">No casualties match current severity filter.</div>';
+                return;
+            }
+
+            let html = "";
+            filtered.forEach(c => {
+                const cat = (c.triage_category || "CRITICAL").toUpperCase();
+                const sevClass = cat.includes("CRIT") ? "severity-critical" : (cat.includes("URG") ? "severity-urgent" : "severity-stable");
+                const badgeClass = cat.includes("CRIT") ? "critical" : (cat.includes("URG") ? "urgent" : "stable");
+                const score = (c.urgency_score || 50).toFixed(1);
+                const temp = (c.thermal_signature || 35.2).toFixed(1);
+
+                // Bearing & Distance from GCS
+                const distStr = c.distance_m ? `${c.distance_m}m` : "Approx. 120m";
+
+                const tagsHtml = (c.environment_tags || ["flood", "hypothermia"]).map(t => `<span class="c-tag">${t}</span>`).join("");
+
+                html += `
+                    <div class="casualty-card ${sevClass}" id="card-${c.victim_id}">
+                        <div class="c-header-row">
+                            <div class="c-id-wrap">
+                                <span class="c-id-title">${c.victim_id}</span>
+                                <span class="severity-badge ${badgeClass}">${cat} [${score}/100]</span>
+                            </div>
+                            <span class="mono" style="font-size: 0.64rem; color: var(--apple-cyan);">${c.drone_id || 'UAV-01'}</span>
+                        </div>
+
+                        <!-- Aerial Inspection Snapshot Image of the Issue -->
+                        <div class="snapshot-preview-frame" onclick="openSnapshotModal('${c.victim_id}', ${c.lat}, ${c.lon}, '${cat}', '${c.drone_id}')" title="Click to inspect optical & thermal HD evidence">
+                            <img src="${c.snapshot_url}?t=${Date.now()}" alt="Aerial Snapshot ${c.victim_id}" onerror="this.src='/api/victims/${c.victim_id}/snapshot'" />
+                            <div class="snapshot-badge-top">FLIR OPTICAL LOCK // 1080p</div>
+                            <div class="snapshot-zoom-hint">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                                <span>Inspect Full HD</span>
+                            </div>
+                        </div>
+
+                        <div class="c-metrics-grid">
+                            <div class="c-metric-cell">
+                                <span class="c-metric-lbl">GPS COORDINATES</span>
+                                <span class="c-metric-val highlight-cyan">${c.lat.toFixed(5)}°, ${c.lon.toFixed(5)}°</span>
+                            </div>
+                            <div class="c-metric-cell">
+                                <span class="c-metric-lbl">THERMAL SENSOR</span>
+                                <span class="c-metric-val" style="color: ${temp < 35 ? 'var(--apple-cyan)' : 'var(--apple-amber)'};">${temp}°C</span>
+                            </div>
+                            <div class="c-metric-cell">
+                                <span class="c-metric-lbl">RANGE FROM GCS</span>
+                                <span class="c-metric-val">${distStr}</span>
+                            </div>
+                        </div>
+
+                        <div class="c-action-prescription">
+                            <b>AI Triage Prescription:</b> ${c.recommended_action || 'Deploy rapid extraction team.'}
+                        </div>
+
+                        <div class="c-tags-wrap">
+                            ${tagsHtml}
+                            <span class="c-tag" style="color: var(--apple-purple); border-color: rgba(192,132,252,0.3);">${(c.sop_references || ['SOP-FL-04']).join(', ')}</span>
+                        </div>
+
+                        <div class="c-buttons-row">
+                            <button class="btn btn-primary" onclick="locateCasualtyOnMap('${c.victim_id}', ${c.lat}, ${c.lon})" style="flex: 1;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                                <span>Locate On Map</span>
+                            </button>
+                            <button class="btn btn-secondary" onclick="retakeFreshSnapshot('${c.victim_id}')" title="Trigger instant UAV camera shutter">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                <span>Retake Photo</span>
+                            </button>
+                            <button class="btn btn-success" onclick="dispatchRescueTeam('${c.victim_id}')" title="Dispatch medical extraction unit">
+                                <span>Dispatch Team</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderCasualtyMapMarkers(list) {
+            if (!triageMap) return;
+
+            list.forEach(c => {
+                const id = c.victim_id;
+                const cat = (c.triage_category || "CRITICAL").toUpperCase();
+                let pinColor = "#f87171"; // Red
+                if (cat.includes("URG")) pinColor = "#fbbf24"; // Amber
+                if (cat.includes("STAB")) pinColor = "#34d399"; // Green
+
+                const markerHtml = `
+                    <div style="position:relative; width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
+                        <div style="position:absolute; inset:0; border-radius:50%; background:${pinColor}; opacity:0.35; animation:radarPulse 1.8s infinite ease-out;"></div>
+                        <div style="width:12px; height:12px; border-radius:50%; background:${pinColor}; border:2px solid #ffffff; box-shadow:0 0 8px ${pinColor};"></div>
+                    </div>
+                `;
+                const icon = L.divIcon({
+                    className: "triage-victim-icon",
+                    html: markerHtml,
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
+                });
+
+                const popupHtml = `
+                    <div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif; min-width:210px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <b style="color:${pinColor}; font-size:12px;">${id} [${cat}]</b>
+                            <span style="font-size:10px; color:#94a3b8;">${c.drone_id || 'UAV-01'}</span>
+                        </div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; margin-bottom:6px;">
+                            LAT: ${c.lat.toFixed(5)}° | LON: ${c.lon.toFixed(5)}°
+                        </div>
+                        <div style="width:100%; height:90px; border-radius:6px; overflow:hidden; margin-bottom:6px; background:#000;">
+                            <img src="${c.snapshot_url}" style="width:100%; height:100%; object-fit:cover;" />
+                        </div>
+                        <div style="font-size:10px; color:#e2e8f0; line-height:1.3; margin-bottom:6px;">
+                            ${c.recommended_action || 'Awaiting dispatch'}
+                        </div>
+                        <button onclick="openSnapshotModal('${id}', ${c.lat}, ${c.lon}, '${cat}', '${c.drone_id}')" style="width:100%; padding:4px 8px; border-radius:8px; background:#0a84ff; color:#fff; border:none; font-weight:700; font-size:10px; cursor:pointer;">
+                            🔍 Inspect Full Evidence
+                        </button>
+                    </div>
+                `;
+
+                if (casualtyMarkers[id]) {
+                    casualtyMarkers[id].setLatLng([c.lat, c.lon]);
+                    casualtyMarkers[id].setPopupContent(popupHtml);
+                } else {
+                    const m = L.marker([c.lat, c.lon], { icon: icon }).addTo(triageMap);
+                    m.bindPopup(popupHtml);
+                    m.on("click", () => highlightCard(id));
+                    casualtyMarkers[id] = m;
+                }
+            });
+        }
+
+        function highlightCard(victimId) {
+            document.querySelectorAll(".casualty-card").forEach(c => c.classList.remove("selected"));
+            const target = document.getElementById(`card-${victimId}`);
+            if (target) {
+                target.classList.add("selected");
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+
+        function locateCasualtyOnMap(victimId, lat, lon) {
+            highlightCard(victimId);
+            if (triageMap) {
+                triageMap.flyTo([lat, lon], 18, { duration: 1.2 });
+                if (casualtyMarkers[victimId]) {
+                    casualtyMarkers[victimId].openPopup();
+                }
+            }
+        }
+
+        function fitAllCasualties() {
+            if (!triageMap || currentCasualties.length === 0) return;
+            const pts = currentCasualties.map(c => [c.lat, c.lon]);
+            if (userGpsPosition) pts.push([userGpsPosition.lat, userGpsPosition.lon]);
+            triageMap.fitBounds(pts, { padding: [30, 30], maxZoom: 18 });
+        }
+
+        function openSnapshotModal(victimId, lat, lon, category, droneId) {
+            currentModalVictimId = victimId;
+            document.getElementById("modal-snapshot-title").textContent = `Inspection Recon Snapshot — ${victimId}`;
+            document.getElementById("modal-snapshot-subtitle").textContent = `Reporting Airframe: ${droneId} • Severity: ${category}`;
+            document.getElementById("modal-snapshot-coords").textContent = `LAT: ${lat.toFixed(5)}° N | LON: ${lon.toFixed(5)}° E`;
+            document.getElementById("modal-snapshot-img").src = `/api/victims/${victimId}/snapshot?t=${Date.now()}`;
+            document.getElementById("snapshot-modal").classList.remove("hidden");
+        }
+
+        function closeSnapshotModal() {
+            document.getElementById("snapshot-modal").classList.add("hidden");
+        }
+
+        async function retakeFreshSnapshot(victimId) {
+            try {
+                const res = await fetch(`/api/victims/${victimId}/capture`, { method: "POST" });
+                if (res.ok) {
+                    // Update preview img
+                    const card = document.getElementById(`card-${victimId}`);
+                    if (card) {
+                        const img = card.querySelector(".snapshot-preview-frame img");
+                        if (img) img.src = `/api/victims/${victimId}/snapshot?t=${Date.now()}`;
+                    }
+                    alert(`Fresh optical reconnaissance snapshot captured for ${victimId}!`);
+                }
+            } catch (e) {
+                console.error("Retake snapshot failed:", e);
+            }
+        }
+
+        async function retakeSnapshotFromModal() {
+            if (!currentModalVictimId) return;
+            await retakeFreshSnapshot(currentModalVictimId);
+            document.getElementById("modal-snapshot-img").src = `/api/victims/${currentModalVictimId}/snapshot?t=${Date.now()}`;
+        }
+
+        function downloadSnapshotImage() {
+            if (!currentModalVictimId) return;
+            const a = document.createElement("a");
+            a.href = `/api/victims/${currentModalVictimId}/snapshot?download=1`;
+            a.download = `SARAS_Inspection_${currentModalVictimId}.jpg`;
+            a.click();
+        }
+
+        function dispatchRescueTeam(victimId) {
+            alert(`Medical Extraction Team dispatched to ${victimId}!\n\nAir-drop medical pack deployed. Ground/boat team en route.`);
+        }
+    </script>
+</body>
+</html>

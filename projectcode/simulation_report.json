@@ -1,0 +1,467 @@
+{
+  "steps_completed": 4612,
+  "coverage_ratio": 0.556,
+  "detected_victims": [
+    "V7",
+    "V8"
+  ],
+  "rescue_recommendations": [
+    {
+      "victim_id": "V7",
+      "priority": 2,
+      "estimated_distance": 391.09,
+      "nearest_rescue_point": [
+        50.0,
+        50.0
+      ],
+      "rescue_point_gps": [
+        11.540054,
+        76.134862
+      ],
+      "suggested_order": 1,
+      "drone_id": "D1",
+      "rationale": "Medium victim near S21"
+    },
+    {
+      "victim_id": "V8",
+      "priority": 1,
+      "estimated_distance": 684.85,
+      "nearest_rescue_point": [
+        50.0,
+        50.0
+      ],
+      "rescue_point_gps": [
+        11.540054,
+        76.134862
+      ],
+      "suggested_order": 2,
+      "drone_id": "D1",
+      "rationale": "Low victim near S21"
+    }
+  ],
+  "drone_status": {
+    "D1": "active",
+    "D2": "failed",
+    "D3": "failed",
+    "D4": "failed",
+    "D5": "failed",
+    "D6": "returning"
+  },
+  "sector_status": {
+    "S11": "available",
+    "S12": "covered",
+    "S13": "available",
+    "S21": "covered",
+    "S22": "assigned",
+    "S23": "covered",
+    "S31": "available",
+    "S32": "covered",
+    "S33": "covered"
+  },
+  "metrics": {
+    "coverage_ratio": 0.5555555555555556,
+    "victim_detections": 5,
+    "failed_drones": 9,
+    "reassigned_sectors": 10,
+    "total_steps": 4612,
+    "active_hazards": 4
+  },
+  "drones": [
+    {
+      "drone_id": "D1",
+      "x": 168.27,
+      "y": 500.0,
+      "battery": 57.0,
+      "health": "active",
+      "sector_id": "S21",
+      "detected_victims": [],
+      "is_physical": true,
+      "heading": 270.0,
+      "pitch": 0.0,
+      "roll": 0.0,
+      "altitude": 35.0,
+      "speed": 28.0,
+      "telemetry_source": "emulated",
+      "video_feed_active": true,
+      "lat": 11.536,
+      "lon": 76.13595
+    },
+    {
+      "drone_id": "D2",
+      "x": 834.81,
+      "y": 499.44,
+      "battery": 90.4,
+      "health": "failed",
+      "sector_id": "S23",
+      "detected_victims": [],
+      "is_physical": false,
+      "heading": 69.2,
+      "pitch": 0.0,
+      "roll": 0.0,
+      "altitude": 37.0,
+      "speed": 28.0,
+      "telemetry_source": "sim",
+      "video_feed_active": false,
+      "lat": 11.536005,
+      "lon": 76.142078
+    },
+    {
+      "drone_id": "D3",
+      "x": 223.29,
+      "y": 556.73,
+      "battery": 81.8,
+      "health": "failed",
+      "sector_id": "S21",
+      "detected_victims": [
+        "V8"
+      ],
+      "is_physical": false,
+      "heading": 315.1,
+      "pitch": -4.0,
+      "roll": 0.0,
+      "altitude": 39.0,
+      "speed": 28.0,
+      "telemetry_source": "sim",
+      "video_feed_active": false,
+      "lat": 11.535489,
+      "lon": 76.136456
+    },
+    {
+      "drone_id": "D4",
+      "x": 163.0,
+      "y": 500.0,
+      "battery": 89.2,
+      "health": "failed",
+      "sector_id": "S21",
+      "detected_victims": [],
+      "is_physical": false,
+      "heading": 340.9,
+      "pitch": -4.0,
+      "roll": -25.0,
+      "altitude": 41.0,
+      "speed": 28.0,
+      "telemetry_source": "sim",
+      "video_feed_active": false,
+      "lat": 11.536,
+      "lon": 76.135901
+    },
+    {
+      "drone_id": "D5",
+      "x": 441.77,
+      "y": 389.3,
+      "battery": 97.8,
+      "health": "failed",
+      "sector_id": "S12",
+      "detected_victims": [],
+      "is_physical": false,
+      "heading": 5.1,
+      "pitch": -4.0,
+      "roll": 11.7,
+      "altitude": 43.0,
+      "speed": 28.0,
+      "telemetry_source": "sim",
+      "video_feed_active": false,
+      "lat": 11.536997,
+      "lon": 76.138465
+    },
+    {
+      "drone_id": "D6",
+      "x": 50.23,
+      "y": 50.87,
+      "battery": 8.0,
+      "health": "returning",
+      "sector_id": "S21",
+      "detected_victims": [
+        "V7"
+      ],
+      "is_physical": false,
+      "heading": 345.1,
+      "pitch": 0.0,
+      "roll": 0.0,
+      "altitude": 45.0,
+      "speed": 28.0,
+      "telemetry_source": "sim",
+      "video_feed_active": false,
+      "lat": 11.540046,
+      "lon": 76.134864
+    }
+  ],
+  "sectors": [
+    {
+      "sector_id": "S11",
+      "x": 166.67,
+      "y": 166.67,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 0.0,
+      "status": "available",
+      "assigned_to": null,
+      "lat": 11.539003,
+      "lon": 76.135935
+    },
+    {
+      "sector_id": "S12",
+      "x": 500.0,
+      "y": 166.67,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 1.0,
+      "status": "covered",
+      "assigned_to": "D6",
+      "lat": 11.539003,
+      "lon": 76.139
+    },
+    {
+      "sector_id": "S13",
+      "x": 833.33,
+      "y": 166.67,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 0.0,
+      "status": "available",
+      "assigned_to": null,
+      "lat": 11.539003,
+      "lon": 76.142065
+    },
+    {
+      "sector_id": "S21",
+      "x": 166.67,
+      "y": 500.0,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 1.0,
+      "status": "covered",
+      "assigned_to": "D1",
+      "lat": 11.536,
+      "lon": 76.135935
+    },
+    {
+      "sector_id": "S22",
+      "x": 500.0,
+      "y": 500.0,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 0.032,
+      "status": "assigned",
+      "assigned_to": "D6",
+      "lat": 11.536,
+      "lon": 76.139
+    },
+    {
+      "sector_id": "S23",
+      "x": 833.33,
+      "y": 500.0,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 1.0,
+      "status": "covered",
+      "assigned_to": "D1",
+      "lat": 11.536,
+      "lon": 76.142065
+    },
+    {
+      "sector_id": "S31",
+      "x": 166.67,
+      "y": 833.33,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 0.0,
+      "status": "available",
+      "assigned_to": null,
+      "lat": 11.532997,
+      "lon": 76.135935
+    },
+    {
+      "sector_id": "S32",
+      "x": 500.0,
+      "y": 833.33,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 1.0,
+      "status": "covered",
+      "assigned_to": "D3",
+      "lat": 11.532997,
+      "lon": 76.139
+    },
+    {
+      "sector_id": "S33",
+      "x": 833.33,
+      "y": 833.33,
+      "width": 333.33,
+      "height": 333.33,
+      "completion": 1.0,
+      "status": "covered",
+      "assigned_to": "D1",
+      "lat": 11.532997,
+      "lon": 76.142065
+    }
+  ],
+  "victims": [
+    {
+      "victim_id": "V1",
+      "x": 903.07,
+      "y": 238.04,
+      "severity": "critical",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 4,
+      "lat": 11.53836,
+      "lon": 76.142706
+    },
+    {
+      "victim_id": "V2",
+      "x": 665.96,
+      "y": 176.08,
+      "severity": "high",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 3,
+      "lat": 11.538918,
+      "lon": 76.140526
+    },
+    {
+      "victim_id": "V3",
+      "x": 632.0,
+      "y": 199.9,
+      "severity": "medium",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 2,
+      "lat": 11.538704,
+      "lon": 76.140214
+    },
+    {
+      "victim_id": "V4",
+      "x": 880.8,
+      "y": 301.14,
+      "severity": "low",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 1,
+      "lat": 11.537792,
+      "lon": 76.142501
+    },
+    {
+      "victim_id": "V5",
+      "x": 636.04,
+      "y": 280.34,
+      "severity": "critical",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 4,
+      "lat": 11.537979,
+      "lon": 76.140251
+    },
+    {
+      "victim_id": "V6",
+      "x": 387.22,
+      "y": 855.34,
+      "severity": "high",
+      "detected": false,
+      "sector_id": null,
+      "rescue_time_step": null,
+      "rescue_priority": 3,
+      "lat": 11.532799,
+      "lon": 76.137963
+    },
+    {
+      "victim_id": "V7",
+      "x": 205.66,
+      "y": 408.78,
+      "severity": "medium",
+      "detected": true,
+      "sector_id": "S21",
+      "rescue_time_step": 151,
+      "rescue_priority": 2,
+      "lat": 11.536822,
+      "lon": 76.136294
+    },
+    {
+      "victim_id": "V8",
+      "x": 328.85,
+      "y": 675.51,
+      "severity": "low",
+      "detected": true,
+      "sector_id": "S21",
+      "rescue_time_step": 72,
+      "rescue_priority": 1,
+      "lat": 11.534419,
+      "lon": 76.137426
+    }
+  ],
+  "hazards": [
+    {
+      "hazard_id": "H1-DEBRIS",
+      "hazard_type": "landslide_debris",
+      "x": 350.0,
+      "y": 400.0,
+      "radius": 160.0,
+      "severity": 0.85,
+      "wind_vector": [
+        0.0,
+        0.0
+      ],
+      "description": "Chooralmala Primary Mudflow & Boulder Debris Field",
+      "lat": 11.536901,
+      "lon": 76.137621
+    },
+    {
+      "hazard_id": "H2-SMOKE",
+      "hazard_type": "smoke_plume",
+      "x": 650.0,
+      "y": 300.0,
+      "radius": 130.0,
+      "severity": 0.75,
+      "wind_vector": [
+        0.0,
+        0.0
+      ],
+      "description": "Dense Smoke Plume & Reduced Visibility Zone",
+      "lat": 11.537802,
+      "lon": 76.140379
+    },
+    {
+      "hazard_id": "H3-WIND",
+      "hazard_type": "wind_shear",
+      "x": 700.0,
+      "y": 750.0,
+      "radius": 180.0,
+      "severity": 0.6,
+      "wind_vector": [
+        6.5,
+        -4.0
+      ],
+      "description": "Western Ghats Ridge Wind Shear (12 m/s Gusts)",
+      "lat": 11.533748,
+      "lon": 76.140839
+    },
+    {
+      "hazard_id": "H4-THERMAL",
+      "hazard_type": "fire_hotspot",
+      "x": 250.0,
+      "y": 750.0,
+      "radius": 110.0,
+      "severity": 0.7,
+      "wind_vector": [
+        0.0,
+        0.0
+      ],
+      "description": "Thermal Hotspot / Collapsed Structure Hazard",
+      "lat": 11.533748,
+      "lon": 76.136701
+    }
+  ],
+  "mode": "hybrid_real",
+  "kerala_anchor": {
+    "lat": 11.536,
+    "lon": 76.139,
+    "region": "Wayanad Chooralmala / Meppadi, Kerala"
+  },
+  "mavlink_connected": false,
+  "is_paused": false
+}

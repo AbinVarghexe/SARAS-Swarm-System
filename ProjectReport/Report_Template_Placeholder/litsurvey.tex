@@ -1,0 +1,65 @@
+% CHAPTER 2
+\chapter{Literature Survey}
+
+\section{Overview of the Problem Domain}
+[Briefly define the domain task and summarize standard historical approaches. Explain how research in this area has evolved over the past decade.]
+
+\section{Classical Machine Learning Approaches}
+[Review traditional machine learning approaches (e.g., SVM, Random Forest, KNN, Decision Trees, Logistic Regression, HOG, Haar Cascades). Group related papers together rather than writing one isolated paragraph per paper. For each group, summarize what was investigated, the reported performance, and the underlying limitation, such as manual feature engineering or poor domain generalization.]
+
+\section{Deep Learning Approaches}
+[Review deep learning architectures (e.g., CNNs, RNNs/LSTMs, Transformers, GANs, Two-Stage vs Single-Stage detectors). Structure the discussion around methodology, dataset evaluated, reported metrics, and core computational or architectural limitations.]
+
+\section{Recent and Hybrid Approaches}
+[Review recent state-of-the-art developments, including attention mechanisms, ensemble learning, lightweight/edge optimizations (quantization, pruning), transfer learning, multi-agent frameworks, or Retrieval-Augmented Generation (RAG).]
+
+\section{Datasets Used in Prior Work}
+Table \ref{tab:datasets} summarizes the prominent benchmark datasets utilized in the literature for this problem domain:
+
+\begin{table}[htbp]
+\centering
+\caption{Benchmark datasets used in prior literature}
+\label{tab:datasets}
+\vspace{0.2cm}
+\resizebox{0.95\columnwidth}{!}{
+\begin{tabular}{|l|c|c|l|l|}
+\hline
+\textbf{Dataset} & \textbf{Year} & \textbf{Sample Count} & \textbf{Target Classes} & \textbf{Data Modality / Source} \\
+\hline
+[Benchmark Dataset 1] & [Year] & [Count] & [Class categories] & [Sensor / Web / Clinical] \\
+\hline
+[Benchmark Dataset 2] & [Year] & [Count] & [Class categories] & [Sensor / Web / Clinical] \\
+\hline
+[Benchmark Dataset 3] & [Year] & [Count] & [Class categories] & [Sensor / Web / Clinical] \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Comparison of Related Works}
+Table \ref{tab:lit_comparison} contrasts key existing methodologies from the literature against the proposed system:
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of related methodologies against proposed system}
+\label{tab:lit_comparison}
+\vspace{0.2cm}
+\resizebox{0.95\columnwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Reference} & \textbf{Methodology} & \textbf{Dataset} & \textbf{Accuracy / Key Metric} & \textbf{Key Limitation} \\
+\hline
+Author et al. \cite{1} & [Method 1] & [Dataset 1] & [Reported Metric] & [Identified limitation] \\
+\hline
+Author et al. \cite{2} & [Method 2] & [Dataset 2] & [Reported Metric] & [Identified limitation] \\
+\hline
+Author et al. \cite{3} & [Method 3] & [Dataset 3] & [Reported Metric] & [Identified limitation] \\
+\hline
+\textbf{Proposed System} & \textbf{[Proposed Method]} & \textbf{[Project Dataset]} & \textbf{[Expected/Achieved Metric]} & \textbf{[Addressed Research Gap]} \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Research Gap}
+[Synthesize the critical limitations identified across the surveyed literature into one comprehensive paragraph. Explain clearly why existing solutions remain inadequate, and directly explain how the proposed system formulated in Chapter 3 bridges these gaps.]
