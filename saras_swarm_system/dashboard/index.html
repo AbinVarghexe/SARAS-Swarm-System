@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=3.1">
     <script>
         // Apply saved theme preference or default to dark
         (function() {
@@ -27,7 +27,7 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Top Apple Tactical Command Bar -->
+        <!-- Top Tactical Command Bar -->
         <header class="tactical-header">
             <div class="brand">
                 <div class="mac-traffic-lights">
@@ -73,11 +73,11 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
                     <span>OPTICAL HUD</span>
                 </button>
-                <a href="/triage" class="btn btn-hud-toggle" style="background: rgba(248, 113, 113, 0.22); border-color: rgba(248, 113, 113, 0.45); color: #ffffff; text-decoration: none;" title="Open Casualty Triage & Medical Dispatch Dashboard">
+                <a href="/triage" class="btn btn-hud-toggle" title="Open Casualty Triage & Medical Dispatch Dashboard">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                     <span>CASUALTY COMMAND</span>
                 </a>
-                <a href="/api/reports/triage-pdf" target="_blank" class="btn btn-hud-toggle" style="background: rgba(2, 132, 199, 0.22); border-color: rgba(2, 132, 199, 0.45); color: #ffffff; text-decoration: none;" title="Export Comprehensive Casualty Triage PDF Report">
+                <a href="/api/reports/triage-pdf" target="_blank" class="btn btn-hud-toggle" title="Export Comprehensive Casualty Triage PDF Report">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     <span>TRIAGE PDF</span>
                 </a>
