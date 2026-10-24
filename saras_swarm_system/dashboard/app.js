@@ -1,6 +1,9 @@
 // SARAS Mission Control Dashboard Application Logic
 let map;
 let droneMarkers = {};
+let droneFootprints = {};
+let droneTrails = {};
+let droneHistories = {};
 let sectorLayers = {};
 let victimMarkers = {};
 let wsTelemetry;
@@ -733,63 +736,133 @@ function renderDrones(drones) {
         if (bat < 25) batClass = "crit";
         else if (bat < 50) batClass = "low";
 
-        // Sidebar card HTML
+        // Sidebar card HTML with click to focus on map
         const isSelected = (drone.drone_id.toLowerCase() === activeVideoDroneId.toLowerCase()) ? "active-selected" : "";
         listHtml += `
-            <div class="drone-card ${isSelected}" onclick="selectDroneForVideo('${drone.drone_id}')" title="Click to view live UAV optical HUD">
+            <div class="drone-card ${isSelected} ${statusClass}" onclick="focusDroneOnMap('${drone.drone_id}')" title="Click to center UAV on map & view optical HUD">
                 <div class="drone-header">
-                    <span class="drone-title">${drone.drone_id}</span>
+                    <div class="drone-id-wrap">
+                        <span class="drone-indicator ${statusClass}"></span>
+                        <span class="drone-title">${drone.drone_id}</span>
+                    </div>
                     <span class="drone-status-tag ${statusClass}">${displayStatus}</span>
                 </div>
-                <div class="battery-bar-wrap">
-                    <div class="battery-bar ${batClass}" style="width: ${bat}%"></div>
+                <div class="battery-track">
+                    <div class="battery-fill ${batClass}" style="width: ${bat}%"></div>
                 </div>
-                <div class="drone-telemetry-row">
-                    <span>BAT: ${bat}%</span>
-                    <span>ALT: ${drone.alt}m</span>
-                    <span>SPD: ${(drone.speed || 0).toFixed(1)}m/s</span>
+                <div class="telemetry-row">
+                    <span>BAT: <strong>${bat}%</strong></span>
+                    <span>ALT: <strong>${drone.alt}m</strong></span>
+                    <span>SPD: <strong>${(drone.speed || 0).toFixed(1)}m/s</strong></span>
                 </div>
-                <div class="drone-telemetry-row">
-                    <span>SEC: ${drone.status === "RETURNING" ? "RTH Base" : (drone.current_sector_id || "None")}</span>
-                    <span>VIC: ${drone.victims_detected || 0}</span>
-                    <span>HDG: ${(drone.heading || 0).toFixed(0)}°</span>
+                <div class="telemetry-row">
+                    <span>SEC: <strong>${drone.status === "RETURNING" ? "RTH Base" : (drone.current_sector_id || "None")}</strong></span>
+                    <span>VIC: <strong>${drone.victims_detected || 0}</strong></span>
+                    <span>HDG: <strong>${(drone.heading || 0).toFixed(0)}°</strong></span>
                 </div>
             </div>
         `;
 
-        // Map Marker Icon with heading
+        // Update coordinate history for flight trails
+        if (!droneHistories[id]) {
+            droneHistories[id] = [];
+        }
+        droneHistories[id].push([lat, lon]);
+        if (droneHistories[id].length > 40) {
+            droneHistories[id].shift();
+        }
+
+        // Draw or update flight trail polyline
+        let trailColor = "#0ea5e9";
+        if (statusClass === "returning") trailColor = "#f59e0b";
+        else if (statusClass === "lost") trailColor = "#ef4444";
+
+        if (droneTrails[id]) {
+            droneTrails[id].setLatLngs(droneHistories[id]);
+            droneTrails[id].setStyle({ color: trailColor });
+        } else if (map) {
+            droneTrails[id] = L.polyline(droneHistories[id], {
+                color: trailColor,
+                weight: 2.5,
+                opacity: 0.7,
+                dashArray: "4, 6"
+            }).addTo(map);
+        }
+
+        // Draw or update 38-meter sensor detection footprint circle
+        if (droneFootprints[id]) {
+            droneFootprints[id].setLatLng([lat, lon]);
+            droneFootprints[id].setStyle({
+                color: trailColor,
+                fillColor: trailColor,
+                fillOpacity: (statusClass === "searching") ? 0.12 : 0.05
+            });
+        } else if (map) {
+            droneFootprints[id] = L.circle([lat, lon], {
+                radius: 38,
+                color: trailColor,
+                weight: 1.5,
+                dashArray: "3, 3",
+                fillColor: trailColor,
+                fillOpacity: 0.12
+            }).addTo(map);
+        }
+
+        // Highlighted Map Marker with Quadrotor SVG, radar ping, and callout badge
         const headingDeg = Math.round(drone.heading || 0);
         const iconHtml = `
-            <div class="drone-marker-body ${statusClass}" style="transform: rotate(${headingDeg}deg);">
-                ▲
+            <div class="drone-highlight-container ${statusClass}">
+                <div class="drone-radar-ping"></div>
+                <div class="drone-heading-wrapper" style="transform: rotate(${headingDeg}deg);">
+                    <svg class="drone-quad-svg" viewBox="0 0 40 40" width="34" height="34">
+                        <line x1="8" y1="8" x2="32" y2="32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="8" y1="32" x2="32" y2="8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="8" cy="8" r="3.5" class="rotor"/>
+                        <circle cx="32" cy="8" r="3.5" class="rotor"/>
+                        <circle cx="8" cy="32" r="3.5" class="rotor"/>
+                        <circle cx="32" cy="32" r="3.5" class="rotor"/>
+                        <polygon points="20,5 27,23 20,19 13,23" class="drone-core-arrow"/>
+                        <circle cx="20" cy="20" r="4.5" class="drone-core-dot"/>
+                    </svg>
+                </div>
+                <div class="drone-callout-pill">
+                    <span class="callout-id">${drone.drone_id}</span>
+                    <span class="callout-bat ${batClass}">${bat}%</span>
+                </div>
             </div>
         `;
         const icon = L.divIcon({
             className: "drone-map-icon",
             html: iconHtml,
-            iconSize: [26, 26],
-            iconAnchor: [13, 13]
+            iconSize: [50, 50],
+            iconAnchor: [25, 25]
         });
+
+        const popupContent = `
+            <div style="min-width: 140px; padding: 2px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <strong style="font-size:13px; color:var(--foreground);">${drone.drone_id}</strong>
+                    <span style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:700; background:var(--secondary); color:var(--secondary-foreground);">${drone.status}</span>
+                </div>
+                <div style="font-size:11px; line-height:1.5; color:var(--muted-foreground);">
+                    <div>Battery: <b style="color:var(--foreground);">${bat}%</b></div>
+                    <div>Altitude: <b style="color:var(--foreground);">${drone.alt}m</b></div>
+                    <div>Speed: <b style="color:var(--foreground);">${(drone.speed || 0).toFixed(1)} m/s</b></div>
+                    <div>Sector: <b style="color:var(--foreground);">${drone.status === "RETURNING" ? "Returning to Pad" : (drone.current_sector_id || "Staged at Base")}</b></div>
+                </div>
+                <button onclick="selectDroneForVideo('${drone.drone_id}')" style="margin-top:8px; width:100%; padding:5px 10px; border-radius:6px; background:var(--primary); color:var(--primary-foreground); border:none; cursor:pointer; font-size:11px; font-weight:600;">
+                    View Optical HUD
+                </button>
+            </div>
+        `;
 
         if (droneMarkers[id]) {
             droneMarkers[id].setLatLng([lat, lon]);
             droneMarkers[id].setIcon(icon);
-            droneMarkers[id].setPopupContent(
-                `<b>${drone.drone_id}</b> [${drone.status}]<br/>` +
-                `Battery: ${bat}%<br/>` +
-                `Altitude: ${drone.alt}m<br/>` +
-                `Assigned: ${drone.status === "RETURNING" ? "Returning to Launch Pad" : (drone.current_sector_id || "Staged at Base")}<br/>` +
-                `<button onclick="selectDroneForVideo('${drone.drone_id}')" style="margin-top:6px; padding:4px 10px; border-radius:12px; background:#0a84ff; color:#fff; border:none; cursor:pointer; font-size:11px; font-weight:700;">View Optical HUD</button>`
-            );
+            droneMarkers[id].setPopupContent(popupContent);
         } else {
             const marker = L.marker([lat, lon], { icon: icon }).addTo(map);
-            marker.bindPopup(
-                `<b>${drone.drone_id}</b> [${drone.status}]<br/>` +
-                `Battery: ${bat}%<br/>` +
-                `Altitude: ${drone.alt}m<br/>` +
-                `Assigned: ${drone.status === "RETURNING" ? "Returning to Launch Pad" : (drone.current_sector_id || "Staged at Base")}<br/>` +
-                `<button onclick="selectDroneForVideo('${drone.drone_id}')" style="margin-top:6px; padding:4px 10px; border-radius:12px; background:#0a84ff; color:#fff; border:none; cursor:pointer; font-size:11px; font-weight:700;">View Optical HUD</button>`
-            );
+            marker.bindPopup(popupContent);
             marker.on("click", () => {
                 selectDroneForVideo(drone.drone_id);
             });
@@ -797,12 +870,21 @@ function renderDrones(drones) {
         }
     });
 
-    // Clean up markers for decommissioned drones if fleet scaled down
+    // Clean up markers, footprints, and trails for decommissioned drones
     const currentDroneIds = new Set(droneList.map(d => d.drone_id));
     Object.keys(droneMarkers).forEach(mId => {
         if (!currentDroneIds.has(mId)) {
             map.removeLayer(droneMarkers[mId]);
             delete droneMarkers[mId];
+            if (droneFootprints[mId]) {
+                map.removeLayer(droneFootprints[mId]);
+                delete droneFootprints[mId];
+            }
+            if (droneTrails[mId]) {
+                map.removeLayer(droneTrails[mId]);
+                delete droneTrails[mId];
+            }
+            delete droneHistories[mId];
         }
     });
 
@@ -813,6 +895,15 @@ function renderDrones(drones) {
     }
 
     if (listContainer) listContainer.innerHTML = listHtml;
+}
+
+function focusDroneOnMap(droneId) {
+    selectDroneForVideo(droneId);
+    if (droneMarkers[droneId]) {
+        const latLng = droneMarkers[droneId].getLatLng();
+        map.setView(latLng, Math.max(map.getZoom(), 16), { animate: true, duration: 0.8 });
+        droneMarkers[droneId].openPopup();
+    }
 }
 
 function renderVictims(detections, recommendations) {

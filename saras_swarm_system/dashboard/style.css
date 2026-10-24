@@ -692,6 +692,168 @@ body {
 }
 
 /* ==============================================================================
+   DRONE HIGH-VISIBILITY MAP MARKERS & SENSOR HIGHLIGHTS
+   ============================================================================== */
+.drone-map-icon {
+  background: transparent !important;
+  border: none !important;
+  overflow: visible !important;
+}
+
+.drone-highlight-container {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: visible;
+}
+
+/* Pulsing radar ping halo beacon */
+.drone-radar-ping {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  margin-left: -22px;
+  border-radius: 50%;
+  border: 2px solid #0ea5e9;
+  background-color: rgba(14, 165, 233, 0.18);
+  animation: dronePulseRing 1.8s cubic-bezier(0.2, 0, 0.4, 1) infinite;
+  pointer-events: none;
+}
+
+.drone-highlight-container.returning .drone-radar-ping {
+  border-color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.22);
+  animation-duration: 1.2s;
+}
+
+.drone-highlight-container.lost .drone-radar-ping {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.3);
+  animation-duration: 0.8s;
+}
+
+.drone-highlight-container.staged .drone-radar-ping {
+  border-color: #94a3b8;
+  background-color: rgba(148, 163, 184, 0.15);
+  animation-duration: 2.8s;
+}
+
+@keyframes dronePulseRing {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.drone-heading-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s linear;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+}
+
+.drone-quad-svg {
+  color: #38bdf8;
+  display: block;
+}
+
+.drone-highlight-container.searching .drone-quad-svg {
+  color: #38bdf8;
+}
+.drone-highlight-container.returning .drone-quad-svg {
+  color: #fbbf24;
+}
+.drone-highlight-container.lost .drone-quad-svg {
+  color: #f87171;
+}
+.drone-highlight-container.staged .drone-quad-svg {
+  color: #cbd5e1;
+}
+
+.rotor {
+  fill: #ffffff;
+  stroke: #0f172a;
+  stroke-width: 1.5;
+}
+
+.drone-core-arrow {
+  fill: #38bdf8;
+}
+.drone-highlight-container.returning .drone-core-arrow { fill: #fbbf24; }
+.drone-highlight-container.lost .drone-core-arrow { fill: #f87171; }
+.drone-highlight-container.staged .drone-core-arrow { fill: #94a3b8; }
+
+.drone-core-dot {
+  fill: #0284c7;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+/* Floating callout badge */
+.drone-callout-pill {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.callout-id {
+  color: var(--foreground);
+}
+
+.callout-bat {
+  color: var(--status-success);
+}
+.callout-bat.low { color: var(--status-warning); }
+.callout-bat.crit { color: var(--destructive); }
+
+/* Sidebar highlighted drone card */
+.drone-card.active-selected {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary), 0 4px 12px 0 rgb(0 0 0 / 0.1) !important;
+  background-color: var(--accent) !important;
+}
+
+.drone-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.drone-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ring);
+}
+
+
+/* ==============================================================================
    FAULT INJECTION & TACTICAL CONTROLS
    ============================================================================== */
 .control-group {
