@@ -1566,3 +1566,152 @@ body {
 .legend-pin.hazard-pin {
   background-color: var(--status-warning);
 }
+
+/* ==============================================================================
+   LIVE CONTINUOUS GPS SPATIAL ANALYSIS DOCK
+   ============================================================================== */
+.gps-analysis-dock {
+  position: absolute;
+  bottom: 24px;
+  left: 18px;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.25);
+  padding: 10px 14px;
+  z-index: 999;
+  min-width: 290px;
+  max-width: 340px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.gps-dock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.gps-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.gps-status-indicator {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gps-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--status-info);
+}
+
+.gps-ping-ring {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--status-info);
+  animation: dronePulseRing 1.8s infinite;
+}
+
+.gps-dock-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: 0.04em;
+}
+
+.gps-action-btn-mini {
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 2px 6px;
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gps-action-btn-mini:hover {
+  background-color: var(--accent);
+}
+
+.gps-dock-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+
+.gps-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gps-lbl {
+  font-size: 0.55rem;
+  font-family: var(--font-mono);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.gps-metric-item strong, .gps-metric-item span {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.highlight-safe {
+  color: var(--status-success) !important;
+  font-weight: 600;
+}
+
+.highlight-warn {
+  color: var(--status-warning) !important;
+  font-weight: 700;
+}
+
+.highlight-danger {
+  color: var(--destructive) !important;
+  font-weight: 700;
+}
+
+.gps-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.btn-xs {
+  font-size: 0.62rem !important;
+  padding: 4px 8px !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  font-weight: 600 !important;
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+}

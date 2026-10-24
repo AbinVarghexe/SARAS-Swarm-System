@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initMap();
     initTelemetryWebSocket();
     initMissionClock();
+    initContinuousGpsAnalysis();   // Always-on background GPS spatial analysis
     fetchSwarmStatus();
     setInterval(fetchSwarmStatus, 1500); // Polling backup (1.5s interval)
 });
@@ -48,6 +49,193 @@ function initMissionClock() {
             if (clockEl) clockEl.textContent = `${mins}:${secs}`;
         }
     }, 1000);
+}
+
+// =============================================================================
+// CONTINUOUS REAL-TIME GPS SPATIAL ANALYSIS ENGINE
+// Starts a watchPosition on page load, never stops, analyses operator position
+// against disaster coordinates, hazard zones, and incident perimeter.
+// =============================================================================
+
+const INCIDENT_CENTER = { lat: 11.5360, lon: 76.1390, name: "Chooralmala Incident HQ" };
+const WAYANAD_HAZARDS_GPS = [
+    { id: "HAZ-01", name: "Chooralmala Mudflow", lat: 11.5375, lon: 76.1385, radius: 140, type: "landslide_debris" },
+    { id: "HAZ-02", name: "Meppadi Smoke Plume", lat: 11.5340, lon: 76.1415, radius: 95, type: "smoke_plume" },
+    { id: "HAZ-03", name: "Transformer Fire",    lat: 11.5388, lon: 76.1420, radius: 60, type: "fire_hotspot" },
+    { id: "HAZ-04", name: "Vellarimala Wind Shear", lat: 11.5320, lon: 76.1360, radius: 180, type: "wind_shear" },
+];
+
+let gpsWatchId = null;
+let lastGpsCoords = null;
+let gpsRetryTimer = null;
+
+function haversineGps(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // metres
+    const phi1 = lat1 * Math.PI / 180;
+    const phi2 = lat2 * Math.PI / 180;
+    const dphi = (lat2 - lat1) * Math.PI / 180;
+    const dlam = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dphi / 2) ** 2 + Math.cos(phi1) * Math.cos(phi2) * Math.sin(dlam / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function fmtDist(m) {
+    if (m >= 1000) return `${(m / 1000).toFixed(2)} km`;
+    return `${Math.round(m)} m`;
+}
+
+function analyseGpsPosition(lat, lon, accuracy) {
+    lastGpsCoords = { lat, lon, accuracy };
+
+    // ── Element refs ───────────────────────────────────────────────────────────
+    const el = (id) => document.getElementById(id);
+
+    // ── Update raw coordinate readouts ────────────────────────────────────────
+    if (el("gps-val-lat"))      el("gps-val-lat").textContent      = `${lat.toFixed(5)}°N`;
+    if (el("gps-val-lon"))      el("gps-val-lon").textContent      = `${lon.toFixed(5)}°E`;
+    if (el("gps-val-accuracy")) el("gps-val-accuracy").textContent = `±${Math.round(accuracy)} m`;
+    if (el("gps-val-status")) {
+        el("gps-val-status").textContent = "LIVE LOCK";
+        el("gps-val-status").className   = "highlight-safe";
+    }
+
+    // ── Status dot → green ─────────────────────────────────────────────────────
+    const dot  = el("gps-status-dot");
+    const ring = el("gps-ping-ring");
+    if (dot)  dot.style.background  = "var(--status-success)";
+    if (ring) ring.style.borderColor = "var(--status-success)";
+
+    // ── Distance from incident HQ ──────────────────────────────────────────────
+    const distIncident = haversineGps(lat, lon, INCIDENT_CENTER.lat, INCIDENT_CENTER.lon);
+    if (el("gps-val-dist-incident")) {
+        el("gps-val-dist-incident").textContent = fmtDist(distIncident);
+        el("gps-val-dist-incident").className =
+            distIncident < 500  ? "highlight-danger" :
+            distIncident < 2000 ? "highlight-warn"   : "highlight-safe";
+    }
+
+    // ── Nearest hazard analysis ────────────────────────────────────────────────
+    let nearestHaz = null, nearestDist = Infinity;
+    WAYANAD_HAZARDS_GPS.forEach(h => {
+        const d = haversineGps(lat, lon, h.lat, h.lon);
+        if (d < nearestDist) { nearestDist = d; nearestHaz = h; }
+    });
+
+    const hazardEl = el("gps-val-nearest-hazard");
+    if (hazardEl && nearestHaz) {
+        const insideHazard = nearestDist <= nearestHaz.radius;
+        hazardEl.innerHTML = insideHazard
+            ? `<span class="highlight-danger">⚠ INSIDE ${nearestHaz.name.toUpperCase()} (${fmtDist(nearestDist)})</span>`
+            : `${nearestHaz.name}<br><small style="color:var(--muted-foreground)">${fmtDist(nearestDist)} away</small>`;
+    }
+
+    // ── Spatial context string ─────────────────────────────────────────────────
+    let context = "";
+    if (nearestHaz && nearestDist <= nearestHaz.radius) {
+        context = `⚠ DANGER: Operator is INSIDE ${nearestHaz.name}. Evacuate immediately.`;
+    } else if (distIncident < 500) {
+        context = `⚡ CRITICAL ZONE: ${fmtDist(distIncident)} from incident HQ. Maintain safety protocols.`;
+    } else if (distIncident < 2000) {
+        context = `Operator in outer perimeter, ${fmtDist(distIncident)} from Chooralmala incident centre.`;
+    } else if (distIncident < 50000) {
+        context = `Operator in Wayanad District, ${fmtDist(distIncident)} from incident HQ. Approaching disaster zone.`;
+    } else {
+        context = `Remote operator — ${fmtDist(distIncident)} from Wayanad Chooralmala incident zone.`;
+    }
+
+    const ctxEl = el("gps-val-context");
+    if (ctxEl) {
+        ctxEl.textContent = context;
+        ctxEl.style.color = nearestHaz && nearestDist <= nearestHaz.radius
+            ? "var(--destructive)"
+            : distIncident < 500 ? "var(--status-warning)" : "var(--foreground)";
+    }
+
+    // ── Update GCS marker on map ───────────────────────────────────────────────
+    if (map) {
+        const gcsIconHtml = `
+            <div class="gcs-marker-beacon">
+                <div class="gcs-pulse-ring"></div>
+                <div class="gcs-center-pin">📡</div>
+            </div>`;
+        const gcsIcon = L.divIcon({
+            className: "gcs-map-marker",
+            html: gcsIconHtml,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+        if (userGpsMarker) {
+            userGpsMarker.setLatLng([lat, lon]);
+            if (userGpsCircle) { userGpsCircle.setLatLng([lat, lon]); userGpsCircle.setRadius(accuracy); }
+        } else {
+            userGpsMarker = L.marker([lat, lon], { icon: gcsIcon, zIndexOffset: 2000 }).addTo(map);
+            userGpsCircle = L.circle([lat, lon], {
+                radius: accuracy, color: "#38bdf8", fillColor: "#38bdf8",
+                fillOpacity: 0.10, weight: 1.5, dashArray: "4, 4"
+            }).addTo(map);
+        }
+        userGpsMarker.bindTooltip(
+            `<b>📡 OPERATOR GCS</b><br>${lat.toFixed(5)}°N, ${lon.toFixed(5)}°E<br>±${Math.round(accuracy)}m accuracy`,
+            { sticky: true }
+        );
+    }
+
+    // ── Show GPS banner once ───────────────────────────────────────────────────
+    showGpsBanner(lat, lon, accuracy);
+}
+
+function initContinuousGpsAnalysis() {
+    if (!navigator.geolocation) {
+        setGpsDockError("Geolocation API not supported in this browser.");
+        return;
+    }
+
+    // watchPosition keeps firing every time position changes (or improves accuracy)
+    gpsWatchId = navigator.geolocation.watchPosition(
+        (position) => {
+            if (gpsRetryTimer) { clearTimeout(gpsRetryTimer); gpsRetryTimer = null; }
+            analyseGpsPosition(
+                position.coords.latitude,
+                position.coords.longitude,
+                position.coords.accuracy || 15
+            );
+        },
+        (error) => {
+            console.warn("[GPS] watchPosition error:", error.message);
+            setGpsDockError(error.code === 1 ? "Permission denied — allow location access." :
+                            error.code === 2 ? "Position unavailable — check device GPS." :
+                            "GPS timeout — retrying...");
+            // Retry watchPosition silently every 10 seconds after failure
+            gpsRetryTimer = setTimeout(initContinuousGpsAnalysis, 10000);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+    );
+}
+
+function setGpsDockError(msg) {
+    const dot = document.getElementById("gps-status-dot");
+    const ring = document.getElementById("gps-ping-ring");
+    const status = document.getElementById("gps-val-status");
+    const ctx = document.getElementById("gps-val-context");
+    if (dot)    dot.style.background   = "var(--destructive)";
+    if (ring)   ring.style.borderColor  = "var(--destructive)";
+    if (status) { status.textContent = "ERROR"; status.className = "highlight-danger"; }
+    if (ctx)    { ctx.textContent = msg; ctx.style.color = "var(--destructive)"; }
+}
+
+function triggerManualGpsRefresh() {
+    // Stop old watch and restart fresh
+    if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
+    const status = document.getElementById("gps-val-status");
+    const ctx = document.getElementById("gps-val-context");
+    if (status) { status.textContent = "REACQUIRING..."; status.className = ""; }
+    if (ctx) ctx.textContent = "Re-acquiring GPS fix...";
+    initContinuousGpsAnalysis();
+}
+
+function flyMapToGps() {
+    if (!lastGpsCoords || !map) return;
+    map.flyTo([lastGpsCoords.lat, lastGpsCoords.lon], 17, { duration: 1.5 });
 }
 
 async function switchSystemMode(mode) {
@@ -371,8 +559,9 @@ async function relocateSwarmToBase(lat, lon) {
 }
 
 function relocateSwarmToGps() {
-    if (userGpsCoords) {
-        relocateSwarmToBase(userGpsCoords.lat, userGpsCoords.lon);
+    const coords = lastGpsCoords || userGpsCoords;
+    if (coords) {
+        relocateSwarmToBase(coords.lat, coords.lon);
     }
 }
 

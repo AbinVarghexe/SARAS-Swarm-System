@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=4.0">
+    <link rel="stylesheet" href="/static/style.css?v=4.1">
     <script>
         // Apply saved theme preference or default to dark
         (function() {
@@ -279,6 +279,54 @@
                     <span id="gps-banner-text">Live GPS Acquired: 12.97500° N, 77.59700° E</span>
                     <button class="banner-action-btn" onclick="relocateSwarmToGps()">Relocate Swarm Base Here</button>
                     <button class="banner-close-btn" onclick="hideGpsBanner()">✕</button>
+                </div>
+
+                <!-- Live Continuous GPS Spatial Analysis Dock -->
+                <div id="gps-analysis-dock" class="gps-analysis-dock">
+                    <div class="gps-dock-header">
+                        <div class="gps-title-wrap">
+                            <div class="gps-status-indicator">
+                                <div class="gps-status-dot" id="gps-status-dot"></div>
+                                <div class="gps-ping-ring" id="gps-ping-ring"></div>
+                            </div>
+                            <span class="gps-dock-label">OPERATOR GPS ANALYSIS</span>
+                        </div>
+                        <button class="gps-action-btn-mini" onclick="triggerManualGpsRefresh()" title="Refresh GPS fix">↺ REFRESH</button>
+                    </div>
+                    <div class="gps-dock-grid">
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">LATITUDE</span>
+                            <strong id="gps-val-lat">—</strong>
+                        </div>
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">LONGITUDE</span>
+                            <strong id="gps-val-lon">—</strong>
+                        </div>
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">GPS ACCURACY</span>
+                            <strong id="gps-val-accuracy">Acquiring...</strong>
+                        </div>
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">FIX STATUS</span>
+                            <strong id="gps-val-status">SEARCHING</strong>
+                        </div>
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">DIST. FROM INCIDENT</span>
+                            <strong id="gps-val-dist-incident">—</strong>
+                        </div>
+                        <div class="gps-metric-item">
+                            <span class="gps-lbl">NEAREST HAZARD</span>
+                            <strong id="gps-val-nearest-hazard">—</strong>
+                        </div>
+                        <div class="gps-metric-item" style="grid-column: span 2;">
+                            <span class="gps-lbl">SPATIAL CONTEXT</span>
+                            <span id="gps-val-context" style="font-size:0.65rem; line-height:1.4;">Awaiting GPS fix...</span>
+                        </div>
+                    </div>
+                    <div class="gps-dock-actions">
+                        <button class="btn btn-primary btn-xs" onclick="relocateSwarmToGps()" title="Set swarm launch pad to your GPS position">⚡ Set as Swarm Base</button>
+                        <button class="btn btn-hud-toggle btn-xs" onclick="flyMapToGps()" title="Pan map to your GPS position">🗺 Pan to Me</button>
+                    </div>
                 </div>
 
                 <!-- Floating Mission Staging Status Banner -->
