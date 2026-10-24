@@ -304,7 +304,7 @@ class SwarmSimulator:
         min_lon: float = 76.1350,
         max_lon: float = 76.1435,
         allocator_type: str = "AUCTION",
-        auto_generate_sectors: bool = True
+        auto_generate_sectors: bool = False
     ):
         self.num_drones = num_drones
         self.rows = rows

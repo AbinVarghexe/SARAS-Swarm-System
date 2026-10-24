@@ -52,7 +52,7 @@ MEDIA_DIR = BASE_DIR / "media"
 DOCS_DIR = BASE_DIR / "docs"
 
 # State & Service Instances
-simulator = SwarmSimulator(num_drones=4, auto_generate_sectors=True)
+simulator = SwarmSimulator(num_drones=4, auto_generate_sectors=False)
 triage_agent = RescueTriageAgent()
 rag_agent = RAGKnowledgeAgent()
 video_streamer = SwarmVideoStreamer()
@@ -1023,7 +1023,7 @@ async def reset_simulation(req: Optional[ResetRequest] = None):
     current_policy = simulator.allocator_type
     drone_count = req.num_drones if (req and req.num_drones) else simulator.num_drones
     drone_count = max(1, min(16, drone_count))
-    simulator = SwarmSimulator(num_drones=drone_count, allocator_type=current_policy, auto_generate_sectors=True)
+    simulator = SwarmSimulator(num_drones=drone_count, allocator_type=current_policy, auto_generate_sectors=False)
     recommendations_map.clear()
     return {
         "status": "ok",
