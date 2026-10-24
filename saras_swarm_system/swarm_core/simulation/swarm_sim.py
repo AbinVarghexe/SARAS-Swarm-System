@@ -298,13 +298,13 @@ class SwarmSimulator:
         self,
         num_drones: int = 4,
         rows: int = 3,
-        cols: int = 4,
-        min_lat: float = 12.9710,
-        max_lat: float = 12.9790,
-        min_lon: float = 77.5910,
-        max_lon: float = 77.6030,
+        cols: int = 3,
+        min_lat: float = 11.5320,
+        max_lat: float = 11.5405,
+        min_lon: float = 76.1350,
+        max_lon: float = 76.1435,
         allocator_type: str = "AUCTION",
-        auto_generate_sectors: bool = False
+        auto_generate_sectors: bool = True
     ):
         self.num_drones = num_drones
         self.rows = rows

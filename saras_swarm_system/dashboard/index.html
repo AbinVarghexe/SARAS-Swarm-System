@@ -42,26 +42,7 @@
                 </div>
             </div>
 
-            <!-- Operating Mode Switcher -->
-            <div class="mode-switcher" role="tablist">
-                <button class="mode-btn active" id="mode-pure-sim" data-mode="pure_sim" onclick="switchSystemMode('pure_sim')" title="Full Hazardous Simulation with active disaster hazards">
-                    <span class="mode-title"><span class="mode-indicator"></span> PURE SIMULATION</span>
-                    <span class="mode-sub">HAZARDOUS DISASTER ZONE</span>
-                </button>
-                <button class="mode-btn" id="mode-hybrid-real" data-mode="hybrid_real" onclick="switchSystemMode('hybrid_real')" title="Physical Drone-1 via MAVLink UDP 14550 + N Autonomous Companions">
-                    <span class="mode-title"><span class="mode-indicator"></span> HYBRID OPERATIONS</span>
-                    <span class="mode-sub">1 PHYSICAL DRONE + N COMPANIONS</span>
-                </button>
-            </div>
-
             <div class="header-metrics">
-                <!-- MAVLink / Mission Planner Status -->
-                <div class="status-pill" id="mavlink-pill" title="MAVLink telemetry connection to Mission Planner (UDP 14550)">
-                    <span class="pill-dot" id="mavlink-dot"></span>
-                    <span class="pill-label">MAVLINK 14550:</span>
-                    <strong id="mavlink-status">STANDBY</strong>
-                </div>
-
                 <!-- Mission Clock -->
                 <div class="clock-pill">
                     <span class="pill-label">UTC MISSION:</span>

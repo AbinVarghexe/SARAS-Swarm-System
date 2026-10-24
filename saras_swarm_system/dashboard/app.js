@@ -134,8 +134,8 @@ let userGpsCircle = null;
 let userGpsCoords = null;
 
 function initMap() {
-    // Default Staging center (disaster search area)
-    const center = [12.9750, 77.5970];
+    // Default Staging center (Wayanad Chooralmala disaster search area)
+    const center = [11.5360, 76.1390];
     map = L.map("map", {
         center: center,
         zoom: 15,
@@ -579,7 +579,7 @@ function updateDashboard(state) {
             if (hudGps) hudGps.textContent = `${(d1.lat || 11.5360).toFixed(4)}°N, ${(d1.lon || 76.1390).toFixed(4)}°E`;
             const hudCam = document.getElementById("hud-cam-source");
             if (hudCam) {
-                hudCam.textContent = state.mode === "hybrid_real" ? "MAVLINK MISSION PLANNER EO/IR" : "AERIAL SAR TEST FEED (MP4)";
+                hudCam.textContent = "AERIAL EO/IR OPTICAL HUD (TEST FEED)";
             }
             const hudTarget = document.getElementById("hud-target-count");
             if (hudTarget) {

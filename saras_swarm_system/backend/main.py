@@ -52,7 +52,7 @@ MEDIA_DIR = BASE_DIR / "media"
 DOCS_DIR = BASE_DIR / "docs"
 
 # State & Service Instances
-simulator = SwarmSimulator(num_drones=4, auto_generate_sectors=False)
+simulator = SwarmSimulator(num_drones=4, auto_generate_sectors=True)
 triage_agent = RescueTriageAgent()
 rag_agent = RAGKnowledgeAgent()
 video_streamer = SwarmVideoStreamer()
@@ -256,20 +256,13 @@ async def broadcast_alert(alert_data: dict):
 @app.on_event("startup")
 async def startup_event():
     global sim_task
-    try:
-        await mavlink_bridge.start()
-    except Exception as e:
-        print(f"[MAVLink Bridge Init Note]: {e}")
+    # Note: Hardware MAVLink bridge disabled in active standalone simulation mode
     sim_task = asyncio.create_task(run_simulation_worker())
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     global sim_task
-    try:
-        await mavlink_bridge.stop()
-    except Exception as e:
-        print(f"[MAVLink Bridge Stop Note]: {e}")
     if sim_task:
         sim_task.cancel()
 
@@ -1030,7 +1023,7 @@ async def reset_simulation(req: Optional[ResetRequest] = None):
     current_policy = simulator.allocator_type
     drone_count = req.num_drones if (req and req.num_drones) else simulator.num_drones
     drone_count = max(1, min(16, drone_count))
-    simulator = SwarmSimulator(num_drones=drone_count, allocator_type=current_policy, auto_generate_sectors=False)
+    simulator = SwarmSimulator(num_drones=drone_count, allocator_type=current_policy, auto_generate_sectors=True)
     recommendations_map.clear()
     return {
         "status": "ok",
