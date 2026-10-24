@@ -1154,3 +1154,415 @@ body {
   font-size: 0.75rem !important;
   line-height: 1.4 !important;
 }
+
+/* ==============================================================================
+   SARAS OPERATING MODE SWITCHER & MAVLINK TELEMETRY PILLS (SHADCN/UI STYLED)
+   ============================================================================== */
+.mode-switcher {
+  display: flex;
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px;
+  gap: 2px;
+}
+
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted-foreground);
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.mode-btn:hover {
+  color: var(--foreground);
+  background-color: var(--accent);
+}
+
+.mode-btn.active {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.mode-btn .mode-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mode-btn .mode-sub {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.02em;
+  margin-top: 1px;
+}
+
+.mode-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted-foreground);
+  transition: all 0.2s ease;
+}
+
+.mode-btn.active .mode-indicator {
+  background: var(--status-success);
+  box-shadow: 0 0 6px var(--status-success);
+}
+
+.mode-btn[data-mode="hybrid_real"].active .mode-indicator {
+  background: var(--status-info);
+  box-shadow: 0 0 6px var(--status-info);
+}
+
+/* MAVLink Status Pill & Mission Clock */
+.status-pill, .clock-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--foreground);
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--status-warning);
+  display: inline-block;
+}
+
+.pill-dot.connected {
+  background-color: var(--status-success);
+  box-shadow: 0 0 6px var(--status-success);
+}
+
+.pill-label {
+  font-size: 0.6rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.control-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.highlight-plan {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+/* ==============================================================================
+   DISASTER INCIDENT SUB-BANNER
+   ============================================================================== */
+.incident-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  flex-wrap: wrap;
+  z-index: 5;
+}
+
+.incident-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.incident-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--destructive);
+  letter-spacing: 0.05em;
+}
+
+.alert-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--destructive);
+  animation: pulse 1.5s infinite;
+}
+
+.incident-main h2 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.incident-main h2 em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.incident-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+.meta-sep {
+  opacity: 0.3;
+}
+
+.incident-meta strong {
+  color: var(--foreground);
+}
+
+.stat-readouts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.readout-box {
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.r-label {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.r-val-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.r-val {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.r-val.alert {
+  color: var(--destructive);
+}
+
+.r-val.warning {
+  color: var(--status-warning);
+}
+
+.r-bar {
+  flex: 1;
+  height: 4px;
+  background-color: var(--input);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 32px;
+}
+
+.r-bar i {
+  display: block;
+  height: 100%;
+  background-color: var(--status-success);
+  transition: width 0.3s ease;
+}
+
+/* ==============================================================================
+   DISASTER HAZARDS MONITOR CARD & ROSTER
+   ============================================================================== */
+.hazard-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hazard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.hazard-card {
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-mono);
+  transition: border-color 0.15s ease;
+}
+
+.hazard-card:hover {
+  border-color: var(--ring);
+}
+
+.hazard-icon-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hazard-icon-box.h-debris {
+  background-color: oklch(0.769 0.188 70.08 / 15%);
+  color: var(--status-warning);
+}
+
+.hazard-icon-box.h-smoke {
+  background-color: oklch(0.556 0 0 / 15%);
+  color: var(--muted-foreground);
+}
+
+.hazard-icon-box.h-thermal {
+  background-color: oklch(0.577 0.245 27.325 / 15%);
+  color: var(--destructive);
+}
+
+.hazard-icon-box.h-wind {
+  background-color: oklch(0.623 0.214 259.815 / 15%);
+  color: var(--status-info);
+}
+
+.hazard-desc {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hazard-desc strong {
+  font-size: 0.72rem;
+  color: var(--foreground);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.hazard-desc small {
+  font-size: 0.58rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.hazard-severity {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--destructive);
+}
+
+/* ==============================================================================
+   VIDEO HUD FLOATING QUICK TELEMETRY BAR
+   ============================================================================== */
+.video-hud-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  padding: 10px;
+}
+
+.hud-stat-box {
+  position: absolute;
+  background: oklch(0.145 0 0 / 75%);
+  backdrop-filter: blur(4px);
+  border: 1px solid oklch(1 0 0 / 15%);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hud-stat-box.top-left {
+  top: 8px;
+  left: 8px;
+}
+
+.hud-stat-box.top-right {
+  top: 8px;
+  right: 8px;
+}
+
+.hud-stat-box.bottom-left {
+  bottom: 8px;
+  left: 8px;
+}
+
+.hud-stat-box.bottom-right {
+  bottom: 8px;
+  right: 8px;
+}
+
+.hud-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: oklch(0.708 0 0);
+  font-weight: 600;
+}
+
+.hud-stat-box strong, .hud-vals {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: oklch(0.985 0 0);
+  font-weight: 600;
+}
+
+.hud-stat-box .target-alert {
+  color: oklch(0.704 0.191 22.216);
+  font-weight: 700;
+}
+
+.legend-pin.hazard-pin {
+  background-color: var(--status-warning);
+}

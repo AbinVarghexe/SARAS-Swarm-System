@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=3.2">
+    <link rel="stylesheet" href="/static/style.css?v=4.0">
     <script>
         // Apply saved theme preference or default to dark
         (function() {
@@ -42,7 +42,32 @@
                 </div>
             </div>
 
+            <!-- Operating Mode Switcher -->
+            <div class="mode-switcher" role="tablist">
+                <button class="mode-btn active" id="mode-pure-sim" data-mode="pure_sim" onclick="switchSystemMode('pure_sim')" title="Full Hazardous Simulation with active disaster hazards">
+                    <span class="mode-title"><span class="mode-indicator"></span> PURE SIMULATION</span>
+                    <span class="mode-sub">HAZARDOUS DISASTER ZONE</span>
+                </button>
+                <button class="mode-btn" id="mode-hybrid-real" data-mode="hybrid_real" onclick="switchSystemMode('hybrid_real')" title="Physical Drone-1 via MAVLink UDP 14550 + N Autonomous Companions">
+                    <span class="mode-title"><span class="mode-indicator"></span> HYBRID OPERATIONS</span>
+                    <span class="mode-sub">1 PHYSICAL DRONE + N COMPANIONS</span>
+                </button>
+            </div>
+
             <div class="header-metrics">
+                <!-- MAVLink / Mission Planner Status -->
+                <div class="status-pill" id="mavlink-pill" title="MAVLink telemetry connection to Mission Planner (UDP 14550)">
+                    <span class="pill-dot" id="mavlink-dot"></span>
+                    <span class="pill-label">MAVLINK 14550:</span>
+                    <strong id="mavlink-status">STANDBY</strong>
+                </div>
+
+                <!-- Mission Clock -->
+                <div class="clock-pill">
+                    <span class="pill-label">UTC MISSION:</span>
+                    <strong id="mission-clock">00:00</strong>
+                </div>
+
                 <div class="metric-chip">
                     <span class="m-label">SWARM TELEMETRY</span>
                     <span id="stat-health" class="m-val status-healthy">HEALTHY</span>
@@ -57,36 +82,73 @@
                     </div>
                     <span id="stat-drones" class="m-val">4 / 4</span>
                 </div>
-                <div class="metric-chip">
-                    <span class="m-label">AREA COVERED</span>
-                    <span id="stat-coverage" class="m-val">0.0%</span>
+
+                <div class="control-actions">
+                    <button class="btn btn-hud-toggle" id="pause-btn" onclick="toggleMissionPause()" title="Pause/Resume mission simulation">
+                        <span id="pause-btn-text">PAUSE</span>
+                    </button>
+                    <button class="btn btn-hud-toggle" id="reassign-btn" onclick="triggerSwarmRebid()" title="Trigger autonomous market auction re-allocation">
+                        <span>RE-BID</span>
+                    </button>
+                    <button class="btn btn-hud-toggle" id="btn-toggle-camera" onclick="toggleVideoFeed()" title="Toggle Live Optical UAV HUD Stream">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+                        <span>OPTICAL HUD</span>
+                    </button>
+                    <a href="/triage" class="btn btn-hud-toggle" title="Open Casualty Triage & Medical Dispatch Dashboard">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        <span>CASUALTY</span>
+                    </a>
+                    <a href="/plan" target="_blank" class="btn btn-hud-toggle highlight-plan" title="View Full SARAS System Architecture & Disaster Plan">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>PLAN</span>
+                    </a>
+                    <button class="btn btn-hud-toggle" id="btn-theme-toggle" onclick="toggleShadcnTheme()" title="Toggle shadcn/ui Theme (Dark / Light)">
+                        <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        <span id="theme-label">THEME</span>
+                    </button>
                 </div>
-                <div class="metric-chip">
-                    <span class="m-label">CONFIRMED DETECTIONS</span>
-                    <span id="stat-victims" class="m-val highlight-amber">0</span>
-                </div>
-                <div class="metric-chip">
-                    <span class="m-label">DISPATCH LOGIC</span>
-                    <span id="stat-policy" class="m-val badge-policy">AUCTION</span>
-                </div>
-                <button class="btn btn-hud-toggle" id="btn-toggle-camera" onclick="toggleVideoFeed()" title="Toggle Live Optical UAV HUD Stream">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
-                    <span>OPTICAL HUD</span>
-                </button>
-                <a href="/triage" class="btn btn-hud-toggle" title="Open Casualty Triage & Medical Dispatch Dashboard">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    <span>CASUALTY COMMAND</span>
-                </a>
-                <a href="/api/reports/triage-pdf" target="_blank" class="btn btn-hud-toggle" title="Export Comprehensive Casualty Triage PDF Report">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>TRIAGE PDF</span>
-                </a>
-                <button class="btn btn-hud-toggle" id="btn-theme-toggle" onclick="toggleShadcnTheme()" title="Toggle shadcn/ui Theme (Dark / Light)">
-                    <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                    <span id="theme-label">THEME</span>
-                </button>
             </div>
         </header>
+
+        <!-- Disaster Incident Sub-Banner -->
+        <section class="incident-banner">
+            <div class="incident-main">
+                <div class="incident-tag">
+                    <span class="alert-pulse"></span>
+                    <span>INCIDENT #KL-2024-WYND // LEVEL 4 DISASTER RESPONSE</span>
+                </div>
+                <h2>Wayanad Landslide Disaster Zone <em>/ Sector Chooralmala</em></h2>
+                <p class="incident-meta">
+                    <span>COORDINATES: <strong>11.5360°N, 76.1390°E</strong></span>
+                    <span class="meta-sep">|</span>
+                    <span>ELEVATION: <strong>850m MSL</strong></span>
+                    <span class="meta-sep">|</span>
+                    <span>HAZARDS: <strong>MUD DEBRIS, SMOKE PLUMES, RIDGE GUSTS, TRANSFORMER FIRE</strong></span>
+                </p>
+            </div>
+
+            <div class="stat-readouts">
+                <div class="readout-box">
+                    <span class="r-label">SECTOR COVERAGE</span>
+                    <div class="r-val-wrap">
+                        <span class="r-val" id="stat-coverage">0.0%</span>
+                        <div class="r-bar"><i id="stat-coverage-fill" style="width: 0%;"></i></div>
+                    </div>
+                </div>
+                <div class="readout-box">
+                    <span class="r-label">CONFIRMED DETECTIONS</span>
+                    <span class="r-val alert" id="stat-victims">0</span>
+                </div>
+                <div class="readout-box">
+                    <span class="r-label">ACTIVE HAZARDS</span>
+                    <span class="r-val warning" id="stat-hazards-count">4 ACTIVE</span>
+                </div>
+                <div class="readout-box">
+                    <span class="r-label">DISPATCH LOGIC</span>
+                    <span class="r-val" id="stat-policy">AUCTION</span>
+                </div>
+            </div>
+        </section>
 
         <!-- Main Command Workspace -->
         <div class="main-body">
@@ -304,6 +366,25 @@
                             <div class="hud-bracket bottom-right"></div>
                         </div>
                         <div class="video-scanlines"></div>
+                        <!-- Floating HUD Quick Telemetry Bar -->
+                        <div class="video-hud-overlay">
+                            <div class="hud-stat-box top-left">
+                                <span class="hud-lbl">CAM SOURCE</span>
+                                <strong id="hud-cam-source">AERIAL SAR TEST FEED (480P)</strong>
+                            </div>
+                            <div class="hud-stat-box top-right">
+                                <span class="hud-lbl">AI TARGET TRACKER</span>
+                                <strong class="target-alert" id="hud-target-count">2 VICTIMS ACQUIRED</strong>
+                            </div>
+                            <div class="hud-stat-box bottom-left">
+                                <span class="hud-lbl">AIRFRAME TELEMETRY</span>
+                                <span class="hud-vals" id="hud-flight-data">ALT: 35.0M | SPD: 10.0M/S | BATT: 98%</span>
+                            </div>
+                            <div class="hud-stat-box bottom-right">
+                                <span class="hud-lbl">TARGET FIX</span>
+                                <span class="hud-vals" id="hud-target-gps">11.5360°N, 76.1390°E</span>
+                            </div>
+                        </div>
                         <div class="video-telemetry-badge">
                             <span id="video-stream-status">1080p • 15 FPS • TARGET LOCK ACTIVE</span>
                         </div>
@@ -318,6 +399,7 @@
                     <div class="legend-item"><span class="legend-pin critical"></span> Critical Victim</div>
                     <div class="legend-item"><span class="legend-pin urgent"></span> Urgent Victim</div>
                     <div class="legend-item"><span class="legend-pin stable"></span> Stable Victim</div>
+                    <div class="legend-item"><span class="legend-pin hazard-pin"></span> Disaster Hazard Zone</div>
                     <div class="legend-item"><span class="legend-pin gcs-pin"></span> Operator GCS</div>
                     <button class="sample-chip legend-mapbox-chip" onclick="promptMapboxToken()">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -339,6 +421,20 @@
                     </div>
                     <div id="triage-list" class="triage-list">
                         <div class="empty-state">No casualties detected. Swarm is conducting autonomous sweep passes...</div>
+                    </div>
+                </section>
+
+                <!-- Environmental Disaster Hazards Monitor -->
+                <section class="card hazard-panel">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <span class="section-indicator" style="background: var(--status-warning);"></span>
+                            <h2>DISASTER HAZARDS MONITOR</h2>
+                        </div>
+                        <span id="hazard-count-badge" class="badge">4 ACTIVE</span>
+                    </div>
+                    <div id="hazard-roster" class="hazard-list">
+                        <!-- Populated dynamically -->
                     </div>
                 </section>
 

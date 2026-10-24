@@ -6,8 +6,12 @@ let droneTrails = {};
 let droneHistories = {};
 let sectorLayers = {};
 let victimMarkers = {};
+let hazardLayers = {};
 let wsTelemetry;
 let currentPolicy = "AUCTION";
+let currentSystemMode = "pure_sim";
+let isPaused = false;
+let missionSeconds = 0;
 let hasAutoFitted = false;
 let isConnected = false;
 
@@ -29,9 +33,97 @@ function getBackendUrls() {
 document.addEventListener("DOMContentLoaded", () => {
     initMap();
     initTelemetryWebSocket();
+    initMissionClock();
     fetchSwarmStatus();
     setInterval(fetchSwarmStatus, 1500); // Polling backup (1.5s interval)
 });
+
+function initMissionClock() {
+    setInterval(() => {
+        if (!isPaused) {
+            missionSeconds++;
+            const mins = String(Math.floor(missionSeconds / 60)).padStart(2, '0');
+            const secs = String(missionSeconds % 60).padStart(2, '0');
+            const clockEl = document.getElementById("mission-clock");
+            if (clockEl) clockEl.textContent = `${mins}:${secs}`;
+        }
+    }, 1000);
+}
+
+async function switchSystemMode(mode) {
+    try {
+        const urls = getBackendUrls();
+        const res = await fetch(`${urls.httpBase}/api/mode`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: mode })
+        });
+        const data = await res.json();
+        if (data.status === "ok") {
+            currentSystemMode = data.mode;
+            updateModeButtons(currentSystemMode);
+        }
+    } catch (e) {
+        console.error("Failed to switch mode:", e);
+    }
+}
+
+function updateModeButtons(mode) {
+    const btnSim = document.getElementById("mode-pure-sim");
+    const btnHybrid = document.getElementById("mode-hybrid-real");
+    if (btnSim && btnHybrid) {
+        if (mode === "hybrid_real") {
+            btnHybrid.classList.add("active");
+            btnSim.classList.remove("active");
+        } else {
+            btnSim.classList.add("active");
+            btnHybrid.classList.remove("active");
+        }
+    }
+}
+
+async function toggleMissionPause() {
+    const urls = getBackendUrls();
+    const cmd = isPaused ? "resume" : "pause";
+    try {
+        const res = await fetch(`${urls.httpBase}/api/command`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ command: cmd })
+        });
+        const data = await res.json();
+        isPaused = data.is_paused !== undefined ? data.is_paused : !isPaused;
+        updatePauseButton(isPaused);
+    } catch (e) {
+        console.error("Pause/resume command error:", e);
+    }
+}
+
+function updatePauseButton(paused) {
+    const btn = document.getElementById("pause-btn");
+    const txt = document.getElementById("pause-btn-text");
+    if (txt) txt.textContent = paused ? "RESUME" : "PAUSE";
+    if (btn) {
+        if (paused) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    }
+}
+
+async function triggerSwarmRebid() {
+    const urls = getBackendUrls();
+    try {
+        await fetch(`${urls.httpBase}/api/command`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ command: "rebid" })
+        });
+    } catch (e) {
+        console.error("Rebid error:", e);
+    }
+}
 
 const DEFAULT_MAPBOX_TOKEN = localStorage.getItem("saras_mapbox_token") || "";
 
@@ -437,6 +529,8 @@ function updateDashboard(state) {
 
         const covEl = document.getElementById("stat-coverage");
         if (covEl) covEl.textContent = `${(state.total_coverage_pct || 0).toFixed(1)}%`;
+        const covFill = document.getElementById("stat-coverage-fill");
+        if (covFill) covFill.style.width = `${Math.min(100, state.total_coverage_pct || 0)}%`;
 
         const detections = state.active_detections || state.victims || [];
         const victimsStat = document.getElementById("stat-victims");
@@ -446,6 +540,57 @@ function updateDashboard(state) {
         const policyEl = document.getElementById("stat-policy");
         if (policyEl) policyEl.textContent = currentPolicy;
         updatePolicyButtons();
+
+        // MAVLink / Hardware Bridge Status
+        const mavDot = document.getElementById("mavlink-dot");
+        const mavTxt = document.getElementById("mavlink-status");
+        const isMavConnected = state.mavlink_connected || state.mavlink_status?.connected || false;
+        if (mavDot && mavTxt) {
+            if (isMavConnected) {
+                mavDot.classList.add("connected");
+                mavTxt.textContent = "ONLINE (14550)";
+                mavTxt.style.color = "var(--status-success)";
+            } else {
+                mavDot.classList.remove("connected");
+                mavTxt.textContent = "STANDBY";
+                mavTxt.style.color = "var(--muted-foreground)";
+            }
+        }
+
+        // Operating Mode Sync
+        if (state.mode && state.mode !== currentSystemMode) {
+            currentSystemMode = state.mode;
+            updateModeButtons(currentSystemMode);
+        }
+
+        // Pause/Resume State Sync
+        if (state.is_paused !== undefined) {
+            isPaused = state.is_paused;
+            updatePauseButton(isPaused);
+        }
+
+        // Video HUD Quick Telemetry Sync
+        const dList = Object.values(drones);
+        if (dList.length > 0) {
+            const d1 = dList[0];
+            const hudFlight = document.getElementById("hud-flight-data");
+            if (hudFlight) hudFlight.textContent = `ALT: ${(d1.alt || 35.0).toFixed(1)}M | SPD: ${(d1.speed_mps || 10.0).toFixed(1)}M/S | BATT: ${Math.round(d1.battery || 100)}%`;
+            const hudGps = document.getElementById("hud-target-gps");
+            if (hudGps) hudGps.textContent = `${(d1.lat || 11.5360).toFixed(4)}°N, ${(d1.lon || 76.1390).toFixed(4)}°E`;
+            const hudCam = document.getElementById("hud-cam-source");
+            if (hudCam) {
+                hudCam.textContent = state.mode === "hybrid_real" ? "MAVLINK MISSION PLANNER EO/IR" : "AERIAL SAR TEST FEED (MP4)";
+            }
+            const hudTarget = document.getElementById("hud-target-count");
+            if (hudTarget) {
+                hudTarget.textContent = `${detections.length} VICTIMS ACQUIRED`;
+            }
+        }
+
+        // 2. Render Hazards (Leaflet map circles & sidebar card)
+        if (state.hazards && Array.isArray(state.hazards)) {
+            renderHazards(state.hazards);
+        }
 
         // Normalize sectors dictionary / list
         let sectors = {};
@@ -500,6 +645,82 @@ function updateDashboard(state) {
     } catch (err) {
         console.error("Dashboard update error:", err);
     }
+}
+
+function renderHazards(hazards) {
+    if (!hazards || !Array.isArray(hazards)) return;
+
+    // 1. Render hazard cards in sidebar roster
+    const container = document.getElementById("hazard-roster");
+    const countBadge = document.getElementById("hazard-count-badge");
+    const bannerCount = document.getElementById("stat-hazards-count");
+    if (countBadge) countBadge.textContent = `${hazards.length} ACTIVE`;
+    if (bannerCount) bannerCount.textContent = `${hazards.length} ACTIVE`;
+
+    if (container) {
+        container.innerHTML = hazards.map(h => {
+            let iconClass = "h-debris";
+            let glyph = "▲";
+            if (h.hazard_type === "smoke_plume") { iconClass = "h-smoke"; glyph = "☁"; }
+            else if (h.hazard_type === "wind_shear") { iconClass = "h-wind"; glyph = "⇄"; }
+            else if (h.hazard_type === "fire_hotspot") { iconClass = "h-thermal"; glyph = "♨"; }
+
+            return `
+            <div class="hazard-card" title="${h.description}">
+                <div class="hazard-icon-box ${iconClass}">${glyph}</div>
+                <div class="hazard-desc">
+                    <strong>${h.name || h.hazard_id}</strong>
+                    <small>${h.description} · RAD: ${h.radius}M</small>
+                </div>
+                <div class="hazard-severity">
+                    ${Math.round((h.severity || 0.8) * 100)}% RISK
+                </div>
+            </div>
+            `;
+        }).join("");
+    }
+
+    // 2. Render hazard circles on Leaflet map
+    if (!map) return;
+    hazards.forEach(h => {
+        const hid = h.hazard_id;
+        let color = "#ef4444";
+        let fillColor = "#ef4444";
+        let fillOpacity = 0.22;
+
+        if (h.hazard_type === "landslide_debris") {
+            color = "#f97316";
+            fillColor = "#ea580c";
+            fillOpacity = 0.26;
+        } else if (h.hazard_type === "smoke_plume") {
+            color = "#94a3b8";
+            fillColor = "#64748b";
+            fillOpacity = 0.28;
+        } else if (h.hazard_type === "wind_shear") {
+            color = "#38bdf8";
+            fillColor = "#0284c7";
+            fillOpacity = 0.20;
+        }
+
+        if (!hazardLayers[hid]) {
+            hazardLayers[hid] = L.circle([h.lat, h.lon], {
+                radius: h.radius || 100,
+                color: color,
+                weight: 1.5,
+                dashArray: "4, 4",
+                fillColor: fillColor,
+                fillOpacity: fillOpacity
+            }).addTo(map);
+
+            hazardLayers[hid].bindTooltip(`
+                <div style="font-family:var(--font-sans); padding:2px;">
+                    <strong style="color:${color}; font-size:12px;">${h.name || hid}</strong><br>
+                    <span style="font-size:11px; color:var(--foreground);">${h.description}</span><br>
+                    <small style="color:var(--muted-foreground);">Radius: ${h.radius}m | Risk: ${Math.round((h.severity || 0.8)*100)}%</small>
+                </div>
+            `, { sticky: true });
+        }
+    });
 }
 
 function updatePolicyButtons() {

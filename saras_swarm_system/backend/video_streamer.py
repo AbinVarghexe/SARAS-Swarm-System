@@ -39,9 +39,16 @@ class SwarmVideoStreamer:
         self.frame_index = 0
         self.last_detections: List[Dict[str, Any]] = []
         self.snapshot_cache: Dict[str, bytes] = {}
+        self.current_telemetry: Dict[str, Any] = {}
 
         self._init_detector()
         self._init_source()
+
+    def update_telemetry(self, telemetry: Dict[str, Any]) -> None:
+        """Update drone flight state for real-time HUD graphics."""
+        if not hasattr(self, "current_telemetry"):
+            self.current_telemetry = {}
+        self.current_telemetry.update(telemetry)
 
     def _init_detector(self) -> None:
         if not self.use_yolo:
@@ -68,6 +75,16 @@ class SwarmVideoStreamer:
             self.cap = cv2.VideoCapture(self.video_source)
             logger.info(f"Using video source file: {self.video_source}")
         else:
+            # Check default media assets
+            candidates = [
+                os.path.join(os.path.dirname(os.path.dirname(__file__)), "media", "drone_feed_test.mp4"),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "projectcode", "media", "drone_feed_test.mp4"),
+            ]
+            for cand in candidates:
+                if os.path.exists(cand):
+                    self.cap = cv2.VideoCapture(cand)
+                    logger.info(f"Loaded media video asset: {cand}")
+                    return
             self.cap = None
 
     def _generate_synthetic_aerial_frame(self, drone_id: str = "Drone-1", telemetry: Optional[Dict[str, Any]] = None) -> np.ndarray:

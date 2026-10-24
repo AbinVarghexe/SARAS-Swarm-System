@@ -29,11 +29,12 @@ from swarm_core.simulation.swarm_sim import SwarmSimulator
 from swarm_core.agentic_ai.triage_rag import RescueTriageAgent, RAGKnowledgeAgent
 from swarm_core.coordination.allocator import evaluate_allocation_policies, haversine_distance
 from backend.video_streamer import SwarmVideoStreamer
+from backend.mavlink_bridge import MavlinkBridge
 
 app = FastAPI(
     title="SARAS Mission Control API",
-    description="Search And Rescue Autonomous Swarm Backend & Telemetry Engine",
-    version="1.0.0"
+    description="Search And Rescue Autonomous Swarm Backend & Telemetry Engine with MAVLink & Hardware Bridge",
+    version="2.0.0"
 )
 
 app.add_middleware(
@@ -47,12 +48,83 @@ app.add_middleware(
 # Base Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 DASHBOARD_DIR = BASE_DIR / "dashboard"
+MEDIA_DIR = BASE_DIR / "media"
+DOCS_DIR = BASE_DIR / "docs"
 
 # State & Service Instances
 simulator = SwarmSimulator(num_drones=4, auto_generate_sectors=False)
 triage_agent = RescueTriageAgent()
 rag_agent = RAGKnowledgeAgent()
 video_streamer = SwarmVideoStreamer()
+
+def on_mavlink_telemetry(data: Dict[str, Any]) -> None:
+    global current_mode
+    if current_mode == "hybrid_real" and "Drone-1" in simulator.drones:
+        d1 = simulator.drones["Drone-1"]
+        if "lat" in data and "lon" in data and data["lat"] != 0 and data["lon"] != 0:
+            d1.lat = float(data["lat"])
+            d1.lon = float(data["lon"])
+        if "alt" in data:
+            d1.alt = float(data["alt"])
+        if "heading" in data:
+            d1.heading = float(data["heading"])
+        if "battery" in data:
+            d1.battery = float(data["battery"])
+        if "speed" in data:
+            d1.speed_mps = float(data["speed"])
+    video_streamer.update_telemetry(data)
+
+mavlink_bridge = MavlinkBridge(
+    connection_str="udpin:127.0.0.1:14550",
+    on_telemetry_callback=on_mavlink_telemetry,
+)
+
+# Operating mode: "pure_sim" (all virtual drones) or "hybrid_real" (Drone 1 is physical via MAVLink)
+current_mode = "pure_sim"
+
+# Wayanad Landslide Environmental Disaster Hazard Zones
+WAYANAD_HAZARDS = [
+    {
+        "hazard_id": "HAZ-01",
+        "hazard_type": "landslide_debris",
+        "name": "Chooralmala Mudflow Torrent",
+        "lat": 11.5375,
+        "lon": 76.1385,
+        "radius": 140.0,
+        "severity": 0.95,
+        "description": "Active mud & debris flow downstream of Iruvaazhinji river. High entrapment risk."
+    },
+    {
+        "hazard_id": "HAZ-02",
+        "hazard_type": "smoke_plume",
+        "name": "Meppadi Ridge Smoke Plume",
+        "lat": 11.5340,
+        "lon": 76.1415,
+        "radius": 95.0,
+        "severity": 0.70,
+        "description": "Secondary brush fire & dense smoke layer; optical sensor visibility reduced."
+    },
+    {
+        "hazard_id": "HAZ-03",
+        "hazard_type": "fire_hotspot",
+        "name": "Collapsed Transformer Fire",
+        "lat": 11.5388,
+        "lon": 76.1420,
+        "radius": 60.0,
+        "severity": 0.88,
+        "description": "Substation transformer short-circuit fire. High thermal radiation."
+    },
+    {
+        "hazard_id": "HAZ-04",
+        "hazard_type": "wind_shear",
+        "name": "Vellarimala Valley Wind Shear",
+        "lat": 11.5320,
+        "lon": 76.1360,
+        "radius": 180.0,
+        "severity": 0.65,
+        "description": "Sudden 14 m/s downdrafts across gorge corridor; attitude stability risk."
+    }
+]
 
 # Recommendations cache: victim_id -> RescueRecommendation
 recommendations_map: Dict[str, RescueRecommendation] = {}
@@ -69,6 +141,10 @@ is_simulation_active = True
 # Request Schemas
 class QueryRequest(BaseModel):
     query: str
+
+
+class ModeRequest(BaseModel):
+    mode: str  # "pure_sim" | "hybrid_real"
 
 
 class FaultRequest(BaseModel):
@@ -139,6 +215,10 @@ async def run_simulation_worker():
                 payload = current_state.model_dump()
                 payload["drones"] = list(payload.get("active_drones", {}).values())
                 payload["victims"] = payload.get("active_detections", [])
+                payload["mode"] = current_mode
+                payload["is_paused"] = not is_simulation_active
+                payload["mavlink_connected"] = mavlink_bridge.is_connected
+                payload["hazards"] = WAYANAD_HAZARDS
                 await broadcast_telemetry(payload)
 
             await asyncio.sleep(dt)
@@ -176,12 +256,20 @@ async def broadcast_alert(alert_data: dict):
 @app.on_event("startup")
 async def startup_event():
     global sim_task
+    try:
+        await mavlink_bridge.start()
+    except Exception as e:
+        print(f"[MAVLink Bridge Init Note]: {e}")
     sim_task = asyncio.create_task(run_simulation_worker())
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     global sim_task
+    try:
+        await mavlink_bridge.stop()
+    except Exception as e:
+        print(f"[MAVLink Bridge Stop Note]: {e}")
     if sim_task:
         sim_task.cancel()
 
@@ -196,7 +284,94 @@ async def get_swarm_status():
     dump = state.model_dump()
     dump["drones"] = list(dump.get("active_drones", {}).values())
     dump["victims"] = dump.get("active_detections", [])
+    dump["mode"] = current_mode
+    dump["is_paused"] = not is_simulation_active
+    dump["mavlink_connected"] = mavlink_bridge.is_connected
+    dump["mavlink_status"] = {
+        "connected": mavlink_bridge.is_connected,
+        "connection_str": mavlink_bridge.connection_str,
+        "packets_received": mavlink_bridge.latest_telemetry.get("packet_count", 0),
+    }
+    dump["hazards"] = WAYANAD_HAZARDS
     return dump
+
+
+@app.get("/api/mode")
+async def get_system_mode():
+    """Returns the current operational mode: pure_sim or hybrid_real."""
+    return {"status": "ok", "mode": current_mode}
+
+
+@app.post("/api/mode")
+async def set_system_mode(req: ModeRequest):
+    """Switch between 'pure_sim' (hazardous simulation) and 'hybrid_real' (1 real drone + N virtual)."""
+    global current_mode
+    if req.mode not in ("pure_sim", "hybrid_real"):
+        raise HTTPException(status_code=400, detail="Invalid mode. Choose 'pure_sim' or 'hybrid_real'")
+    current_mode = req.mode
+    return {"status": "ok", "mode": current_mode}
+
+
+@app.get("/api/hazards")
+async def get_hazard_zones():
+    """Returns active environmental disaster hazard zones (Wayanad Landslide ground zero)."""
+    return WAYANAD_HAZARDS
+
+
+@app.get("/api/mavlink/status")
+async def get_mavlink_status():
+    """Returns current MAVLink telemetry bridge status and packet reception statistics."""
+    return {
+        "connected": mavlink_bridge.is_connected,
+        "connection_str": mavlink_bridge.connection_str,
+        "packets_received": mavlink_bridge.latest_telemetry.get("packet_count", 0),
+        "telemetry": mavlink_bridge.latest_telemetry
+    }
+
+
+@app.post("/api/simulation/pause")
+async def pause_simulation():
+    """Pauses mission simulator step loop."""
+    global is_simulation_active
+    is_simulation_active = False
+    return {"status": "ok", "is_paused": True}
+
+
+@app.post("/api/simulation/resume")
+async def resume_simulation():
+    """Resumes mission simulator step loop."""
+    global is_simulation_active
+    is_simulation_active = True
+    return {"status": "ok", "is_paused": False}
+
+
+@app.post("/api/command")
+async def execute_tactical_command(req: Dict[str, Any]):
+    """Unified tactical command endpoint for pause, resume, reassign/rebid, and reset."""
+    global is_simulation_active
+    cmd = req.get("command", "").lower()
+    if cmd == "pause":
+        is_simulation_active = False
+        return {"status": "ok", "command": "pause", "is_paused": True}
+    elif cmd == "resume":
+        is_simulation_active = True
+        return {"status": "ok", "command": "resume", "is_paused": False}
+    elif cmd in ("reassign", "rebid"):
+        simulator.rebalance_after_dropout()
+        return {"status": "ok", "command": cmd, "message": "Swarm tasks re-bid and balanced."}
+    elif cmd == "reset":
+        return await reset_simulation()
+    return {"status": "ok", "command": cmd}
+
+
+@app.get("/plan")
+@app.get("/system-plan")
+async def serve_system_plan():
+    """Serves the detailed SARAS System & Architecture Plan document."""
+    plan_file = DOCS_DIR / "SARAS_SYSTEM_PLAN.html"
+    if plan_file.exists():
+        return FileResponse(str(plan_file))
+    return JSONResponse({"error": "SARAS_SYSTEM_PLAN.html not found"}, status_code=404)
 
 
 @app.get("/api/sectors")
