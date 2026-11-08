@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 440" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050B14"/>
+      <stop offset="50%" stop-color="#0B1528"/>
+      <stop offset="100%" stop-color="#03070E"/>
+    </linearGradient>
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.1"/>
+      <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#EF4444" stop-opacity="0.2"/>
+    </linearGradient>
+    <radialGradient id="radar" cx="70%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#0284C7" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="hex" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(0.8)">
+      <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" 
+            fill="none" stroke="#38BDF8" stroke-opacity="0.04" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="440" fill="url(#bg)"/>
+  <rect width="1280" height="440" fill="url(#hex)"/>
+  <circle cx="900" cy="220" r="300" fill="url(#radar)"/>
+
+  <!-- Radar Circles -->
+  <g opacity="0.25" stroke="#F59E0B">
+    <circle cx="920" cy="220" r="80" fill="none" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="920" cy="220" r="160" fill="none" stroke-width="1"/>
+    <circle cx="920" cy="220" r="240" fill="none" stroke-width="1" stroke-dasharray="4 6"/>
+  </g>
+
+  <!-- UAV Icons / Swarm Nodes -->
+  <g transform="translate(860, 160)" stroke="#F59E0B" fill="none" stroke-width="1.5">
+    <!-- Center Drone -->
+    <circle cx="60" cy="60" r="14" fill="#F59E0B" fill-opacity="0.2"/>
+    <line x1="40" y1="40" x2="80" y2="80"/>
+    <line x1="40" y1="80" x2="80" y2="40"/>
+    <circle cx="40" cy="40" r="6" fill="#38BDF8"/>
+    <circle cx="80" cy="80" r="6" fill="#38BDF8"/>
+    <circle cx="40" cy="80" r="6" fill="#38BDF8"/>
+    <circle cx="80" cy="40" r="6" fill="#38BDF8"/>
+    <!-- YOLO Target Box -->
+    <rect x="25" y="25" width="70" height="70" stroke="#22C55E" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <text x="30" y="20" font-family="monospace" font-size="10" fill="#22C55E">TARGET [0.94]</text>
+  </g>
+
+  <!-- Satellite / Drone Node 2 -->
+  <g transform="translate(1040, 90)" stroke="#38BDF8" fill="none" stroke-width="1.2" opacity="0.8">
+    <circle cx="30" cy="30" r="8" fill="#38BDF8" fill-opacity="0.3"/>
+    <line x1="20" y1="20" x2="40" y2="40"/>
+    <line x1="20" y1="40" x2="40" y2="20"/>
+  </g>
+
+  <!-- Mesh Connection Line -->
+  <line x1="920" y1="220" x2="1070" y2="120" stroke="#38BDF8" stroke-opacity="0.4" stroke-width="1.2" stroke-dasharray="2 4"/>
+
+  <!-- Logo Mark -->
+  <g transform="translate(100, 95)">
+    <rect x="0" y="0" width="84" height="84" rx="24" fill="#0B132B" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.5"/>
+    <!-- Quadcopter Vector -->
+    <g transform="translate(18, 18)" stroke="#F59E0B" stroke-width="2" fill="none">
+      <circle cx="24" cy="24" r="7" fill="#F59E0B"/>
+      <line x1="6" y1="6" x2="42" y2="42"/>
+      <line x1="6" y1="42" x2="42" y2="6"/>
+      <circle cx="6" cy="6" r="4" fill="#38BDF8" stroke="none"/>
+      <circle cx="42" cy="42" r="4" fill="#38BDF8" stroke="none"/>
+      <circle cx="6" cy="42" r="4" fill="#38BDF8" stroke="none"/>
+      <circle cx="42" cy="6" r="4" fill="#38BDF8" stroke="none"/>
+    </g>
+  </g>
+
+  <!-- Titles -->
+  <g transform="translate(210, 135)">
+    <text x="0" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif"
+          font-size="44" font-weight="900" fill="#FFFFFF" letter-spacing="-1">
+      SARAS
+    </text>
+    <text x="175" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif"
+          font-size="12" font-weight="700" fill="#F59E0B" letter-spacing="2">
+      AUTONOMOUS SWARM
+    </text>
+    <text x="0" y="56" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif"
+          font-size="17" font-weight="500" fill="#94A3B8" letter-spacing="-0.2">
+      Search And Rescue Autonomous Multi-UAV Robotic Swarm Architecture
+    </text>
+  </g>
+
+  <!-- Telemetry Badges -->
+  <g transform="translate(100, 245)">
+    <g transform="translate(0, 0)">
+      <rect width="195" height="34" rx="17" fill="#0B132B" stroke="#1E293B" stroke-width="1.2"/>
+      <circle cx="16" cy="17" r="4" fill="#F59E0B"/>
+      <text x="28" y="22" font-family="monospace" font-size="12" font-weight="600" fill="#E2E8F0">Dual-Track Edge AI</text>
+    </g>
+    <g transform="translate(210, 0)">
+      <rect width="180" height="34" rx="17" fill="#0B132B" stroke="#1E293B" stroke-width="1.2"/>
+      <circle cx="16" cy="17" r="4" fill="#38BDF8"/>
+      <text x="28" y="22" font-family="monospace" font-size="12" font-weight="600" fill="#E2E8F0">YOLOv8 ONNX Nano</text>
+    </g>
+    <g transform="translate(405, 0)">
+      <rect width="190" height="34" rx="17" fill="#0B132B" stroke="#1E293B" stroke-width="1.2"/>
+      <circle cx="16" cy="17" r="4" fill="#22C55E"/>
+      <text x="28" y="22" font-family="monospace" font-size="12" font-weight="600" fill="#E2E8F0">PX4 + Raspberry Pi</text>
+    </g>
+    <g transform="translate(610, 0)">
+      <rect width="210" height="34" rx="17" fill="#0B132B" stroke="#1E293B" stroke-width="1.2"/>
+      <circle cx="16" cy="17" r="4" fill="#A855F7"/>
+      <text x="28" y="22" font-family="monospace" font-size="12" font-weight="600" fill="#E2E8F0">72h Golden Window Ops</text>
+    </g>
+  </g>
+
+  <line x1="0" y1="439" x2="1280" y2="439" stroke="#F59E0B" stroke-opacity="0.4" stroke-width="1"/>
+</svg>
